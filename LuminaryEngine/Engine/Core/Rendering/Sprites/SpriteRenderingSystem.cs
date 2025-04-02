@@ -33,12 +33,15 @@ public class SpriteRenderingSystem
                 throw new UnknownTextureException($"Failed to load texture: {spriteComponent.TextureId}");
             }
             
+            int scaledWidth = (int)(texture.Width * transformComponent.Scale.X);
+            int scaledHeight = (int)(texture.Height * transformComponent.Scale.Y);
+            
             SDL.SDL_Rect destRect = new SDL.SDL_Rect
             {
                 x = (int)transformComponent.Position.X,
                 y = (int)transformComponent.Position.Y,
-                w = 100,
-                h = 100
+                w = scaledWidth,
+                h = scaledHeight
             };
             
             if (spriteComponent.SourceRect.HasValue)
