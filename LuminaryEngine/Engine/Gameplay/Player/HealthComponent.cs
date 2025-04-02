@@ -1,4 +1,4 @@
-﻿namespace LunimaryEngine.Engine.Gameplay.Player;
+﻿namespace LuminaryEngine.Engine.Gameplay.Player;
 
 public class HealthComponent
 {

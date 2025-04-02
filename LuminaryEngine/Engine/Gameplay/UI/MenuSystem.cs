@@ -1,4 +1,4 @@
-﻿namespace LunimaryEngine.Engine.Gameplay.UI;
+﻿namespace LuminaryEngine.Engine.Gameplay.UI;
 
 public class MenuSystem
 {

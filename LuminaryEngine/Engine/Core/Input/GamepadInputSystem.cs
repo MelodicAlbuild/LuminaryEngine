@@ -1,4 +1,4 @@
-﻿namespace LunimaryEngine.Engine.Core.Input;
+﻿namespace LuminaryEngine.Engine.Core.Input;
 
 public class GamepadInputSystem
 {

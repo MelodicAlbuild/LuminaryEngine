@@ -1,4 +1,4 @@
-﻿namespace LunimaryEngine.Engine.Core.ResourceManagement;
+﻿namespace LuminaryEngine.Engine.Core.ResourceManagement;
 
 public class ResourceLoadingSystem
 {

@@ -1,4 +1,4 @@
-﻿namespace LunimaryEngine.Engine.ECS;
+﻿namespace LuminaryEngine.Engine.ECS;
 
 public class Entity
 {

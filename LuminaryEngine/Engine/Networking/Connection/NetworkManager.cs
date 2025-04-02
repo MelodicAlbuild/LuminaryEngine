@@ -1,4 +1,4 @@
-﻿namespace LunimaryEngine.Engine.Networking.Connection;
+﻿namespace LuminaryEngine.Engine.Networking.Connection;
 
 public class NetworkManager
 {

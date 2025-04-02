@@ -1,4 +1,4 @@
-﻿namespace LunimaryEngine.Engine.Core.GameLoop;
+﻿namespace LuminaryEngine.Engine.Core.GameLoop;
 
 public class GameTime
 {

@@ -1,4 +1,4 @@
-﻿namespace LunimaryEngine.Engine.ECS.Components;
+﻿namespace LuminaryEngine.Engine.ECS.Components;
 
 public class TransformComponent
 {

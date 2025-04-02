@@ -1,4 +1,4 @@
-﻿namespace LunimaryEngine.Engine.Gameplay.Crafting;
+﻿namespace LuminaryEngine.Engine.Gameplay.Crafting;
 
 public class ForgingLogicSystem
 {

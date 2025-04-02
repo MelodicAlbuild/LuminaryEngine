@@ -1,4 +1,4 @@
-﻿namespace LunimaryEngine.Engine.Networking.Transport;
+﻿namespace LuminaryEngine.Engine.Networking.Transport;
 
 public class NetworkTransport
 {

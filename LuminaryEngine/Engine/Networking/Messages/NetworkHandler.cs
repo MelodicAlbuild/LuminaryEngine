@@ -1,4 +1,4 @@
-﻿namespace LunimaryEngine.Engine.Networking.Messages;
+﻿namespace LuminaryEngine.Engine.Networking.Messages;
 
 public class NetworkHandler
 {

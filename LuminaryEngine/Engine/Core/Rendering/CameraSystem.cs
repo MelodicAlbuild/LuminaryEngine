@@ -1,4 +1,4 @@
-﻿namespace LunimaryEngine.Engine.Core.Rendering;
+﻿namespace LuminaryEngine.Engine.Core.Rendering;
 
 public class CameraSystem
 {

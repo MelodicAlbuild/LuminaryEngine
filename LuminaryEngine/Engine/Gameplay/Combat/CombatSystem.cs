@@ -1,4 +1,4 @@
-﻿namespace LunimaryEngine.Engine.Gameplay.Combat;
+﻿namespace LuminaryEngine.Engine.Gameplay.Combat;
 
 public class CombatSystem
 {

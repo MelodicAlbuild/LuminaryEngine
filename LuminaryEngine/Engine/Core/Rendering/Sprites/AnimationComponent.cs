@@ -1,4 +1,4 @@
-﻿namespace LunimaryEngine.Engine.Core.Rendering.Sprites;
+﻿namespace LuminaryEngine.Engine.Core.Rendering.Sprites;
 
 public class AnimationComponent
 {

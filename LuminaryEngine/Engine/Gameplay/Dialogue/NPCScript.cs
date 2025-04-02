@@ -1,4 +1,4 @@
-﻿namespace LunimaryEngine.Engine.Gameplay.Dialogue;
+﻿namespace LuminaryEngine.Engine.Gameplay.Dialogue;
 
 public class NPCScript
 {

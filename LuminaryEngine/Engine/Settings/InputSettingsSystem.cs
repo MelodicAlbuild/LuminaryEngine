@@ -1,4 +1,4 @@
-﻿namespace LunimaryEngine.Engine.Settings;
+﻿namespace LuminaryEngine.Engine.Settings;
 
 public class InputSettingsSystem
 {

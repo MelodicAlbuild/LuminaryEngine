@@ -1,4 +1,4 @@
-﻿namespace LunimaryEngine.Engine.Core.Rendering.Textures;
+﻿namespace LuminaryEngine.Engine.Core.Rendering.Textures;
 
 public class TextureLoadingSystem
 {
