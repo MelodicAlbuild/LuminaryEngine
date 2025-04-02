@@ -11,4 +11,10 @@
       <ProjectReference Include="..\LuminaryEngine\LuminaryEngine.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="Assets\**\*.*">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
 </Project>

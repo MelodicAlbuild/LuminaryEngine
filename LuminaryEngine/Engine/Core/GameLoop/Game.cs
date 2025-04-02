@@ -3,6 +3,7 @@ using LuminaryEngine.Engine.Core.Rendering.Sprites;
 using LuminaryEngine.Engine.Core.Rendering.Textures;
 using LuminaryEngine.Engine.Core.ResourceManagement;
 using LuminaryEngine.Engine.ECS;
+using LuminaryEngine.Engine.ECS.Components;
 using SDL2;
 
 namespace LuminaryEngine.Engine.Core.GameLoop;
@@ -118,7 +119,9 @@ public class Game
 
     private void LoadContent()
     {
-        // TODO: Handle Load
+        Entity player = _world.CreateEntity();
+        player.AddComponent(new TransformComponent(100, 100));
+        player.AddComponent(new SpriteComponent("player.png", 1));
     }
 
     private void UnloadContent()
