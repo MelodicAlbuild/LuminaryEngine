@@ -20,6 +20,7 @@ public class Game
     
     private Renderer _renderer;
     private ResourceCache _resourceCache;
+    private GameTime _gameTime;
     private SpriteRenderingSystem _spriteRenderingSystem;
     private TextureLoadingSystem _textureLoadingSystem;
     private KeyboardInputSystem _keyboardInputSystem;
@@ -31,6 +32,7 @@ public class Game
     {
         _isRunning = true;
         _world = new World();
+        _gameTime = new GameTime();
     }
 
     private bool Initialize()
@@ -73,7 +75,7 @@ public class Game
         _keyboardInputSystem = new KeyboardInputSystem(_world);
         _mouseInputSystem = new MouseInputSystem(_world);
         _playerMovementSystem = new PlayerMovementSystem(_world);
-        _cameraSystem = new CameraSystem(_world);
+        _cameraSystem = new CameraSystem(_world, _gameTime);
 
         return true;
     }
