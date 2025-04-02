@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LunimaryEngine", "LunimaryEngine\LunimaryEngine.csproj", "{15C6CCB4-BFF5-4590-8914-3A861E8F0F3D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuminaryEngine", "LuminaryEngine\LuminaryEngine.csproj", "{15C6CCB4-BFF5-4590-8914-3A861E8F0F3D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Starforge", "Starforge\Starforge.csproj", "{A80260C6-F3F1-4F8B-9C7B-A1A14CCACBF8}"
 EndProject
