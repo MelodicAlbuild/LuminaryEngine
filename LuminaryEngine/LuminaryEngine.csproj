@@ -33,6 +33,10 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         <TargetPath>SDL2_ttf.dll</TargetPath>
       </ContentWithTargetPath>
+        <ContentWithTargetPath Include="ThirdParty\SDL2\SDL2_mixer.dll">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <TargetPath>SDL2_mixer.dll</TargetPath>
+        </ContentWithTargetPath>
     </ItemGroup>
 
 </Project>

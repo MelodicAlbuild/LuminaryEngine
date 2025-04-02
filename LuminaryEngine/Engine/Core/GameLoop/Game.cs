@@ -1,4 +1,5 @@
-﻿using LuminaryEngine.Engine.Core.Input;
+﻿using LuminaryEngine.Engine.Audio;
+using LuminaryEngine.Engine.Core.Input;
 using LuminaryEngine.Engine.Core.Rendering;
 using LuminaryEngine.Engine.Core.Rendering.Sprites;
 using LuminaryEngine.Engine.Core.Rendering.Textures;
@@ -27,6 +28,8 @@ public class Game
     private MouseInputSystem _mouseInputSystem;
     private PlayerMovementSystem _playerMovementSystem;
     private CameraSystem _cameraSystem;
+    private AudioManager _audioManager;
+    private AudioSystem _audioSystem;
 
     public Game()
     {
@@ -67,8 +70,11 @@ public class Game
         // Initialize Texture Loading System
         _textureLoadingSystem = new TextureLoadingSystem(_world);
         
+        // Initialize Audio Manager
+        _audioManager = new AudioManager();
+        
         // Initialize Resource Cache
-        _resourceCache = new ResourceCache(_renderer.GetRenderer(), _textureLoadingSystem);
+        _resourceCache = new ResourceCache(_renderer.GetRenderer(), _textureLoadingSystem, _audioManager);
         
         // Initialize Systems
         _spriteRenderingSystem = new SpriteRenderingSystem(_renderer, _resourceCache, _world);
@@ -76,6 +82,7 @@ public class Game
         _mouseInputSystem = new MouseInputSystem(_world);
         _playerMovementSystem = new PlayerMovementSystem(_world);
         _cameraSystem = new CameraSystem(_world, _gameTime);
+        _audioSystem = new AudioSystem(_world, _audioManager);
 
         return true;
     }
@@ -120,6 +127,7 @@ public class Game
     {
         _playerMovementSystem.Update();
         _cameraSystem.Update();
+        _audioSystem.Update();
     }
 
     private void Draw()
@@ -133,6 +141,10 @@ public class Game
 
     private void LoadContent()
     {
+        Sound bgmMain = _resourceCache.GetSound("background_music.mp3");
+        Entity backgroundMusicEntity = _world.CreateEntity();
+        backgroundMusicEntity.AddComponent(new AudioSource("background_music.mp3") { PlayOnAwake = true, Volume = 0.7f, Loop = true });
+        
         Entity player = _world.CreateEntity();
         player.AddComponent(new TransformComponent(100, 100));
         player.AddComponent(new SpriteComponent("player.png", 1));

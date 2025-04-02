@@ -1,4 +1,5 @@
-﻿using LuminaryEngine.Engine.Core.Rendering.Textures;
+﻿using LuminaryEngine.Engine.Audio;
+using LuminaryEngine.Engine.Core.Rendering.Textures;
 using SDL2;
 
 namespace LuminaryEngine.Engine.Core.ResourceManagement;
@@ -7,14 +8,18 @@ public class ResourceCache
 {
     private IntPtr _renderer;
     private Dictionary<string, Texture> _textureCache;
+    public Dictionary<string, Sound> _soundCache { get; private set; }
+    private AudioManager _audioManager;
     
     private TextureLoadingSystem _textureLoadingSystem;
     
-    public ResourceCache(IntPtr renderer, TextureLoadingSystem textureLoadingSystem)
+    public ResourceCache(IntPtr renderer, TextureLoadingSystem textureLoadingSystem, AudioManager audioManager)
     {
         _renderer = renderer;
         _textureLoadingSystem = textureLoadingSystem;
         _textureCache = new Dictionary<string, Texture>();
+        _audioManager = audioManager;
+        _soundCache = new Dictionary<string, Sound>();
     }
 
     public Texture GetTexture(string textureId)
@@ -32,6 +37,25 @@ public class ResourceCache
         _textureCache[textureId] = texture;
         return texture;
     }
+    
+    public Sound GetSound(string id)
+    {
+        if (_soundCache.TryGetValue(id, out Sound sound))
+        {
+            return sound;
+        }
+
+        // Assuming sound IDs correspond to file paths in "Assets/Audio/"
+        string filePath = $"Assets/Audio/{id}";
+        Sound newSound = _audioManager.LoadSound(id, filePath); // AudioManager handles the actual loading
+        if (newSound != null)
+        {
+            _soundCache[id] = newSound;
+            return newSound;
+        }
+
+        return null;
+    }
 
     public void ClearCache()
     {
@@ -40,5 +64,11 @@ public class ResourceCache
             texture.Destroy();
         }
         _textureCache.Clear();
+        
+        foreach (var sound in _soundCache.Values)
+        {
+            sound.Dispose();
+        }
+        _soundCache.Clear();
     }
 }
