@@ -1,19 +1,23 @@
-﻿using SDL2;
+﻿using LuminaryEngine.Engine.Core.Rendering.Textures;
+using SDL2;
 
 namespace LuminaryEngine.Engine.Core.ResourceManagement;
 
 public class ResourceCache
 {
     private IntPtr _renderer;
-    private Dictionary<string, IntPtr> _textureCache;
+    private Dictionary<string, Texture> _textureCache;
     
-    public ResourceCache(IntPtr renderer)
+    private TextureLoadingSystem _textureLoadingSystem;
+    
+    public ResourceCache(IntPtr renderer, TextureLoadingSystem textureLoadingSystem)
     {
         _renderer = renderer;
-        _textureCache = new Dictionary<string, IntPtr>();
+        _textureLoadingSystem = textureLoadingSystem;
+        _textureCache = new Dictionary<string, Texture>();
     }
 
-    public IntPtr GetTexture(string textureId)
+    public Texture GetTexture(string textureId)
     {
         if (_textureCache.ContainsKey(textureId))
         {
@@ -22,12 +26,8 @@ public class ResourceCache
         
         string texturePath = Path.Combine("Assets", "Textures", textureId);
         
-        IntPtr texture = SDL_image.IMG_LoadTexture(_renderer, texturePath);
-        if (texture == IntPtr.Zero)
-        {
-            Console.WriteLine($"Failed to load texture: {texturePath}, Error: {SDL.SDL_GetError()}");
-            return IntPtr.Zero;
-        }
+        Texture texture = _textureLoadingSystem.LoadTexture(_renderer, texturePath);
+        texture.AssignTextureId(textureId);
         
         _textureCache[textureId] = texture;
         return texture;
@@ -37,7 +37,7 @@ public class ResourceCache
     {
         foreach (var texture in _textureCache.Values)
         {
-            SDL.SDL_DestroyTexture(texture);
+            texture.Destroy();
         }
         _textureCache.Clear();
     }

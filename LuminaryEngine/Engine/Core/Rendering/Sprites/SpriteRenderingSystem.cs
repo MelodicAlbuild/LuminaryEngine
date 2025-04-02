@@ -1,6 +1,8 @@
-﻿using LuminaryEngine.Engine.Core.ResourceManagement;
+﻿using LuminaryEngine.Engine.Core.Rendering.Textures;
+using LuminaryEngine.Engine.Core.ResourceManagement;
 using LuminaryEngine.Engine.ECS;
 using LuminaryEngine.Engine.ECS.Components;
+using LuminaryEngine.Engine.Exceptions;
 using SDL2;
 
 namespace LuminaryEngine.Engine.Core.Rendering.Sprites;
@@ -25,11 +27,10 @@ public class SpriteRenderingSystem
             var spriteComponent = entity.GetComponent<SpriteComponent>();
             var transformComponent = entity.GetComponent<TransformComponent>();
             
-            IntPtr texture = _resourceCache.GetTexture(spriteComponent.TextureId);
-            if (texture == IntPtr.Zero)
+            Texture texture = _resourceCache.GetTexture(spriteComponent.TextureId);
+            if (texture == null)
             {
-                Console.WriteLine($"Failed to load texture: {spriteComponent.TextureId}");
-                continue;
+                throw new UnknownTextureException($"Failed to load texture: {spriteComponent.TextureId}");
             }
             
             SDL.SDL_Rect destRect = new SDL.SDL_Rect
@@ -43,11 +44,11 @@ public class SpriteRenderingSystem
             if (spriteComponent.SourceRect.HasValue)
             {
                 var spriteComponentSourceRect = spriteComponent.SourceRect!.Value;
-                SDL.SDL_RenderCopy(_renderer, texture, ref spriteComponentSourceRect, ref destRect);
+                SDL.SDL_RenderCopy(_renderer, texture.Handle, ref spriteComponentSourceRect, ref destRect);
             }
             else
             {
-                SDL.SDL_RenderCopy(_renderer, texture, IntPtr.Zero, ref destRect);
+                SDL.SDL_RenderCopy(_renderer, texture.Handle, IntPtr.Zero, ref destRect);
             }
         }
     }
