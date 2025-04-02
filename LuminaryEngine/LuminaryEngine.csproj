@@ -20,4 +20,19 @@
       <PackageReference Include="Nuke.Common" Version="9.0.4" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ContentWithTargetPath Include="ThirdParty\SDL2\SDL2.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <TargetPath>SDL2.dll</TargetPath>
+      </ContentWithTargetPath>
+      <ContentWithTargetPath Include="ThirdParty\SDL2\SDL2_image.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <TargetPath>SDL2_image.dll</TargetPath>
+      </ContentWithTargetPath>
+      <ContentWithTargetPath Include="ThirdParty\SDL2\SDL2_ttf.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <TargetPath>SDL2_ttf.dll</TargetPath>
+      </ContentWithTargetPath>
+    </ItemGroup>
+
 </Project>

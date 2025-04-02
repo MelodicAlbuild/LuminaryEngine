@@ -1,7 +1,10 @@
-﻿public class Program
+﻿using LuminaryEngine.Engine.Core.GameLoop;
+
+public class Program
 {
     public static void Main(string[] args)
     {
-        Console.WriteLine("Hello World!");
+        Game game = new Game();
+        game.Run();
     }
 }
