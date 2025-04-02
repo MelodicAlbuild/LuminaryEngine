@@ -1,10 +1,15 @@
-﻿using LuminaryEngine.Engine.Exceptions;
+﻿using LuminaryEngine.Engine.ECS;
+using LuminaryEngine.Engine.Exceptions;
 using SDL2;
 
 namespace LuminaryEngine.Engine.Core.Rendering.Textures;
 
-public class TextureLoadingSystem
+public class TextureLoadingSystem : LuminSystem
 {
+    public TextureLoadingSystem(World world) : base(world)
+    {
+    }
+
     public Texture LoadTexture(IntPtr renderer, string filePath)
     {
         if (!File.Exists(filePath))
@@ -29,5 +34,9 @@ public class TextureLoadingSystem
         {
             texture.Destroy();
         }
+    }
+
+    public override void Update()
+    {
     }
 }

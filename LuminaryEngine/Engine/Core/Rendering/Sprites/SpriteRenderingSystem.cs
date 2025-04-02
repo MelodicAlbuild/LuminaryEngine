@@ -7,17 +7,15 @@ using SDL2;
 
 namespace LuminaryEngine.Engine.Core.Rendering.Sprites;
 
-public class SpriteRenderingSystem
+public class SpriteRenderingSystem : LuminSystem
 {
     private Renderer _renderer;
     private ResourceCache _resourceCache;
-    private World _world;
 
-    public SpriteRenderingSystem(Renderer renderer, ResourceCache resourceCache, World world)
+    public SpriteRenderingSystem(Renderer renderer, ResourceCache resourceCache, World world) : base(world)
     {
         _renderer = renderer;
         _resourceCache = resourceCache;
-        _world = world;
     }
 
     public void Draw()
@@ -55,5 +53,10 @@ public class SpriteRenderingSystem
             
             _renderer.EnqueueRenderCommand(command);
         }
+    }
+
+    public override void Update()
+    {
+        
     }
 }
