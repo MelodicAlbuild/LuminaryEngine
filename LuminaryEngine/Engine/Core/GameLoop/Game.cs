@@ -1,9 +1,11 @@
-﻿using LuminaryEngine.Engine.Core.Rendering;
+﻿using LuminaryEngine.Engine.Core.Input;
+using LuminaryEngine.Engine.Core.Rendering;
 using LuminaryEngine.Engine.Core.Rendering.Sprites;
 using LuminaryEngine.Engine.Core.Rendering.Textures;
 using LuminaryEngine.Engine.Core.ResourceManagement;
 using LuminaryEngine.Engine.ECS;
 using LuminaryEngine.Engine.ECS.Components;
+using LuminaryEngine.Engine.ECS.Systems;
 using SDL2;
 
 namespace LuminaryEngine.Engine.Core.GameLoop;
@@ -20,6 +22,9 @@ public class Game
     private ResourceCache _resourceCache;
     private SpriteRenderingSystem _spriteRenderingSystem;
     private TextureLoadingSystem _textureLoadingSystem;
+    private KeyboardInputSystem _keyboardInputSystem;
+    private MouseInputSystem _mouseInputSystem;
+    private PlayerMovementSystem _playerMovementSystem;
 
     public Game()
     {
@@ -57,13 +62,16 @@ public class Game
         }
         
         // Initialize Texture Loading System
-        _textureLoadingSystem = new TextureLoadingSystem();
+        _textureLoadingSystem = new TextureLoadingSystem(_world);
         
         // Initialize Resource Cache
         _resourceCache = new ResourceCache(_renderer.GetRenderer(), _textureLoadingSystem);
         
-        // Initialize Sprite Rendering System
+        // Initialize Systems
         _spriteRenderingSystem = new SpriteRenderingSystem(_renderer, _resourceCache, _world);
+        _keyboardInputSystem = new KeyboardInputSystem(_world);
+        _mouseInputSystem = new MouseInputSystem(_world);
+        _playerMovementSystem = new PlayerMovementSystem(_world);
 
         return true;
     }
@@ -99,13 +107,14 @@ public class Game
                 _isRunning = false;
             }
             
-            // TODO: Handle Input System
+            _keyboardInputSystem.HandleEvents(e);
+            _mouseInputSystem.HandleEvents(e);
         }
     }
 
     private void Update()
     {
-        // TODO: Handle Update
+        _playerMovementSystem.Update();
     }
 
     private void Draw()
@@ -122,6 +131,7 @@ public class Game
         Entity player = _world.CreateEntity();
         player.AddComponent(new TransformComponent(100, 100));
         player.AddComponent(new SpriteComponent("player.png", 1));
+        player.AddComponent(new InputStateComponent());
     }
 
     private void UnloadContent()
