@@ -1,4 +1,5 @@
 ﻿using LuminaryEngine.Engine.Core.Rendering.Sprites;
+using LuminaryEngine.Engine.Core.Rendering.Textures;
 using LuminaryEngine.Engine.Core.ResourceManagement;
 using LuminaryEngine.Engine.ECS;
 using SDL2;
@@ -16,6 +17,7 @@ public class Game
     
     private ResourceCache _resourceCache;
     private SpriteRenderingSystem _spriteRenderingSystem;
+    private TextureLoadingSystem _textureLoadingSystem;
 
     public Game()
     {
@@ -58,8 +60,11 @@ public class Game
             return false;
         }
         
+        // Initialize Texture Loading System
+        _textureLoadingSystem = new TextureLoadingSystem();
+        
         // Initialize Resource Cache
-        _resourceCache = new ResourceCache(_renderer);
+        _resourceCache = new ResourceCache(_renderer, _textureLoadingSystem);
         
         // Initialize Sprite Rendering System
         _spriteRenderingSystem = new SpriteRenderingSystem(_renderer, _resourceCache, _world);
