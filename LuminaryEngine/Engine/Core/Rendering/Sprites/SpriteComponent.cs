@@ -7,6 +7,7 @@ public class SpriteComponent : IComponent
 {
     public string TextureId { get; set; }
     public SDL.SDL_Rect? SourceRect { get; set; }
+    public int ZIndex { get; set; } = 0;
 
     public SpriteComponent(string textureId)
     {

@@ -5,7 +5,7 @@ namespace LuminaryEngine.Engine.Core.Rendering;
 public class Renderer
 {
     private IntPtr _renderer;
-    private Queue<RenderCommand> _commandQueue = new Queue<RenderCommand>();
+    private List<RenderCommand> renderQueue = new List<RenderCommand>();
     
     public Renderer(IntPtr window)
     {
@@ -19,13 +19,28 @@ public class Renderer
     
     public void Clear(byte r, byte g, byte b, byte a)
     {
-        SDL.SDL_SetRenderDrawColor(_renderer, r, g, b, a);
-        SDL.SDL_RenderClear(_renderer);
+        EnqueueRenderCommand(new RenderCommand()
+        {
+            Type = RenderCommandType.Clear,
+            ClearR = r,
+            ClearG = g,
+            ClearB = b,
+            ClearA = a,
+            ZOrder = float.MinValue
+        });
     }
     
     public void EnqueueRenderCommand(RenderCommand command)
     {
-        _commandQueue.Enqueue(command);
+        int insertIndex = renderQueue.FindIndex(cmd => cmd.ZOrder > command.ZOrder);
+        if (insertIndex < 0)
+        {
+            renderQueue.Add(command);
+        }
+        else
+        {
+            renderQueue.Insert(insertIndex, command);
+        }
     }
     
     public void DrawTexture(IntPtr texture, SDL.SDL_Rect? sourceRect, SDL.SDL_Rect destRect)
@@ -44,20 +59,22 @@ public class Renderer
     public void Present()
     {
         // Process the entire queue
-        while (_commandQueue.Count > 0) // Check if the queue is not empty
+        foreach (var command in renderQueue)
         {
-            RenderCommand command = _commandQueue.Dequeue(); // Use Dequeue
-
             switch (command.Type)
             {
                 case RenderCommandType.DrawTexture:
                     DrawTexture(command.Texture, command.SourceRect, command.DestRect);
                     break;
-                // Handle other command types here
+                case RenderCommandType.Clear:
+                    SDL.SDL_SetRenderDrawColor(_renderer, command.ClearR, command.ClearG, command.ClearB, command.ClearA);
+                    SDL.SDL_RenderClear(_renderer);
+                    break;
             }
         }
 
         SDL.SDL_RenderPresent(_renderer);
+        renderQueue.Clear();
     }
     
     public void Destroy()

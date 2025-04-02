@@ -50,6 +50,7 @@ public class SpriteRenderingSystem
                 Texture = texture.Handle,
                 SourceRect = spriteComponent.SourceRect,
                 DestRect = destRect,
+                ZOrder = spriteComponent.ZIndex
             };
             
             _renderer.EnqueueRenderCommand(command);
