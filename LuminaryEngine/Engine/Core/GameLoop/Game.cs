@@ -1,4 +1,5 @@
-﻿using LuminaryEngine.Engine.Core.Rendering.Sprites;
+﻿using LuminaryEngine.Engine.Core.Rendering;
+using LuminaryEngine.Engine.Core.Rendering.Sprites;
 using LuminaryEngine.Engine.Core.Rendering.Textures;
 using LuminaryEngine.Engine.Core.ResourceManagement;
 using LuminaryEngine.Engine.ECS;
@@ -11,10 +12,10 @@ using static SDL2.SDL;
 public class Game
 {
     private IntPtr _window;
-    private IntPtr _renderer;
     private bool _isRunning;
     private World _world;
     
+    private Renderer _renderer;
     private ResourceCache _resourceCache;
     private SpriteRenderingSystem _spriteRenderingSystem;
     private TextureLoadingSystem _textureLoadingSystem;
@@ -43,19 +44,13 @@ public class Game
         }
 
         // Create Renderer
-        _renderer = SDL_CreateRenderer(_window, -1, SDL_RendererFlags.SDL_RENDERER_ACCELERATED | SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC);
-        if (_renderer == IntPtr.Zero)
-        {
-            Console.WriteLine($"SDL_CreateRenderer Error: {SDL_GetError()}");
-            SDL_DestroyWindow(_window);
-            return false;
-        }
+        _renderer = new Renderer(_window);
 
         // Initialize SDL_image
         if (SDL_image.IMG_Init(SDL_image.IMG_InitFlags.IMG_INIT_PNG) < 0)
         {
             Console.WriteLine($"SDL_image_Init Error: {SDL_image.IMG_GetError()}");
-            SDL_DestroyRenderer(_renderer);
+            _renderer.Destroy();
             SDL_DestroyWindow(_window);
             return false;
         }
@@ -64,7 +59,7 @@ public class Game
         _textureLoadingSystem = new TextureLoadingSystem();
         
         // Initialize Resource Cache
-        _resourceCache = new ResourceCache(_renderer, _textureLoadingSystem);
+        _resourceCache = new ResourceCache(_renderer.GetRenderer(), _textureLoadingSystem);
         
         // Initialize Sprite Rendering System
         _spriteRenderingSystem = new SpriteRenderingSystem(_renderer, _resourceCache, _world);
@@ -114,12 +109,11 @@ public class Game
 
     private void Draw()
     {
-        SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
-        SDL_RenderClear(_renderer);
+        _renderer.Clear(0, 0, 0, 255);
         
         _spriteRenderingSystem.Draw();
         
-        SDL_RenderPresent(_renderer);
+        _renderer.Present();
     }
 
     private void LoadContent()
@@ -134,8 +128,10 @@ public class Game
     
     private void Shutdown()
     {
-        SDL_DestroyRenderer(_renderer);
+        _renderer.Destroy();
+        
         SDL_DestroyWindow(_window);
+        SDL_image.IMG_Quit();
         SDL_Quit();
     }
 }

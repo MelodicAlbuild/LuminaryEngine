@@ -68,4 +68,9 @@ public class Renderer
             _renderer = IntPtr.Zero;
         }
     }
+
+    public IntPtr GetRenderer()
+    {
+        return _renderer;
+    }
 }

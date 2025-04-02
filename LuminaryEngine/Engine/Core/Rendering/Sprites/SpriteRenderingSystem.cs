@@ -9,11 +9,11 @@ namespace LuminaryEngine.Engine.Core.Rendering.Sprites;
 
 public class SpriteRenderingSystem
 {
-    private IntPtr _renderer;
+    private Renderer _renderer;
     private ResourceCache _resourceCache;
     private World _world;
 
-    public SpriteRenderingSystem(IntPtr renderer, ResourceCache resourceCache, World world)
+    public SpriteRenderingSystem(Renderer renderer, ResourceCache resourceCache, World world)
     {
         _renderer = renderer;
         _resourceCache = resourceCache;
@@ -43,16 +43,16 @@ public class SpriteRenderingSystem
                 w = scaledWidth,
                 h = scaledHeight
             };
+
+            RenderCommand command = new RenderCommand()
+            {
+                Type = RenderCommandType.DrawTexture,
+                Texture = texture.Handle,
+                SourceRect = spriteComponent.SourceRect,
+                DestRect = destRect,
+            };
             
-            if (spriteComponent.SourceRect.HasValue)
-            {
-                var spriteComponentSourceRect = spriteComponent.SourceRect!.Value;
-                SDL.SDL_RenderCopy(_renderer, texture.Handle, ref spriteComponentSourceRect, ref destRect);
-            }
-            else
-            {
-                SDL.SDL_RenderCopy(_renderer, texture.Handle, IntPtr.Zero, ref destRect);
-            }
+            _renderer.EnqueueRenderCommand(command);
         }
     }
 }
