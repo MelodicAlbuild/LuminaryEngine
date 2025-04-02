@@ -1,4 +1,5 @@
-﻿using LuminaryEngine.Engine.Core.Rendering.Textures;
+﻿using System.Numerics;
+using LuminaryEngine.Engine.Core.Rendering.Textures;
 using LuminaryEngine.Engine.Core.ResourceManagement;
 using LuminaryEngine.Engine.ECS;
 using LuminaryEngine.Engine.ECS.Components;
@@ -20,6 +21,15 @@ public class SpriteRenderingSystem : LuminSystem
 
     public void Draw()
     {
+        // Get the camera position
+        Vector2 cameraPosition = Vector2.Zero;
+        foreach (var cameraEntity in _world.GetEntitiesWithComponents(typeof(CameraComponent)))
+        {
+            var transformComponent = cameraEntity.GetComponent<TransformComponent>();
+            cameraPosition = transformComponent.Position;
+            break; // Assuming only one camera
+        }
+        
         foreach (var entity in _world.GetEntitiesWithComponents(typeof(SpriteComponent), typeof(TransformComponent)))
         {
             var spriteComponent = entity.GetComponent<SpriteComponent>();
@@ -34,10 +44,12 @@ public class SpriteRenderingSystem : LuminSystem
             int scaledWidth = (int)(texture.Width * transformComponent.Scale.X);
             int scaledHeight = (int)(texture.Height * transformComponent.Scale.Y);
             
+            Vector2 screenPosition = transformComponent.Position - cameraPosition;
+            
             SDL.SDL_Rect destRect = new SDL.SDL_Rect
             {
-                x = (int)transformComponent.Position.X,
-                y = (int)transformComponent.Position.Y,
+                x = (int)screenPosition.X,
+                y = (int)screenPosition.Y,
                 w = scaledWidth,
                 h = scaledHeight
             };

@@ -25,6 +25,7 @@ public class Game
     private KeyboardInputSystem _keyboardInputSystem;
     private MouseInputSystem _mouseInputSystem;
     private PlayerMovementSystem _playerMovementSystem;
+    private CameraSystem _cameraSystem;
 
     public Game()
     {
@@ -72,6 +73,7 @@ public class Game
         _keyboardInputSystem = new KeyboardInputSystem(_world);
         _mouseInputSystem = new MouseInputSystem(_world);
         _playerMovementSystem = new PlayerMovementSystem(_world);
+        _cameraSystem = new CameraSystem(_world);
 
         return true;
     }
@@ -115,6 +117,7 @@ public class Game
     private void Update()
     {
         _playerMovementSystem.Update();
+        _cameraSystem.Update();
     }
 
     private void Draw()
@@ -132,6 +135,10 @@ public class Game
         player.AddComponent(new TransformComponent(100, 100));
         player.AddComponent(new SpriteComponent("player.png", 1));
         player.AddComponent(new InputStateComponent());
+        
+        Entity camera = _world.CreateEntity();
+        camera.AddComponent(new TransformComponent(0, 0));
+        camera.AddComponent(new CameraComponent());
     }
 
     private void UnloadContent()
