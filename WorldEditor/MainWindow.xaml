@@ -1,0 +1,102 @@
+﻿<Window x:Class="WorldEditor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="World Editor" Height="700" Width="1200">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New" Click="NewWorld_Click"/>
+                <MenuItem Header="_Open" Click="OpenWorld_Click"/>
+                <MenuItem Header="_Save" Click="SaveWorld_Click"/>
+                <Separator/>
+                <MenuItem Header="_Exit" Click="Exit_Click"/>
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="_Undo" Click="Undo_Click"/>
+                <MenuItem Header="_Redo" Click="Redo_Click"/>
+            </MenuItem>
+        </Menu>
+
+        <DockPanel DockPanel.Dock="Left" Width="250" Background="#F0F0F0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <GroupBox Grid.Row="3" Header="Tileset" Margin="5" DockPanel.Dock="Top">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="TilesetItemsControl" ItemsSource="{Binding TilesetTiles}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="4"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="Transparent" BorderThickness="0">
+                                    <Button Margin="2" Padding="5" Click="Tile_Click">
+                                        <Image Source="{Binding ImageSource}" Width="32" Height="32"/>
+                                    </Button>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </GroupBox>
+
+            <GroupBox Grid.Row="0" Header="Objects" Margin="5" DockPanel.Dock="Top">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="ObjectItemsControl" ItemsSource="{Binding Objects}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Margin="2" Padding="5" Click="Object_Click" Content="{Binding ObjectId}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </GroupBox>
+
+            <GroupBox Grid.Row="1" Header="Layers" Margin="5" DockPanel.Dock="Bottom">
+                <StackPanel>
+                    <ListBox x:Name="LayerListBox" ItemsSource="{Binding WorldLayers}" SelectedItem="{Binding SelectedLayer}" DisplayMemberPath="Name"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Add" Margin="2" Click="AddLayer_Click"/>
+                        <Button Content="Remove" Margin="2" Click="RemoveLayer_Click" IsEnabled="{Binding IsLayerSelected}"/>
+                        <Button Content="Up" Margin="2" Click="MoveLayerUp_Click" IsEnabled="{Binding IsLayerSelected}"/>
+                        <Button Content="Down" Margin="2" Click="MoveLayerDown_Click" IsEnabled="{Binding IsLayerSelected}"/>
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
+            </Grid>
+        </DockPanel>
+
+        <DockPanel DockPanel.Dock="Right" Width="300" Background="#F0F0F0">
+            <GroupBox Header="Properties" Margin="5">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel x:Name="PropertyPanel"/>
+                </ScrollViewer>
+            </GroupBox>
+        </DockPanel>
+
+        <DockPanel>
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <Canvas x:Name="MapCanvas" Background="LightGray"
+                        Width="5000" Height="5000"
+                        MouseLeftButtonDown="MapCanvas_MouseLeftButtonDown"
+                        MouseMove="MapCanvas_MouseMove"
+                        MouseLeftButtonUp="MapCanvas_MouseLeftButtonUp"
+                        MouseRightButtonDown="MapCanvas_MouseRightButtonDown"
+                        MouseRightButtonUp="MapCanvas_MouseRightButtonUp">
+                </Canvas>
+            </ScrollViewer>
+            <TextBlock DockPanel.Dock="Bottom" Name="MouseCoordinatesTextBlock" Text="Mouse: (0, 0)" Padding="5" Background="LightGray"/>
+        </DockPanel>
+    </DockPanel>
+</Window>
