@@ -6,8 +6,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Starforge", "Starforge\Star
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{8526E261-6F0B-4FE1-92DD-9B93AB609CA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorldEditor", "WorldEditor\WorldEditor.csproj", "{122F77B3-2417-42DE-8ECC-28401408168A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,12 +20,7 @@ Global
 		{A80260C6-F3F1-4F8B-9C7B-A1A14CCACBF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A80260C6-F3F1-4F8B-9C7B-A1A14CCACBF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A80260C6-F3F1-4F8B-9C7B-A1A14CCACBF8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{122F77B3-2417-42DE-8ECC-28401408168A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{122F77B3-2417-42DE-8ECC-28401408168A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{122F77B3-2417-42DE-8ECC-28401408168A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{122F77B3-2417-42DE-8ECC-28401408168A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{122F77B3-2417-42DE-8ECC-28401408168A} = {8526E261-6F0B-4FE1-92DD-9B93AB609CA4}
 	EndGlobalSection
 EndGlobal
