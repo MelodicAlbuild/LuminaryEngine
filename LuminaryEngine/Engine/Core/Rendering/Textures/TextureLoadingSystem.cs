@@ -4,12 +4,8 @@ using SDL2;
 
 namespace LuminaryEngine.Engine.Core.Rendering.Textures;
 
-public class TextureLoadingSystem : LuminSystem
+public class TextureLoadingSystem
 {
-    public TextureLoadingSystem(World world) : base(world)
-    {
-    }
-
     public Texture LoadTexture(IntPtr renderer, string filePath)
     {
         if (!File.Exists(filePath))
@@ -34,9 +30,5 @@ public class TextureLoadingSystem : LuminSystem
         {
             texture.Destroy();
         }
-    }
-
-    public override void Update()
-    {
     }
 }

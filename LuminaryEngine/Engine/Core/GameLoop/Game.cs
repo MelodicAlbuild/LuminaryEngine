@@ -7,6 +7,8 @@ using LuminaryEngine.Engine.Core.ResourceManagement;
 using LuminaryEngine.Engine.ECS;
 using LuminaryEngine.Engine.ECS.Components;
 using LuminaryEngine.Engine.ECS.Systems;
+using LuminaryEngine.ThirdParty.LDtk;
+using LuminaryEngine.ThirdParty.LDtk.Models;
 using SDL2;
 
 namespace LuminaryEngine.Engine.Core.GameLoop;
@@ -34,7 +36,6 @@ public class Game
     public Game()
     {
         _isRunning = true;
-        _world = new World();
         _gameTime = new GameTime();
     }
 
@@ -68,13 +69,19 @@ public class Game
         }
         
         // Initialize Texture Loading System
-        _textureLoadingSystem = new TextureLoadingSystem(_world);
+        _textureLoadingSystem = new TextureLoadingSystem();
         
         // Initialize Audio Manager
         _audioManager = new AudioManager();
         
         // Initialize Resource Cache
         _resourceCache = new ResourceCache(_renderer.GetRenderer(), _textureLoadingSystem, _audioManager);
+        
+        // Load LDtk World
+        LDtkProject proj = LDtkLoader.LoadProject($"Assets/World/MainWorld.ldtk");
+        
+        // Initialize World
+        _world = new World(proj);
         
         // Initialize Systems
         _spriteRenderingSystem = new SpriteRenderingSystem(_renderer, _resourceCache, _world);

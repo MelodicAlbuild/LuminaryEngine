@@ -1,4 +1,5 @@
 ﻿using LuminaryEngine.Engine.Exceptions;
+using LuminaryEngine.ThirdParty.LDtk.Models;
 
 namespace LuminaryEngine.Engine.ECS;
 
@@ -6,6 +7,13 @@ public class World
 {
     private Dictionary<int, Entity> _entities = new Dictionary<int, Entity>();
     private int _nextEntityId = 0;
+
+    private LDtkProject _ldtkWorld;
+    
+    public World(LDtkProject ldtkWorld)
+    {
+        _ldtkWorld = ldtkWorld;
+    }
 
     public Entity CreateEntity()
     {
@@ -60,5 +68,10 @@ public class World
         }
         
         return results;
+    }
+    
+    public LDtkProject GetLDtkWorld()
+    {
+        return _ldtkWorld;
     }
 }
