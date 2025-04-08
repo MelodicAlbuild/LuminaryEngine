@@ -21,16 +21,16 @@ public class SpriteComponent : IComponent
         SourceRect = sourceRect;
     }
     
-    public SpriteComponent(string textureId, int ZIndex)
+    public SpriteComponent(string textureId, int zIndex)
     {
         TextureId = textureId;
-        ZIndex = ZIndex;
+        ZIndex = zIndex;
     }
     
-    public SpriteComponent(string textureId, SDL.SDL_Rect sourceRect, int ZIndex)
+    public SpriteComponent(string textureId, SDL.SDL_Rect sourceRect, int zIndex)
     {
         TextureId = textureId;
         SourceRect = sourceRect;
-        ZIndex = ZIndex;
+        ZIndex = zIndex;
     }
 }

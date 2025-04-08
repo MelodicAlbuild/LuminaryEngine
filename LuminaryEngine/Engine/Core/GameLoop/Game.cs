@@ -1,4 +1,5 @@
-﻿using LuminaryEngine.Engine.Audio;
+﻿using System.Numerics;
+using LuminaryEngine.Engine.Audio;
 using LuminaryEngine.Engine.Core.Input;
 using LuminaryEngine.Engine.Core.Rendering;
 using LuminaryEngine.Engine.Core.Rendering.Sprites;
@@ -29,9 +30,10 @@ public class Game
     private KeyboardInputSystem _keyboardInputSystem;
     private MouseInputSystem _mouseInputSystem;
     private PlayerMovementSystem _playerMovementSystem;
-    private CameraSystem _cameraSystem;
+    //private CameraSystem _cameraSystem;
     private AudioManager _audioManager;
     private AudioSystem _audioSystem;
+    private TilemapRenderingSystem _tilemapRenderingSystem;
 
     public Game()
     {
@@ -88,8 +90,9 @@ public class Game
         _keyboardInputSystem = new KeyboardInputSystem(_world);
         _mouseInputSystem = new MouseInputSystem(_world);
         _playerMovementSystem = new PlayerMovementSystem(_world);
-        _cameraSystem = new CameraSystem(_world, _gameTime);
+        //_cameraSystem = new CameraSystem(_world, _gameTime);
         _audioSystem = new AudioSystem(_world, _audioManager);
+        _tilemapRenderingSystem = new TilemapRenderingSystem(_renderer, _resourceCache, _world);
 
         return true;
     }
@@ -133,7 +136,7 @@ public class Game
     private void Update()
     {
         _playerMovementSystem.Update();
-        _cameraSystem.Update();
+        //_cameraSystem.Update();
         _audioSystem.Update();
     }
 
@@ -141,6 +144,7 @@ public class Game
     {
         _renderer.Clear(0, 0, 0, 255);
         
+        _tilemapRenderingSystem.Draw();
         _spriteRenderingSystem.Draw();
         
         _renderer.Present();
@@ -150,16 +154,13 @@ public class Game
     {
         Sound bgmMain = _resourceCache.GetSound("background_music.mp3");
         Entity backgroundMusicEntity = _world.CreateEntity();
-        backgroundMusicEntity.AddComponent(new AudioSource("background_music.mp3") { PlayOnAwake = true, Volume = 0.7f, Loop = true });
+        //backgroundMusicEntity.AddComponent(new AudioSource("background_music.mp3") { PlayOnAwake = true, Volume = 0.7f, Loop = true });
         
         Entity player = _world.CreateEntity();
-        player.AddComponent(new TransformComponent(100, 100));
-        player.AddComponent(new SpriteComponent("player.png", 1));
+        player.AddComponent(new TransformComponent(250, 100));
+        player.GetComponent<TransformComponent>().Scale = new Vector2(0.5f, 0.5f);
+        player.AddComponent(new SpriteComponent("player.png", 10));
         player.AddComponent(new InputStateComponent());
-        
-        Entity camera = _world.CreateEntity();
-        camera.AddComponent(new TransformComponent(0, 0));
-        camera.AddComponent(new CameraComponent());
     }
 
     private void UnloadContent()

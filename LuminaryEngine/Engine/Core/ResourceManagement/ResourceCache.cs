@@ -8,6 +8,7 @@ public class ResourceCache
 {
     private IntPtr _renderer;
     private Dictionary<string, Texture> _textureCache;
+    private Dictionary<string, Texture> _spritesheetCache;
     public Dictionary<string, Sound> _soundCache { get; private set; }
     private AudioManager _audioManager;
     
@@ -18,6 +19,7 @@ public class ResourceCache
         _renderer = renderer;
         _textureLoadingSystem = textureLoadingSystem;
         _textureCache = new Dictionary<string, Texture>();
+        _spritesheetCache = new Dictionary<string, Texture>();
         _audioManager = audioManager;
         _soundCache = new Dictionary<string, Sound>();
     }
@@ -35,6 +37,22 @@ public class ResourceCache
         texture.AssignTextureId(textureId);
         
         _textureCache[textureId] = texture;
+        return texture;
+    }
+    
+    public Texture GetSpritesheet(string spritesheetId)
+    {
+        if (_spritesheetCache.ContainsKey(spritesheetId))
+        {
+            return _spritesheetCache[spritesheetId];
+        }
+        
+        string texturePath = Path.Combine("Assets", "Spritesheet", spritesheetId);
+        
+        Texture texture = _textureLoadingSystem.LoadTexture(_renderer, texturePath);
+        texture.AssignTextureId(spritesheetId);
+        
+        _spritesheetCache[spritesheetId] = texture;
         return texture;
     }
     

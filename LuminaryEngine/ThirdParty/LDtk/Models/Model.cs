@@ -45,6 +45,9 @@ namespace LuminaryEngine.ThirdParty.LDtk.Models
 
     public class LDtkTileset
     {
+        [JsonProperty("identifier")]
+        public string Identifier { get; set; }
+        
         [JsonProperty("uid")]
         public int Uid { get; set; }
 
@@ -67,7 +70,7 @@ namespace LuminaryEngine.ThirdParty.LDtk.Models
         public int Padding { get; set; }
 
         [JsonProperty("tags")]
-        public string Tags { get; set; }
+        public string[] Tags { get; set; }
     }
 
     public class LDtkEnumDef
@@ -227,7 +230,7 @@ namespace LuminaryEngine.ThirdParty.LDtk.Models
         [JsonProperty("visible")]
         public bool Visible { get; set; }
 
-        [JsonProperty("gridSize")]
+        [JsonProperty("__gridSize")]
         public int GridSize { get; set; }
 
         [JsonProperty("pxOffsetX")]
@@ -239,10 +242,10 @@ namespace LuminaryEngine.ThirdParty.LDtk.Models
         [JsonProperty("tileSize")]
         public int TileSize { get; set; }
 
-        [JsonProperty("tilesetUid")]
+        [JsonProperty("__tilesetDefUid")]
         public int? TilesetUid { get; set; }
 
-        [JsonProperty("tilesetRelPath")]
+        [JsonProperty("__tilesetRelPath")]
         public string TilesetRelPath { get; set; }
 
         // For tile layers:
