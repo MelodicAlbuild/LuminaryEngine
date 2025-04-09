@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics;
+using System.Numerics;
+using System.Security.Cryptography.Xml;
 using LuminaryEngine.Engine.Audio;
 using LuminaryEngine.Engine.Core.Input;
 using LuminaryEngine.Engine.Core.Rendering;
@@ -8,6 +10,7 @@ using LuminaryEngine.Engine.Core.ResourceManagement;
 using LuminaryEngine.Engine.ECS;
 using LuminaryEngine.Engine.ECS.Components;
 using LuminaryEngine.Engine.ECS.Systems;
+using LuminaryEngine.Engine.Gameplay.Player;
 using LuminaryEngine.ThirdParty.LDtk;
 using LuminaryEngine.ThirdParty.LDtk.Models;
 using SDL2;
@@ -30,15 +33,27 @@ public class Game
     private KeyboardInputSystem _keyboardInputSystem;
     private MouseInputSystem _mouseInputSystem;
     private PlayerMovementSystem _playerMovementSystem;
-    //private CameraSystem _cameraSystem;
     private AudioManager _audioManager;
     private AudioSystem _audioSystem;
     private TilemapRenderingSystem _tilemapRenderingSystem;
+    
+    private int _cameraX, _cameraY;
+    
+    private Stopwatch _stopwatch;
+    private int _frameCount;
+    private float _frameRate;
+    
+    private int DISPLAY_WIDTH = 640;
+    private int DISPLAY_HEIGHT = 360;
 
     public Game()
     {
         _isRunning = true;
         _gameTime = new GameTime();
+        
+        _stopwatch = new Stopwatch();
+        _frameCount = 0;
+        _frameRate = 0.0f;
     }
 
     private bool Initialize()
@@ -51,7 +66,7 @@ public class Game
         }
         
         // Create Window
-        _window = SDL_CreateWindow("Luminary Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WindowFlags.SDL_WINDOW_SHOWN);
+        _window = SDL_CreateWindow("Luminary Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, DISPLAY_WIDTH, DISPLAY_HEIGHT, SDL_WindowFlags.SDL_WINDOW_SHOWN);
         if (_window == IntPtr.Zero)
         {
             Console.WriteLine($"SDL_CreateWindow Error: {SDL_GetError()}");
@@ -90,9 +105,11 @@ public class Game
         _keyboardInputSystem = new KeyboardInputSystem(_world);
         _mouseInputSystem = new MouseInputSystem(_world);
         _playerMovementSystem = new PlayerMovementSystem(_world);
-        //_cameraSystem = new CameraSystem(_world, _gameTime);
         _audioSystem = new AudioSystem(_world, _audioManager);
         _tilemapRenderingSystem = new TilemapRenderingSystem(_renderer, _resourceCache, _world);
+        
+        // Start the stopwatch
+        _stopwatch.Start();
 
         return true;
     }
@@ -112,6 +129,8 @@ public class Game
             HandleEvents();
             Update();
             Draw();
+            CalculateFrameRate();
+            UpdateWindowTitle();
         }
         
         UnloadContent();
@@ -136,8 +155,22 @@ public class Game
     private void Update()
     {
         _playerMovementSystem.Update();
-        //_cameraSystem.Update();
         _audioSystem.Update();
+        
+        Entity player = _world.GetEntitiesWithComponents(typeof(PlayerComponent))[0];
+        TransformComponent playerTransform = player.GetComponent<TransformComponent>();
+        _cameraX = (int)Math.Floor(playerTransform.Position.X) - (DISPLAY_WIDTH / 2);
+        _cameraY = (int)Math.Floor(playerTransform.Position.Y) - (DISPLAY_HEIGHT / 2);
+    }
+    
+    public int GetCameraX()
+    {
+        return _cameraX;
+    }
+    
+    public int GetCameraY()
+    {
+        return _cameraY;
     }
 
     private void Draw()
@@ -175,5 +208,31 @@ public class Game
         SDL_DestroyWindow(_window);
         SDL_image.IMG_Quit();
         SDL_Quit();
+    }
+    
+    private void CalculateFrameRate()
+    {
+        // Increment frame count
+        _frameCount++;
+
+        // Calculate elapsed time
+        float elapsedTime = (float)_stopwatch.Elapsed.TotalSeconds;
+
+        // If more than a second has passed, calculate the frame rate
+        if (elapsedTime >= 1.0f)
+        {
+            _frameRate = _frameCount / elapsedTime;
+
+            // Reset frame count and stopwatch
+            _frameCount = 0;
+            _stopwatch.Restart();
+        }
+    }
+
+    private void UpdateWindowTitle()
+    {
+        // Update the window title with the frame rate
+        string title = $"Luminary Engine - FPS: {_frameRate:F2}";
+        SDL_SetWindowTitle(_window, title);
     }
 }

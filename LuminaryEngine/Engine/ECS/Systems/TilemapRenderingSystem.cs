@@ -22,15 +22,6 @@ public class TilemapRenderingSystem : LuminSystem
 
     public void Draw()
     {
-        // Get the camera position
-        Vector2 cameraPosition = Vector2.Zero;
-        foreach (var cameraEntity in _world.GetEntitiesWithComponents(typeof(CameraComponent)))
-        {
-            var transformComponent = cameraEntity.GetComponent<TransformComponent>();
-            cameraPosition = transformComponent.Position;
-            break; // Assuming only one camera
-        }
-
         // Get the LDtk project from the world
         LDtkProject ldtkWorld = _world.GetLDtkWorld();
         foreach (var level in ldtkWorld.Levels)
@@ -51,8 +42,8 @@ public class TilemapRenderingSystem : LuminSystem
                     // Calculate the destination rectangle for the tile
                     SDL.SDL_Rect destRect = new SDL.SDL_Rect
                     {
-                        x = (int)(tile.PositionPx[0] - cameraPosition.X),
-                        y = (int)(tile.PositionPx[1] - cameraPosition.Y),
+                        x = tile.PositionPx[0],
+                        y = tile.PositionPx[1],
                         w = 16,
                         h = 16
                     };
