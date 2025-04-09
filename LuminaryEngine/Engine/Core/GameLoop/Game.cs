@@ -37,7 +37,7 @@ public class Game
     private AudioSystem _audioSystem;
     private TilemapRenderingSystem _tilemapRenderingSystem;
     
-    private int _cameraX, _cameraY;
+    private Camera _camera;
     
     private Stopwatch _stopwatch;
     private int _frameCount;
@@ -54,6 +54,8 @@ public class Game
         _stopwatch = new Stopwatch();
         _frameCount = 0;
         _frameRate = 0.0f;
+        
+        _camera = new Camera(0, 0);
     }
 
     private bool Initialize()
@@ -106,7 +108,7 @@ public class Game
         _mouseInputSystem = new MouseInputSystem(_world);
         _playerMovementSystem = new PlayerMovementSystem(_world);
         _audioSystem = new AudioSystem(_world, _audioManager);
-        _tilemapRenderingSystem = new TilemapRenderingSystem(_renderer, _resourceCache, _world);
+        _tilemapRenderingSystem = new TilemapRenderingSystem(_renderer, _resourceCache, _camera, _world);
         
         // Start the stopwatch
         _stopwatch.Start();
@@ -159,18 +161,8 @@ public class Game
         
         Entity player = _world.GetEntitiesWithComponents(typeof(PlayerComponent))[0];
         TransformComponent playerTransform = player.GetComponent<TransformComponent>();
-        _cameraX = (int)Math.Floor(playerTransform.Position.X) - (DISPLAY_WIDTH / 2);
-        _cameraY = (int)Math.Floor(playerTransform.Position.Y) - (DISPLAY_HEIGHT / 2);
-    }
-    
-    public int GetCameraX()
-    {
-        return _cameraX;
-    }
-    
-    public int GetCameraY()
-    {
-        return _cameraY;
+        _camera.X = (int)Math.Floor(playerTransform.Position.X) - (DISPLAY_WIDTH / 2);
+        _camera.Y = (int)Math.Floor(playerTransform.Position.Y) - (DISPLAY_HEIGHT / 2);
     }
 
     private void Draw()
@@ -194,6 +186,7 @@ public class Game
         player.GetComponent<TransformComponent>().Scale = new Vector2(0.5f, 0.5f);
         player.AddComponent(new SpriteComponent("player.png", 10));
         player.AddComponent(new InputStateComponent());
+        player.AddComponent(new PlayerComponent());
     }
 
     private void UnloadContent()

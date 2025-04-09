@@ -1,6 +1,8 @@
-﻿namespace LuminaryEngine.Engine.Gameplay.Player;
+﻿using LuminaryEngine.Engine.ECS;
 
-public class PlayerComponent
+namespace LuminaryEngine.Engine.Gameplay.Player;
+
+public class PlayerComponent : IComponent
 {
     
 }

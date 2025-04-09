@@ -13,11 +13,13 @@ public class TilemapRenderingSystem : LuminSystem
 {
     private Renderer _renderer;
     private ResourceCache _resourceCache;
+    private Camera _camera;
 
-    public TilemapRenderingSystem(Renderer renderer, ResourceCache resourceCache, World world) : base(world)
+    public TilemapRenderingSystem(Renderer renderer, ResourceCache resourceCache, Camera camera, World world) : base(world)
     {
         _renderer = renderer;
         _resourceCache = resourceCache;
+        _camera = camera;
     }
 
     public void Draw()
@@ -42,8 +44,8 @@ public class TilemapRenderingSystem : LuminSystem
                     // Calculate the destination rectangle for the tile
                     SDL.SDL_Rect destRect = new SDL.SDL_Rect
                     {
-                        x = tile.PositionPx[0],
-                        y = tile.PositionPx[1],
+                        x = tile.PositionPx[0] - _camera.X,
+                        y = tile.PositionPx[1] - _camera.Y,
                         w = 16,
                         h = 16
                     };
