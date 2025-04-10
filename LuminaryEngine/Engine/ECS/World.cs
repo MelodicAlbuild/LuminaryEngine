@@ -139,7 +139,7 @@ public class World
             throw new ArgumentOutOfRangeException(nameof(newLevelId), "Invalid level ID.");
         }
         
-        SwitchLevel(newLevelId, exitLocation);
+        SwitchLevelInternal(newLevelId, exitLocation);
     }
     
     private async void SwitchLevelInternal(int newLevelId, Vector2 exitLocation)
