@@ -43,8 +43,8 @@ public class Game
     private int _frameCount;
     private float _frameRate;
     
-    private int DISPLAY_WIDTH = 640;
-    private int DISPLAY_HEIGHT = 360;
+    public static readonly int DISPLAY_WIDTH = 640;
+    public static readonly int DISPLAY_HEIGHT = 360;
 
     public Game()
     {
@@ -106,7 +106,7 @@ public class Game
         _spriteRenderingSystem = new SpriteRenderingSystem(_renderer, _resourceCache, _world);
         _keyboardInputSystem = new KeyboardInputSystem(_world);
         _mouseInputSystem = new MouseInputSystem(_world);
-        _playerMovementSystem = new PlayerMovementSystem(_world);
+        _playerMovementSystem = new PlayerMovementSystem(_world, _gameTime);
         _audioSystem = new AudioSystem(_world, _audioManager);
         _tilemapRenderingSystem = new TilemapRenderingSystem(_renderer, _resourceCache, _camera, _world);
         
@@ -156,13 +156,15 @@ public class Game
 
     private void Update()
     {
+        _gameTime.Update();
+        
         _playerMovementSystem.Update();
         _audioSystem.Update();
         
         Entity player = _world.GetEntitiesWithComponents(typeof(PlayerComponent))[0];
         TransformComponent playerTransform = player.GetComponent<TransformComponent>();
-        _camera.X = (int)Math.Floor(playerTransform.Position.X) - (DISPLAY_WIDTH / 2);
-        _camera.Y = (int)Math.Floor(playerTransform.Position.Y) - (DISPLAY_HEIGHT / 2);
+        
+        _camera.Follow(playerTransform.Position);
     }
 
     private void Draw()
@@ -182,11 +184,12 @@ public class Game
         //backgroundMusicEntity.AddComponent(new AudioSource("background_music.mp3") { PlayOnAwake = true, Volume = 0.7f, Loop = true });
         
         Entity player = _world.CreateEntity();
-        player.AddComponent(new TransformComponent(250, 100));
+        player.AddComponent(new TransformComponent(0, 0));
         player.GetComponent<TransformComponent>().Scale = new Vector2(0.5f, 0.5f);
         player.AddComponent(new SpriteComponent("player.png", 10));
         player.AddComponent(new InputStateComponent());
         player.AddComponent(new PlayerComponent());
+        player.AddComponent(new SmoothMovementComponent(50f, 16));
     }
 
     private void UnloadContent()

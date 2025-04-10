@@ -24,6 +24,8 @@ public class TilemapRenderingSystem : LuminSystem
 
     public void Draw()
     {
+        bool first = true;
+        
         // Get the LDtk project from the world
         LDtkProject ldtkWorld = _world.GetLDtkWorld();
         foreach (var level in ldtkWorld.Levels)
@@ -39,6 +41,14 @@ public class TilemapRenderingSystem : LuminSystem
                     if (texture == null)
                     {
                         throw new UnknownTextureException($"Failed to load texture: {layer.TilesetUid}");
+                    }
+
+                    if (first)
+                    {
+                        Console.WriteLine("Tile 0,0 PositionPx: " + tile.PositionPx[0] + ", " + tile.PositionPx[1]);
+                        Console.WriteLine("Camera: (" + _camera.X + ", " + _camera.Y + ")");
+
+                        first = false;
                     }
 
                     // Calculate the destination rectangle for the tile
