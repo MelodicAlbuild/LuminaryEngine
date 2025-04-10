@@ -11,8 +11,6 @@ public class AudioSource : IComponent
     public bool PlayOnAwake { get; set; } = false;
     public bool Loop { get; set; } = false;
 
-    // Optional: Add properties for looping, spatial audio, etc.
-
     public AudioSource(string soundId)
     {
         SoundId = soundId;

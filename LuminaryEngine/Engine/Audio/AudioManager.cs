@@ -1,4 +1,5 @@
-﻿using SDL2;
+﻿using LuminaryEngine.Engine.Core.ResourceManagement;
+using SDL2;
 
 namespace LuminaryEngine.Engine.Audio;
 
@@ -46,6 +47,8 @@ public class AudioManager : IDisposable
 
     public void PlaySound(string soundId, float volume = 1.0f, bool loop = false)
     {
+        if(DevModeConfig.MuteAllSounds) volume = 0.0f;
+        
         if (sounds.TryGetValue(soundId, out Sound sound))
         {
             int loops = loop ? -1 : 0; // -1 for infinite loop, 0 for no loop
