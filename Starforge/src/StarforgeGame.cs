@@ -18,7 +18,7 @@ public class StarforgeGame : Game
         
         Sound bgmMain = ResourceCache.GetSound("background_music.mp3");
         Entity backgroundMusicEntity = World.CreateEntity();
-        //backgroundMusicEntity.AddComponent(new AudioSource("background_music.mp3") { PlayOnAwake = true, Volume = 0.7f, Loop = true });
+        backgroundMusicEntity.AddComponent(new AudioSource("background_music.mp3") { PlayOnAwake = true, Volume = 0.7f, Loop = true });
         
         Entity player = World.CreateEntity();
         player.AddComponent(new TransformComponent(512, 544));
