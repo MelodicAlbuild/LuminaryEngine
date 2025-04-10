@@ -131,16 +131,20 @@ public class World
     {
         return _ldtkWorld.Levels[_currentLevelId];
     }
-    
-    public async void SwitchLevel(int newLevelId, Vector2 exitLocation)
+
+    public void SwitchLevel(int newLevelId, Vector2 exitLocation)
     {
-        _isTransitioning = true;
-        
         if (newLevelId < 0 || newLevelId >= _ldtkWorld.Levels.Count)
         {
-            _isTransitioning = false;
             throw new ArgumentOutOfRangeException(nameof(newLevelId), "Invalid level ID.");
         }
+        
+        SwitchLevel(newLevelId, exitLocation);
+    }
+    
+    private async void SwitchLevelInternal(int newLevelId, Vector2 exitLocation)
+    {
+        _isTransitioning = true;
         
         Entity player = GetEntitiesWithComponents(typeof(PlayerComponent))[0];
         
