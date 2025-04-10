@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Numerics;
 using System.Security.Cryptography.Xml;
 using LuminaryEngine.Engine.Audio;
@@ -96,10 +96,10 @@ public class Game
         _resourceCache = new ResourceCache(_renderer.GetRenderer(), _textureLoadingSystem, _audioManager);
         
         // Load LDtk World
-        LDtkLoadResponse proj = LDtkLoader.LoadProject($"Assets/World/MainWorld.ldtk");
+        LDtkLoadResponse resp = LDtkLoader.LoadProject($"Assets/World/World.ldtk");
         
         // Initialize World
-        _world = new World(proj.Project, proj.CollisionMaps);
+        _world = new World(resp, _renderer);
         
         // Initialize Camera
         _camera = new Camera(0, 0, _world);

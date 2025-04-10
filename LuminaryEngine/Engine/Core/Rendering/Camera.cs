@@ -22,9 +22,31 @@ public class Camera
     {
         // Center the camera on the target immediately.
         Vector2 desiredPosition = target - new Vector2(Game.DISPLAY_WIDTH * 0.5f, Game.DISPLAY_HEIGHT * 0.5f);
-        int clampedX = (int)Math.Clamp(desiredPosition.X, 0, (_world.GetCurrentLevel().PixelWidth) - Game.DISPLAY_WIDTH);
-        int clampedY = (int)Math.Clamp(desiredPosition.Y, 0, (_world.GetCurrentLevel().PixelHeight) - Game.DISPLAY_HEIGHT);
+        int clampedX, clampedY;
+        if (_world.GetCurrentLevel().PixelWidth - Game.DISPLAY_WIDTH < 0)
+        {
+            clampedX = -((Game.DISPLAY_WIDTH - _world.GetCurrentLevel().PixelWidth) / 2);
+        }
+        else
+        {
+            clampedX = (int)Math.Clamp(desiredPosition.X, 0, _world.GetCurrentLevel().PixelWidth - Game.DISPLAY_WIDTH);
+        }
+        
+        if (_world.GetCurrentLevel().PixelHeight - Game.DISPLAY_HEIGHT < 0)
+        {
+            clampedY = -((Game.DISPLAY_HEIGHT - _world.GetCurrentLevel().PixelHeight) / 2);
+        }
+        else
+        {
+            clampedY = (int)Math.Clamp(desiredPosition.Y, 0, _world.GetCurrentLevel().PixelHeight - Game.DISPLAY_HEIGHT);
+        }
+        
         X = clampedX;
-        Y =clampedY;
+        Y = clampedY;
+    }
+    
+    public int HalfDifference(int a, int b)
+    {
+        return (a - b) / 2;
     }
 }

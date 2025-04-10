@@ -319,7 +319,7 @@ namespace LuminaryEngine.ThirdParty.LDtk.Models
         [JsonProperty("defUid")]
         public int DefUid { get; set; }
 
-        [JsonProperty("identifier")]
+        [JsonProperty("__identifier")]
         public string Identifier { get; set; }
 
         [JsonProperty("width")]
@@ -360,6 +360,9 @@ namespace LuminaryEngine.ThirdParty.LDtk.Models
         [JsonProperty("defUid")]
         public int DefUid { get; set; }
 
+        [JsonProperty("__value")]
+        public object Value { get; set; }
+        
         // Depending on the field type, only one of these may be populated.
         [JsonProperty("real")]
         public double? RealValue { get; set; }

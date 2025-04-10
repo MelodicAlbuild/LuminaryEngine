@@ -1,9 +1,9 @@
-﻿using System.Numerics;
+using System.Numerics;
 using LuminaryEngine.Engine.Core.GameLoop;
 using LuminaryEngine.Engine.Core.Input;
 using LuminaryEngine.Engine.Core.Rendering.Sprites;
 using LuminaryEngine.Engine.ECS.Components;
-using LuminaryEngine.Engine.Gameplay.Player;
+using LuminaryEngine.ThirdParty.LDtk.Models;
 using SDL2;
 
 namespace LuminaryEngine.Engine.ECS.Systems;
@@ -40,7 +40,7 @@ public class PlayerMovementSystem : LuminSystem
             {
                 // Calculate new target position based on a grid move
                 Vector2 newTarget = transform.Position + (direction * smoothMove.TileSize);
-                if (IsValidTarget(newTarget))
+                if (IsValidTarget(newTarget, entity))
                 {
                     smoothMove.TargetPosition = newTarget;
                     smoothMove.IsMoving = true;
@@ -73,9 +73,39 @@ public class PlayerMovementSystem : LuminSystem
         }
     }
     
-    private bool IsValidTarget(Vector2 target)
+    private bool IsValidTarget(Vector2 target, Entity entity)
     {
-        return !_world.IsTileSolid((int)(target.X / 32), (int)(target.Y / 32));
+        if (_world.IsTileSolid((int)(target.X / 32), (int)(target.Y / 32)))
+        {
+            OnCollide(target, entity);
+            return false;
+        }
+        
+        return true;
+    }
+
+    private void OnCollide(Vector2 target, Entity entity)
+    {
+        Vector2 gridTarget = new Vector2(target.X / 32, target.Y / 32);
+        if (_world.IsEntityAtPosition(gridTarget))
+        {
+            // Handle collision with another entity
+            LDtkEntityInstance entityInstance = _world.GetEntityInstance(gridTarget);
+            if (entityInstance != null)
+            {
+                switch (entityInstance.Identifier)
+                {
+                    case "building_interact":
+                        // Handle building interaction
+                        if (entityInstance.FieldInstances.Find(o => o.Identifier == "buildingId") != null)
+                        {
+                            int bId = Convert.ToInt32(entityInstance.FieldInstances.Find(o => o.Identifier == "buildingId").Value);
+                            _world.SwitchLevel(bId);
+                        }
+                        break;
+                }
+            }
+        }
     }
     
     private bool IsMovementKeyPressed(InputStateComponent isc, Entity entity, out Vector2 direction)

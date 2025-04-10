@@ -1,4 +1,4 @@
-﻿using LuminaryEngine.Engine.Exceptions;
+using LuminaryEngine.Engine.Exceptions;
 using LuminaryEngine.ThirdParty.LDtk.Models;
 
 namespace LuminaryEngine.Engine.ECS;
@@ -12,11 +12,16 @@ public class World
 
     private LDtkProject _ldtkWorld;
     private Dictionary<int, int[,]> _collisionMaps;
-    
+    private Dictionary<int, List<Vector2>> _entityMaps;
     public World(LDtkProject ldtkWorld, Dictionary<int, int[,]> cMaps)
+    private Renderer _renderer;
+    public World(LDtkLoadResponse response, Renderer renderer)
     {
-        _ldtkWorld = ldtkWorld;
-        _collisionMaps = cMaps;
+        _ldtkWorld = response.Project;
+        _collisionMaps = response.CollisionMaps;
+        _entityMaps = response.EntityMaps;
+        
+        _renderer = renderer;
     }
 
     public Entity CreateEntity()
@@ -90,6 +95,17 @@ public class World
         }
         
         return false;
+    }
+
+    public LDtkEntityInstance GetEntityInstance(Vector2 position)
+    {
+        return GetCurrentLevel().LayerInstances.Find(o => o.Type == "Entities").EntityInstances
+            .Find(o => o.PositionPx[0] == (int)position.X * 32 && o.PositionPx[1] == (int)position.Y * 32);
+    }
+    
+    public bool IsEntityAtPosition(Vector2 position)
+    {
+        return _entityMaps[_currentLevelId].Any(entity => entity == position);
     }
 
     public LDtkLevel GetCurrentLevel()
