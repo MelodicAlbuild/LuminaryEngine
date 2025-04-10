@@ -229,7 +229,7 @@ public class Game
     private void UpdateWindowTitle()
     {
         // Update the window title with the frame rate
-        string title = $"Luminary Engine - FPS: {_frameRate:F2}";
+        string title = $"Luminary Engine - FPS: {_frameRate:F0}";
         SDL_SetWindowTitle(_window, title);
     }
     
