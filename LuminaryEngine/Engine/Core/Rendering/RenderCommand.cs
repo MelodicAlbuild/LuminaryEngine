@@ -22,5 +22,7 @@ public struct RenderCommand
 public enum RenderCommandType
 {
     DrawTexture,
-    Clear
+    Clear,
+    FadeFrame,
+    FadeFrameHold
 }

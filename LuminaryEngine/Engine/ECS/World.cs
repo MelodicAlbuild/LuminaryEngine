@@ -1,4 +1,11 @@
+﻿using System.Numerics;
+using LuminaryEngine.Engine.Core.Rendering;
+using LuminaryEngine.Engine.Core.Rendering.Sprites;
+using LuminaryEngine.Engine.ECS.Components;
 using LuminaryEngine.Engine.Exceptions;
+using LuminaryEngine.Engine.Gameplay.Player;
+using LuminaryEngine.Extras;
+using LuminaryEngine.ThirdParty.LDtk;
 using LuminaryEngine.ThirdParty.LDtk.Models;
 
 namespace LuminaryEngine.Engine.ECS;
@@ -13,8 +20,12 @@ public class World
     private LDtkProject _ldtkWorld;
     private Dictionary<int, int[,]> _collisionMaps;
     private Dictionary<int, List<Vector2>> _entityMaps;
-    public World(LDtkProject ldtkWorld, Dictionary<int, int[,]> cMaps)
+    
+    private bool _isTransitioning = false;
+    private bool _hasFaded = true;
+    
     private Renderer _renderer;
+    
     public World(LDtkLoadResponse response, Renderer renderer)
     {
         _ldtkWorld = response.Project;
@@ -22,6 +33,14 @@ public class World
         _entityMaps = response.EntityMaps;
         
         _renderer = renderer;
+    }
+
+    public void Update()
+    {
+        if (!_renderer.IsFading())
+        {
+            _hasFaded = true;
+        }
     }
 
     public Entity CreateEntity()
@@ -111,5 +130,64 @@ public class World
     public LDtkLevel GetCurrentLevel()
     {
         return _ldtkWorld.Levels[_currentLevelId];
+    }
+    
+    public async void SwitchLevel(int newLevelId)
+    {
+        _isTransitioning = true;
+        
+        if (newLevelId < 0 || newLevelId >= _ldtkWorld.Levels.Count)
+        {
+            _isTransitioning = false;
+            throw new ArgumentOutOfRangeException(nameof(newLevelId), "Invalid level ID.");
+        }
+        
+        foreach (Entity entity in GetEntitiesWithComponents(typeof(SmoothMovementComponent)))
+        {
+            entity.GetComponent<SmoothMovementComponent>().Freeze();
+        }
+        
+        foreach (Entity entity in GetEntitiesWithComponents(typeof(AnimationComponent)))
+        {
+            entity.GetComponent<AnimationComponent>().StopAnimation();
+        }
+        
+        _renderer.StartFade(true, 2.0f, true);
+        _hasFaded = false;
+
+        await TaskEx.WaitUntil(HasFaded);
+        
+        int oldLevelId = _currentLevelId;
+        
+        _currentLevelId = newLevelId;
+
+        // Optionally, clear and reload entities specific to the level
+        //_entities.Clear();
+        // TODO: Handle level-specific entities
+
+        int[] exitPx = _ldtkWorld.Levels[_currentLevelId].LayerInstances.Find(o => o.Type == "Entities").EntityInstances
+            .Find(o => o.Identifier == "building_interact" &&
+                       o.FieldInstances.Find(o => o.Identifier == "interaction").Value.ToString() == "exit" && o.FieldInstances.Find(o => o.Identifier == "buildingId").Value.ToString() == oldLevelId.ToString()).PositionPx;
+        
+        GetEntitiesWithComponents(typeof(PlayerComponent))[0].GetComponent<TransformComponent>().Position = new Vector2(exitPx[0], exitPx[1]);
+        
+        await TaskEx.WaitMs(100);
+        
+        _renderer.StartFade(false, 2.0f, false);
+        _hasFaded = false;
+
+        await TaskEx.WaitUntil(HasFaded);
+        
+        _isTransitioning = false;
+    }
+    
+    public bool HasFaded()
+    {
+        return _hasFaded;
+    }
+    
+    public bool IsTransitioning()
+    {
+        return _isTransitioning;
     }
 }

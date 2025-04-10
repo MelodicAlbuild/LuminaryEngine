@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Numerics;
 using System.Security.Cryptography.Xml;
 using LuminaryEngine.Engine.Audio;
@@ -164,6 +164,9 @@ public class Game
         _playerMovementSystem.Update();
         _audioSystem.Update();
         
+        _renderer.UpdateFade(_gameTime.DeltaTime);
+        _world.Update();
+        
         _animationSystem.Update();
         
         Entity player = _world.GetEntitiesWithComponents(typeof(PlayerComponent))[0];
@@ -178,6 +181,9 @@ public class Game
         
         _tilemapRenderingSystem.Draw();
         _spriteRenderingSystem.Draw();
+        
+        // Render the fade overlay if applicable
+        _renderer.RenderFade();
         
         _renderer.Present();
     }

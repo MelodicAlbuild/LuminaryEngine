@@ -1,4 +1,4 @@
-using System.Numerics;
+﻿using System.Numerics;
 using LuminaryEngine.Engine.Core.GameLoop;
 using LuminaryEngine.Engine.Core.Input;
 using LuminaryEngine.Engine.Core.Rendering.Sprites;
@@ -28,6 +28,8 @@ public class PlayerMovementSystem : LuminSystem
 
     public override void Update()
     {
+        if(_world.IsTransitioning()) return;
+        
         foreach (var entity in _world.GetEntitiesWithComponents(typeof(TransformComponent), typeof(InputStateComponent)))
         {
             // Assume entity has InputComponent, TransformComponent, and SmoothMovementComponent.

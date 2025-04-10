@@ -39,4 +39,11 @@ public class SmoothMovementComponent : IComponent
         IsMoving = false;
         TargetPosition = Vector2.Zero;
     }
+    
+    public void Freeze()
+    {
+        // Reset the component to its initial state.
+        IsMoving = false;
+        TargetPosition = Vector2.Zero;
+    }
 }
