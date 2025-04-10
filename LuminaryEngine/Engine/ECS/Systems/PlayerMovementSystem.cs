@@ -28,8 +28,6 @@ public class PlayerMovementSystem : LuminSystem
 
     public override void Update()
     {
-        if(_world.IsTransitioning()) return;
-        
         foreach (var entity in _world.GetEntitiesWithComponents(typeof(TransformComponent), typeof(InputStateComponent)))
         {
             // Assume entity has InputComponent, TransformComponent, and SmoothMovementComponent.
@@ -38,7 +36,7 @@ public class PlayerMovementSystem : LuminSystem
             var smoothMove = entity.GetComponent<SmoothMovementComponent>();
 
             // When a movement input is detected and no move is currently in progress:
-            if (!smoothMove.IsMoving && IsMovementKeyPressed(input, entity, out Vector2 direction))
+            if (!smoothMove.IsMoving && IsMovementKeyPressed(input, entity, out Vector2 direction) && !_world.IsTransitioning())
             {
                 // Calculate new target position based on a grid move
                 Vector2 newTarget = transform.Position + (direction * smoothMove.TileSize);
@@ -102,7 +100,7 @@ public class PlayerMovementSystem : LuminSystem
                         if (entityInstance.FieldInstances.Find(o => o.Identifier == "buildingId") != null)
                         {
                             int bId = Convert.ToInt32(entityInstance.FieldInstances.Find(o => o.Identifier == "buildingId").Value);
-                            _world.SwitchLevel(bId);
+                            _world.SwitchLevel(bId, target);
                         }
                         break;
                 }

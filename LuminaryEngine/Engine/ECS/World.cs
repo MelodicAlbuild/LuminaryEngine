@@ -132,7 +132,7 @@ public class World
         return _ldtkWorld.Levels[_currentLevelId];
     }
     
-    public async void SwitchLevel(int newLevelId)
+    public async void SwitchLevel(int newLevelId, Vector2 exitLocation)
     {
         _isTransitioning = true;
         
@@ -141,6 +141,15 @@ public class World
             _isTransitioning = false;
             throw new ArgumentOutOfRangeException(nameof(newLevelId), "Invalid level ID.");
         }
+        
+        Entity player = GetEntitiesWithComponents(typeof(PlayerComponent))[0];
+        
+        Vector2 dirVector = Vector2.Normalize(exitLocation - player.GetComponent<TransformComponent>().Position);
+        
+        player.GetComponent<SmoothMovementComponent>().TargetPosition = player.GetComponent<TransformComponent>().Position + (dirVector * player.GetComponent<SmoothMovementComponent>().TileSize);
+        player.GetComponent<SmoothMovementComponent>().IsMoving = true;
+        
+        await TaskEx.WaitUntilNot(player.GetComponent<SmoothMovementComponent>().GetIsMoving);
         
         foreach (Entity entity in GetEntitiesWithComponents(typeof(SmoothMovementComponent)))
         {
@@ -160,7 +169,7 @@ public class World
         int oldLevelId = _currentLevelId;
         
         _currentLevelId = newLevelId;
-
+        
         // Optionally, clear and reload entities specific to the level
         //_entities.Clear();
         // TODO: Handle level-specific entities
@@ -169,7 +178,7 @@ public class World
             .Find(o => o.Identifier == "building_interact" &&
                        o.FieldInstances.Find(o => o.Identifier == "interaction").Value.ToString() == "exit" && o.FieldInstances.Find(o => o.Identifier == "buildingId").Value.ToString() == oldLevelId.ToString()).PositionPx;
         
-        GetEntitiesWithComponents(typeof(PlayerComponent))[0].GetComponent<TransformComponent>().Position = new Vector2(exitPx[0], exitPx[1]);
+        player.GetComponent<TransformComponent>().Position = new Vector2(exitPx[0], exitPx[1]);
         
         await TaskEx.WaitMs(100);
         
