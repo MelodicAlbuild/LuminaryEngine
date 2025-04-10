@@ -24,7 +24,7 @@ public class TilemapRenderingSystem : LuminSystem
 
     public void Draw()
     {
-        bool first = true;
+        Texture black = _resourceCache.GetTexture("black.png");
         
         // Get the LDtk project from the world
         LDtkProject ldtkWorld = _world.GetLDtkWorld();
@@ -43,23 +43,15 @@ public class TilemapRenderingSystem : LuminSystem
                         throw new UnknownTextureException($"Failed to load texture: {layer.TilesetUid}");
                     }
 
-                    if (first)
-                    {
-                        Console.WriteLine("Tile 0,0 PositionPx: " + tile.PositionPx[0] + ", " + tile.PositionPx[1]);
-                        Console.WriteLine("Camera: (" + _camera.X + ", " + _camera.Y + ")");
-
-                        first = false;
-                    }
-
                     // Calculate the destination rectangle for the tile
                     SDL.SDL_Rect destRect = new SDL.SDL_Rect
                     {
-                        x = tile.PositionPx[0] - _camera.X,
-                        y = tile.PositionPx[1] - _camera.Y,
-                        w = 16,
-                        h = 16
+                        x = (int)Math.Round((tile.PositionPx[0] - _camera.X), MidpointRounding.AwayFromZero),
+                        y = (int)Math.Round((tile.PositionPx[1] - _camera.Y), MidpointRounding.AwayFromZero),
+                        w = 32,
+                        h = 32
                     };
-
+                    
                     // Create the render command
                     RenderCommand command = new RenderCommand()
                     {
@@ -69,15 +61,29 @@ public class TilemapRenderingSystem : LuminSystem
                         {
                             x = tile.SrcRect[0],
                             y = tile.SrcRect[1],
-                            w = 16,
-                            h = 16
+                            w = 32,
+                            h = 32
                         },
                         DestRect = destRect,
-                        ZOrder = layer.LayerDefUid
+                        ZOrder = ldtkWorld.Definitions.LayerDefs.Find(o => o.Uid == layer.LayerDefUid)!.Doc.zIndex
                     };
 
                     // Enqueue the render command
                     _renderer.EnqueueRenderCommand(command);
+                    
+                    if(_world.IsTileSolid(tile.PositionPx[0] / 32, tile.PositionPx[1] / 32) && DevModeConfig.ShowCollisionBoxes)
+                    {
+                        RenderCommand command2 = new RenderCommand()
+                        {
+                            Type = RenderCommandType.DrawTexture,
+                            Texture = black.Handle,
+                            DestRect = destRect,
+                            ZOrder = 250
+                        };
+
+                        // Enqueue the render command
+                        _renderer.EnqueueRenderCommand(command2);
+                    }
                 }
             }
         }

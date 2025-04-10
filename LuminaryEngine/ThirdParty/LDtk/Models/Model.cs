@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using LuminaryEngine.ThirdParty.LDtk.Converters;
+using Newtonsoft.Json;
 
 namespace LuminaryEngine.ThirdParty.LDtk.Models
 {
@@ -36,10 +37,10 @@ namespace LuminaryEngine.ThirdParty.LDtk.Models
         [JsonProperty("enums")]
         public List<LDtkEnumDef> Enums { get; set; }
 
-        [JsonProperty("layerDefs")]
+        [JsonProperty("layers")]
         public List<LDtkLayerDef> LayerDefs { get; set; }
 
-        [JsonProperty("entityDefs")]
+        [JsonProperty("entities")]
         public List<LDtkEntityDef> EntityDefs { get; set; }
     }
 
@@ -88,7 +89,7 @@ namespace LuminaryEngine.ThirdParty.LDtk.Models
     public class LDtkEnumValue
     {
         [JsonProperty("id")]
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [JsonProperty("identifier")]
         public string Identifier { get; set; }
@@ -126,8 +127,17 @@ namespace LuminaryEngine.ThirdParty.LDtk.Models
 
         [JsonProperty("offsetY")]
         public int OffsetY { get; set; }
+        
+        [JsonProperty("doc")]
+        [JsonConverter(typeof(StringToObjectConverter))]
+        public LDtkDocDef Doc { get; set; }
 
         // Additional properties can be added as needed.
+    }
+
+    public class LDtkDocDef
+    {
+        public int zIndex { get; set; }
     }
 
     public class LDtkEntityDef
@@ -261,8 +271,14 @@ namespace LuminaryEngine.ThirdParty.LDtk.Models
         public List<LDtkEntityInstance> EntityInstances { get; set; }
 
         // For int-grid layers:
-        [JsonProperty("intGrid")]
-        public List<LDtkIntGridValue> IntGrid { get; set; }
+        [JsonProperty("intGridCsv")]
+        public List<int> IntGrid { get; set; }
+        
+        [JsonProperty("__cWid")]
+        public int CellWidth { get; set; }
+        
+        [JsonProperty("__cHei")]
+        public int CellHeight { get; set; }
 
         // Custom field instances attached to the layer.
         [JsonProperty("fieldInstances")]
@@ -331,18 +347,6 @@ namespace LuminaryEngine.ThirdParty.LDtk.Models
 
         [JsonProperty("fieldInstances")]
         public List<LDtkFieldInstance> FieldInstances { get; set; }
-    }
-
-    public class LDtkIntGridValue
-    {
-        [JsonProperty("v")]
-        public int Value { get; set; }
-
-        [JsonProperty("coordId")]
-        public int CoordId { get; set; }
-
-        [JsonProperty("px")]
-        public int[] PositionPx { get; set; }
     }
 
     public class LDtkFieldInstance

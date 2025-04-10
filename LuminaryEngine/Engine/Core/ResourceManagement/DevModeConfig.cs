@@ -1,10 +1,12 @@
-﻿namespace LuminaryEngine.Engine.Core.ResourceManagement;
+﻿#define DEV_MODE
+
+namespace LuminaryEngine.Engine.Core.ResourceManagement;
 
 public class DevModeConfig
 {
-#if DEBUG
-    public static bool EnableDevMode = true;
-#elif RELEASE
-    public static bool EnableDevMode = false;
+#if DEV_MODE
+    public static bool ShowCollisionBoxes => false;
+#else
+    public static bool ShowCollisionBoxes => false;
 #endif
 }

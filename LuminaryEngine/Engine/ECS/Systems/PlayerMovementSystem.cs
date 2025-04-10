@@ -9,7 +9,7 @@ namespace LuminaryEngine.Engine.ECS.Systems;
 public class PlayerMovementSystem : LuminSystem
 {
     private float _speed = 0.75f;
-    private int _tileSize = 16;
+    private int _tileSize = 32;
     
     private GameTime _gameTime;
     
@@ -32,8 +32,6 @@ public class PlayerMovementSystem : LuminSystem
             var input = entity.GetComponent<InputStateComponent>();
             var transform = entity.GetComponent<TransformComponent>();
             var smoothMove = entity.GetComponent<SmoothMovementComponent>();
-            
-            Console.WriteLine("Target Position: " + smoothMove.TargetPosition);
 
             // When a movement input is detected and no move is currently in progress:
             if (!smoothMove.IsMoving && IsMovementKeyPressed(input, out Vector2 direction))
@@ -75,8 +73,8 @@ public class PlayerMovementSystem : LuminSystem
     
     private bool IsValidTarget(Vector2 target)
     {
-        // Implement your logic to check if the target position is valid (e.g., not colliding with walls)
-        return true;
+        Console.WriteLine($"{(int)(target.X / 32)}, {(int)(target.Y / 32)} is {_world.IsTileSolid((int)(target.X / 32), (int)(target.Y / 32))}");
+        return !_world.IsTileSolid((int)(target.X / 32), (int)(target.Y / 32));
     }
     
     private bool IsMovementKeyPressed(InputStateComponent isc, out Vector2 direction)
@@ -86,23 +84,15 @@ public class PlayerMovementSystem : LuminSystem
         if (isc.PressedKeys.Contains(SDL.SDL_Scancode.SDL_SCANCODE_W))
         {
             direction.Y -= 1;
-        }
-        if (isc.PressedKeys.Contains(SDL.SDL_Scancode.SDL_SCANCODE_S))
+        } else if (isc.PressedKeys.Contains(SDL.SDL_Scancode.SDL_SCANCODE_S))
         {
             direction.Y += 1;
-        }
-        if (isc.PressedKeys.Contains(SDL.SDL_Scancode.SDL_SCANCODE_A))
+        } else if (isc.PressedKeys.Contains(SDL.SDL_Scancode.SDL_SCANCODE_A))
         {
             direction.X -= 1;
-        }
-        if (isc.PressedKeys.Contains(SDL.SDL_Scancode.SDL_SCANCODE_D))
+        } else if (isc.PressedKeys.Contains(SDL.SDL_Scancode.SDL_SCANCODE_D))
         {
             direction.X += 1;
-        }
-        
-        if (direction != Vector2.Zero)
-        {
-            Console.WriteLine("Movement key pressed: " + direction);
         }
 
         return direction != Vector2.Zero;

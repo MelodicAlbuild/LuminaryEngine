@@ -7,12 +7,16 @@ public class World
 {
     private Dictionary<int, Entity> _entities = new Dictionary<int, Entity>();
     private int _nextEntityId = 0;
+    
+    private int _currentLevelId = 0;
 
     private LDtkProject _ldtkWorld;
+    private Dictionary<int, int[,]> _collisionMaps;
     
-    public World(LDtkProject ldtkWorld)
+    public World(LDtkProject ldtkWorld, Dictionary<int, int[,]> cMaps)
     {
         _ldtkWorld = ldtkWorld;
+        _collisionMaps = cMaps;
     }
 
     public Entity CreateEntity()
@@ -73,5 +77,23 @@ public class World
     public LDtkProject GetLDtkWorld()
     {
         return _ldtkWorld;
+    }
+    
+    public bool IsTileSolid(int x, int y)
+    {
+        if (_collisionMaps.TryGetValue(_currentLevelId, out var collisionMap))
+        {
+            if (x >= 0 && x < collisionMap.GetLength(0) && y >= 0 && y < collisionMap.GetLength(1))
+            {
+                return collisionMap[x, y] == 1;
+            }
+        }
+        
+        return false;
+    }
+
+    public LDtkLevel GetCurrentLevel()
+    {
+        return _ldtkWorld.Levels[_currentLevelId];
     }
 }

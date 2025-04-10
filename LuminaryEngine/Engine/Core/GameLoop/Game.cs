@@ -54,8 +54,6 @@ public class Game
         _stopwatch = new Stopwatch();
         _frameCount = 0;
         _frameRate = 0.0f;
-        
-        _camera = new Camera(0, 0);
     }
 
     private bool Initialize()
@@ -97,13 +95,16 @@ public class Game
         _resourceCache = new ResourceCache(_renderer.GetRenderer(), _textureLoadingSystem, _audioManager);
         
         // Load LDtk World
-        LDtkProject proj = LDtkLoader.LoadProject($"Assets/World/MainWorld.ldtk");
+        LDtkLoadResponse proj = LDtkLoader.LoadProject($"Assets/World/MainWorld.ldtk");
         
         // Initialize World
-        _world = new World(proj);
+        _world = new World(proj.Project, proj.CollisionMaps);
+        
+        // Initialize Camera
+        _camera = new Camera(0, 0, _world);
         
         // Initialize Systems
-        _spriteRenderingSystem = new SpriteRenderingSystem(_renderer, _resourceCache, _world);
+        _spriteRenderingSystem = new SpriteRenderingSystem(_renderer, _resourceCache, _camera, _world);
         _keyboardInputSystem = new KeyboardInputSystem(_world);
         _mouseInputSystem = new MouseInputSystem(_world);
         _playerMovementSystem = new PlayerMovementSystem(_world, _gameTime);
@@ -184,12 +185,11 @@ public class Game
         //backgroundMusicEntity.AddComponent(new AudioSource("background_music.mp3") { PlayOnAwake = true, Volume = 0.7f, Loop = true });
         
         Entity player = _world.CreateEntity();
-        player.AddComponent(new TransformComponent(0, 0));
-        player.GetComponent<TransformComponent>().Scale = new Vector2(0.5f, 0.5f);
-        player.AddComponent(new SpriteComponent("player.png", 10));
+        player.AddComponent(new TransformComponent(512, 544));
+        player.AddComponent(new SpriteComponent("player.png", 18));
         player.AddComponent(new InputStateComponent());
         player.AddComponent(new PlayerComponent());
-        player.AddComponent(new SmoothMovementComponent(50f, 16));
+        player.AddComponent(new SmoothMovementComponent(100f, 32));
     }
 
     private void UnloadContent()
