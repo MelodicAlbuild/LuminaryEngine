@@ -1,10 +1,11 @@
 ﻿using LuminaryEngine.Engine.Core.GameLoop;
+using Starforge;
 
 public class Program
 {
     public static void Main(string[] args)
     {
-        Game game = new Game();
+        StarforgeGame game = new StarforgeGame();
         game.Run();
     }
 }

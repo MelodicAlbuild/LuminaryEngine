@@ -1,7 +1,9 @@
 ﻿using System.Numerics;
 using LuminaryEngine.Engine.Core.GameLoop;
 using LuminaryEngine.Engine.Core.Input;
+using LuminaryEngine.Engine.Core.Rendering.Sprites;
 using LuminaryEngine.Engine.ECS.Components;
+using LuminaryEngine.Engine.Gameplay.Player;
 using SDL2;
 
 namespace LuminaryEngine.Engine.ECS.Systems;
@@ -34,7 +36,7 @@ public class PlayerMovementSystem : LuminSystem
             var smoothMove = entity.GetComponent<SmoothMovementComponent>();
 
             // When a movement input is detected and no move is currently in progress:
-            if (!smoothMove.IsMoving && IsMovementKeyPressed(input, out Vector2 direction))
+            if (!smoothMove.IsMoving && IsMovementKeyPressed(input, entity, out Vector2 direction))
             {
                 // Calculate new target position based on a grid move
                 Vector2 newTarget = transform.Position + (direction * smoothMove.TileSize);
@@ -73,26 +75,50 @@ public class PlayerMovementSystem : LuminSystem
     
     private bool IsValidTarget(Vector2 target)
     {
-        Console.WriteLine($"{(int)(target.X / 32)}, {(int)(target.Y / 32)} is {_world.IsTileSolid((int)(target.X / 32), (int)(target.Y / 32))}");
         return !_world.IsTileSolid((int)(target.X / 32), (int)(target.Y / 32));
     }
     
-    private bool IsMovementKeyPressed(InputStateComponent isc, out Vector2 direction)
+    private bool IsMovementKeyPressed(InputStateComponent isc, Entity entity, out Vector2 direction)
     {
         direction = Vector2.Zero;
+        AnimationComponent anim = entity.GetComponent<AnimationComponent>();
+        SmoothMovementComponent smoothMove = entity.GetComponent<SmoothMovementComponent>();
 
         if (isc.PressedKeys.Contains(SDL.SDL_Scancode.SDL_SCANCODE_W))
         {
+            if (anim.State is not { CurrentAnimation: "WalkUp" })
+            {
+                anim.PlayAnimation("WalkUp");
+            }
             direction.Y -= 1;
         } else if (isc.PressedKeys.Contains(SDL.SDL_Scancode.SDL_SCANCODE_S))
         {
+            if (anim.State is not { CurrentAnimation: "WalkDown" })
+            {
+                anim.PlayAnimation("WalkDown");
+            }
             direction.Y += 1;
         } else if (isc.PressedKeys.Contains(SDL.SDL_Scancode.SDL_SCANCODE_A))
         {
+            if (anim.State is not { CurrentAnimation: "WalkLeft" })
+            {
+                anim.PlayAnimation("WalkLeft");
+            }
             direction.X -= 1;
         } else if (isc.PressedKeys.Contains(SDL.SDL_Scancode.SDL_SCANCODE_D))
         {
+            if (anim.State is not { CurrentAnimation: "WalkRight" })
+            {
+                anim.PlayAnimation("WalkRight");
+            }
             direction.X += 1;
+        }
+        else
+        {
+            if (!smoothMove.IsMoving)
+            {
+                anim.StopAnimation();
+            }
         }
 
         return direction != Vector2.Zero;

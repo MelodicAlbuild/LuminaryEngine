@@ -29,6 +29,28 @@ public class SpriteRenderingSystem : LuminSystem
             var spriteComponent = entity.GetComponent<SpriteComponent>();
             var transformComponent = entity.GetComponent<TransformComponent>();
             
+            if (entity.HasComponent<AnimationComponent>())
+            {
+                var animationComponent = entity.GetComponent<AnimationComponent>();
+                if (animationComponent.State != null)
+                {
+                    // Use the current frame's source rectangle from the animation
+                    var animation = animationComponent.Animations[animationComponent.State.CurrentAnimation];
+                    spriteComponent.SourceRect = animation.Frames[animationComponent.State.CurrentFrame];
+                }
+                else
+                {
+                    if (animationComponent.DeadAnim == 1)
+                    {
+                        spriteComponent.SourceRect = animationComponent.Frame;
+                    }
+                    else
+                    {
+                        spriteComponent.SourceRect = spriteComponent.SourceRect;
+                    }
+                }
+            }
+            
             Texture texture = _resourceCache.GetTexture(spriteComponent.TextureId);
             if (texture == null)
             {
@@ -39,8 +61,8 @@ public class SpriteRenderingSystem : LuminSystem
             {
                 x = (int)Math.Floor(transformComponent.Position.X) - (int)_camera.X,
                 y = (int)Math.Floor(transformComponent.Position.Y) - 16 - (int)_camera.Y,
-                w = (int)(texture.Width * transformComponent.Scale.X),
-                h = (int)(texture.Height * transformComponent.Scale.Y)
+                w = (int)(spriteComponent.SourceRect.Value.w * transformComponent.Scale.X),
+                h = (int)(spriteComponent.SourceRect.Value.h * transformComponent.Scale.Y)
             };
 
             RenderCommand command = new RenderCommand()

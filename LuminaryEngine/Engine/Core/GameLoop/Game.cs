@@ -36,6 +36,7 @@ public class Game
     private AudioManager _audioManager;
     private AudioSystem _audioSystem;
     private TilemapRenderingSystem _tilemapRenderingSystem;
+    private AnimationSystem _animationSystem;
     
     private Camera _camera;
     
@@ -110,6 +111,7 @@ public class Game
         _playerMovementSystem = new PlayerMovementSystem(_world, _gameTime);
         _audioSystem = new AudioSystem(_world, _audioManager);
         _tilemapRenderingSystem = new TilemapRenderingSystem(_renderer, _resourceCache, _camera, _world);
+        _animationSystem = new AnimationSystem(_world, _gameTime);
         
         // Start the stopwatch
         _stopwatch.Start();
@@ -155,12 +157,14 @@ public class Game
         }
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         _gameTime.Update();
         
         _playerMovementSystem.Update();
         _audioSystem.Update();
+        
+        _animationSystem.Update();
         
         Entity player = _world.GetEntitiesWithComponents(typeof(PlayerComponent))[0];
         TransformComponent playerTransform = player.GetComponent<TransformComponent>();
@@ -178,23 +182,14 @@ public class Game
         _renderer.Present();
     }
 
-    private void LoadContent()
+    protected virtual void LoadContent()
     {
-        Sound bgmMain = _resourceCache.GetSound("background_music.mp3");
-        Entity backgroundMusicEntity = _world.CreateEntity();
-        //backgroundMusicEntity.AddComponent(new AudioSource("background_music.mp3") { PlayOnAwake = true, Volume = 0.7f, Loop = true });
         
-        Entity player = _world.CreateEntity();
-        player.AddComponent(new TransformComponent(512, 544));
-        player.AddComponent(new SpriteComponent("player.png", 18));
-        player.AddComponent(new InputStateComponent());
-        player.AddComponent(new PlayerComponent());
-        player.AddComponent(new SmoothMovementComponent(100f, 32));
     }
 
-    private void UnloadContent()
+    protected virtual void UnloadContent()
     {
-        // TODO: Handle Unload
+        
     }
     
     private void Shutdown()
@@ -231,4 +226,9 @@ public class Game
         string title = $"Luminary Engine - FPS: {_frameRate:F2}";
         SDL_SetWindowTitle(_window, title);
     }
+    
+    public ResourceCache ResourceCache => _resourceCache;
+    public Renderer Renderer => _renderer;
+    public GameTime GameTime => _gameTime;
+    public World World => _world;
 }
