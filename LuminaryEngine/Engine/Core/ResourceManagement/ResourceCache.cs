@@ -1,4 +1,5 @@
 ﻿using LuminaryEngine.Engine.Audio;
+using LuminaryEngine.Engine.Core.Rendering.Fonts;
 using LuminaryEngine.Engine.Core.Rendering.Textures;
 using SDL2;
 
@@ -9,19 +10,38 @@ public class ResourceCache
     private IntPtr _renderer;
     private Dictionary<string, Texture> _textureCache;
     private Dictionary<string, Texture> _spritesheetCache;
-    public Dictionary<string, Sound> _soundCache { get; private set; }
+    private Dictionary<string, Font> _fontCache;
+    private Dictionary<string, Sound> _soundCache;
     private AudioManager _audioManager;
     
     private TextureLoadingSystem _textureLoadingSystem;
+    private FontLoadingSystem _fontLoadingSystem;
     
-    public ResourceCache(IntPtr renderer, TextureLoadingSystem textureLoadingSystem, AudioManager audioManager)
+    public ResourceCache(IntPtr renderer, TextureLoadingSystem textureLoadingSystem, FontLoadingSystem fontLoadingSystem, AudioManager audioManager)
     {
         _renderer = renderer;
         _textureLoadingSystem = textureLoadingSystem;
+        _fontLoadingSystem = fontLoadingSystem;
         _textureCache = new Dictionary<string, Texture>();
         _spritesheetCache = new Dictionary<string, Texture>();
+        _fontCache = new Dictionary<string, Font>();
         _audioManager = audioManager;
         _soundCache = new Dictionary<string, Sound>();
+    }
+    
+    public Font GetFont(string fontId, int fontSize)
+    {
+        string cacheKey = $"{fontId}-{fontSize}";
+        if (_fontCache.ContainsKey(cacheKey))
+        {
+            return _fontCache[cacheKey];
+        }
+
+        string fontPath = Path.Combine("Assets", "Fonts", $"{fontId}.ttf");
+
+        Font font = _fontLoadingSystem.LoadFont(fontPath, fontSize);
+        _fontCache[cacheKey] = font;
+        return font;
     }
 
     public Texture GetTexture(string textureId)
@@ -82,6 +102,12 @@ public class ResourceCache
             texture.Destroy();
         }
         _textureCache.Clear();
+        
+        foreach (var font in _fontCache.Values)
+        {
+            font.Dispose();
+        }
+        _fontCache.Clear();
         
         foreach (var sound in _soundCache.Values)
         {

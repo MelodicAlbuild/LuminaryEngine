@@ -4,6 +4,7 @@ using System.Security.Cryptography.Xml;
 using LuminaryEngine.Engine.Audio;
 using LuminaryEngine.Engine.Core.Input;
 using LuminaryEngine.Engine.Core.Rendering;
+using LuminaryEngine.Engine.Core.Rendering.Fonts;
 using LuminaryEngine.Engine.Core.Rendering.Sprites;
 using LuminaryEngine.Engine.Core.Rendering.Textures;
 using LuminaryEngine.Engine.Core.ResourceManagement;
@@ -31,6 +32,7 @@ public class Game
     private GameTime _gameTime;
     private SpriteRenderingSystem _spriteRenderingSystem;
     private TextureLoadingSystem _textureLoadingSystem;
+    private FontLoadingSystem _fontLoadingSystem;
     private KeyboardInputSystem _keyboardInputSystem;
     private MouseInputSystem _mouseInputSystem;
     private PlayerMovementSystem _playerMovementSystem;
@@ -90,14 +92,38 @@ public class Game
             return false;
         }
         
+        // Initialize SDL_ttf
+        if (SDL_ttf.TTF_Init() < 0)
+        {
+            Console.WriteLine($"SDL_ttf_Init Error: {SDL_ttf.TTF_GetError()}");
+            SDL_image.IMG_Quit();
+            _renderer.Destroy();
+            SDL_DestroyWindow(_window);
+            return false;
+        }
+        
+        // Initialize SDL_mixer
+        if (SDL_mixer.Mix_Init(SDL_mixer.MIX_InitFlags.MIX_INIT_MP3) < 0)
+        {
+            Console.WriteLine($"SDL_mixer_Init Error: {SDL_mixer.Mix_GetError()}");
+            SDL_ttf.TTF_Quit();
+            SDL_image.IMG_Quit();
+            _renderer.Destroy();
+            SDL_DestroyWindow(_window);
+            return false;
+        }
+        
         // Initialize Texture Loading System
         _textureLoadingSystem = new TextureLoadingSystem();
+        
+        // Font Loading System
+        _fontLoadingSystem = new FontLoadingSystem();
         
         // Initialize Audio Manager
         _audioManager = new AudioManager();
         
         // Initialize Resource Cache
-        _resourceCache = new ResourceCache(_renderer.GetRenderer(), _textureLoadingSystem, _audioManager);
+        _resourceCache = new ResourceCache(_renderer.GetRenderer(), _textureLoadingSystem, _fontLoadingSystem, _audioManager);
         
         // Load LDtk World
         LDtkLoadResponse resp = LDtkLoader.LoadProject($"Assets/World/World.ldtk");
@@ -128,17 +154,17 @@ public class Game
         // Example HUD setup
         var gameplayHUD = new HUDSystem();
         gameplayHUD.AddComponent(new ImageComponent(texture: _resourceCache.GetTexture("health_bar.png"), x: 10, y: 10, width: 200, height: 20));
-        gameplayHUD.AddComponent(new TextComponent("Score: 0", font: LoadFont("arial.ttf", 24), color: new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }, x: 10, y: 40, width: 200, height: 30));
+        gameplayHUD.AddComponent(new TextComponent("Score: 0", font: _resourceCache.GetFont("arial.ttf", 24), color: new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }, x: 10, y: 40, width: 200, height: 30));
         _uiSystem.RegisterHUD("GameplayHUD", gameplayHUD);
         _uiSystem.ActivateHUD("GameplayHUD");
 
         // Example Menu setup
         var mainMenu = new MenuSystem();
-        var startButton = new ButtonComponent("Start", LoadFont("arial.ttf", 24), new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }, new SDL.SDL_Color { r = 0, g = 128, b = 255, a = 255 }, 100, 100, 200, 50);
+        var startButton = new ButtonComponent("Start", _resourceCache.GetFont("arial.ttf", 24), new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }, new SDL.SDL_Color { r = 0, g = 128, b = 255, a = 255 }, 100, 100, 200, 50);
         startButton.OnClick = () => Console.WriteLine("Game Started!");
         mainMenu.AddComponent(startButton);
 
-        var exitButton = new ButtonComponent("Exit", LoadFont("arial.ttf", 24), new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }, new SDL.SDL_Color { r = 255, g = 0, b = 0, a = 255 }, 100, 160, 200, 50);
+        var exitButton = new ButtonComponent("Exit", _resourceCache.GetFont("arial.ttf", 24), new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }, new SDL.SDL_Color { r = 255, g = 0, b = 0, a = 255 }, 100, 160, 200, 50);
         exitButton.OnClick = () => _isRunning = false;
         mainMenu.AddComponent(exitButton);
 

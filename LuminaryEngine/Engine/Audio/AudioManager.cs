@@ -12,13 +12,6 @@ public class AudioManager : IDisposable
 
     public AudioManager()
     {
-        if (SDL_mixer.Mix_Init(SDL_mixer.MIX_InitFlags.MIX_INIT_MP3) ==
-            0) // Initialize OGG support (add others as needed)
-        {
-            Console.WriteLine($"SDL_mixer Init Error: {SDL_mixer.Mix_GetError()}");
-            // Handle error
-        }
-
         if (SDL_mixer.Mix_OpenAudio(44100, SDL_mixer.MIX_DEFAULT_FORMAT, 2, 2048) == -1)
         {
             Console.WriteLine($"SDL_mixer OpenAudio Error: {SDL_mixer.Mix_GetError()}");
