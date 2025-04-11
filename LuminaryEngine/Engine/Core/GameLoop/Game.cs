@@ -11,6 +11,7 @@ using LuminaryEngine.Engine.ECS;
 using LuminaryEngine.Engine.ECS.Components;
 using LuminaryEngine.Engine.ECS.Systems;
 using LuminaryEngine.Engine.Gameplay.Player;
+using LuminaryEngine.Engine.Gameplay.UI;
 using LuminaryEngine.ThirdParty.LDtk;
 using LuminaryEngine.ThirdParty.LDtk.Models;
 using SDL2;
@@ -37,6 +38,7 @@ public class Game
     private AudioSystem _audioSystem;
     private TilemapRenderingSystem _tilemapRenderingSystem;
     private AnimationSystem _animationSystem;
+    private UISystem _uiSystem;
     
     private Camera _camera;
     
@@ -55,6 +57,8 @@ public class Game
         _stopwatch = new Stopwatch();
         _frameCount = 0;
         _frameRate = 0.0f;
+        
+        _uiSystem = new UISystem();
     }
 
     private bool Initialize()
@@ -117,6 +121,29 @@ public class Game
         _stopwatch.Start();
 
         return true;
+    }
+    
+    private void InitializeUISystem()
+    {
+        // Example HUD setup
+        var gameplayHUD = new HUDSystem();
+        gameplayHUD.AddComponent(new ImageComponent(texture: _resourceCache.GetTexture("health_bar.png"), x: 10, y: 10, width: 200, height: 20));
+        gameplayHUD.AddComponent(new TextComponent("Score: 0", font: LoadFont("arial.ttf", 24), color: new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }, x: 10, y: 40, width: 200, height: 30));
+        _uiSystem.RegisterHUD("GameplayHUD", gameplayHUD);
+        _uiSystem.ActivateHUD("GameplayHUD");
+
+        // Example Menu setup
+        var mainMenu = new MenuSystem();
+        var startButton = new ButtonComponent("Start", LoadFont("arial.ttf", 24), new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }, new SDL.SDL_Color { r = 0, g = 128, b = 255, a = 255 }, 100, 100, 200, 50);
+        startButton.OnClick = () => Console.WriteLine("Game Started!");
+        mainMenu.AddComponent(startButton);
+
+        var exitButton = new ButtonComponent("Exit", LoadFont("arial.ttf", 24), new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }, new SDL.SDL_Color { r = 255, g = 0, b = 0, a = 255 }, 100, 160, 200, 50);
+        exitButton.OnClick = () => _isRunning = false;
+        mainMenu.AddComponent(exitButton);
+
+        _uiSystem.RegisterMenu("MainMenu", mainMenu);
+        _uiSystem.ActivateMenu("MainMenu");
     }
 
     public void Run()

@@ -6,7 +6,7 @@ public class DevModeConfig
 {
 #if DEV_MODE
     public static bool ShowCollisionBoxes => false;
-    public static bool MuteAllSounds => false;
+    public static bool MuteAllSounds => true;
 #else
     public static bool ShowCollisionBoxes => false;
     public static bool MuteAllSounds => false;
