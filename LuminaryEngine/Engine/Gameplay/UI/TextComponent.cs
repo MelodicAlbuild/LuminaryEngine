@@ -1,4 +1,5 @@
 ﻿using LuminaryEngine.Engine.Core.Rendering;
+using LuminaryEngine.Engine.Core.Rendering.Fonts;
 using SDL2;
 
 namespace LuminaryEngine.Engine.Gameplay.UI;
@@ -6,10 +7,10 @@ namespace LuminaryEngine.Engine.Gameplay.UI;
 public class TextComponent : UIComponent
 {
     public string Text { get; set; }
-    public IntPtr Font { get; set; } // SDL2 TTF Font
+    public Font Font { get; set; }
     public SDL.SDL_Color Color { get; set; }
 
-    public TextComponent(string text, IntPtr font, SDL.SDL_Color color, int x, int y, int width, int height, int zIndex = int.MaxValue)
+    public TextComponent(string text, Font font, SDL.SDL_Color color, int x, int y, int width, int height, int zIndex = int.MaxValue)
         : base(x, y, width, height, zIndex)
     {
         Text = text;
@@ -21,20 +22,39 @@ public class TextComponent : UIComponent
     {
         if (!IsVisible) return;
 
-        IntPtr surface = SDL_ttf.TTF_RenderText_Blended(Font, Text, Color);
-        IntPtr texture = SDL.SDL_CreateTextureFromSurface(renderer.GetRenderer(), surface);
+        // Calculate text dimensions
+        int textWidth, textHeight;
+        SDL_ttf.TTF_SizeText(Font.Handle, Text, out textWidth, out textHeight);
 
-        SDL.SDL_FreeSurface(surface);
+        // Adjust the DestRect to maintain aspect ratio
+        SDL.SDL_Rect adjustedRect = new SDL.SDL_Rect
+        {
+            x = X,
+            y = Y,
+            w = Width,
+            h = Height
+        };
 
+        float aspectRatio = (float)textWidth / textHeight;
+        if (adjustedRect.w / (float)adjustedRect.h > aspectRatio)
+        {
+            adjustedRect.w = (int)(adjustedRect.h * aspectRatio);
+        }
+        else
+        {
+            adjustedRect.h = (int)(adjustedRect.w / aspectRatio);
+        }
+
+        // Enqueue the DrawText render command
         renderer.EnqueueRenderCommand(new RenderCommand
         {
-            Type = RenderCommandType.DrawTexture,
-            Texture = texture,
-            DestRect = new SDL.SDL_Rect { x = X, y = Y, w = Width, h = Height },
+            Type = RenderCommandType.DrawText,
+            Font = Font.Handle,
+            Text = Text,
+            TextColor = Color,
+            DestRect = adjustedRect,
             ZOrder = ZIndex
         });
-
-        SDL.SDL_DestroyTexture(texture);
     }
 
     public override void HandleEvent(SDL.SDL_Event sdlEvent)

@@ -113,6 +113,9 @@ public class Game
             return false;
         }
         
+        // SDL Hints
+        SDL.SDL_SetHint(SDL.SDL_HINT_RENDER_SCALE_QUALITY, "0");
+        
         // Initialize Texture Loading System
         _textureLoadingSystem = new TextureLoadingSystem();
         
@@ -143,6 +146,9 @@ public class Game
         _tilemapRenderingSystem = new TilemapRenderingSystem(_renderer, _resourceCache, _camera, _world);
         _animationSystem = new AnimationSystem(_world, _gameTime);
         
+        // Initialize UI System
+        InitializeUISystem();
+        
         // Start the stopwatch
         _stopwatch.Start();
 
@@ -153,18 +159,18 @@ public class Game
     {
         // Example HUD setup
         var gameplayHUD = new HUDSystem();
-        gameplayHUD.AddComponent(new ImageComponent(texture: _resourceCache.GetTexture("health_bar.png"), x: 10, y: 10, width: 200, height: 20));
-        gameplayHUD.AddComponent(new TextComponent("Score: 0", font: _resourceCache.GetFont("arial.ttf", 24), color: new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }, x: 10, y: 40, width: 200, height: 30));
+        gameplayHUD.AddComponent(new ImageComponent(texture: _resourceCache.GetTexture("black.png"), x: 10, y: 10, width: 200, height: 20, zIndex: 700));
+        gameplayHUD.AddComponent(new TextComponent("Score: 0", font: _resourceCache.GetFont("Pixel", 24), color: new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }, x: 10, y: 40, width: 200, height: 30, zIndex: 701));
         _uiSystem.RegisterHUD("GameplayHUD", gameplayHUD);
         _uiSystem.ActivateHUD("GameplayHUD");
 
         // Example Menu setup
         var mainMenu = new MenuSystem();
-        var startButton = new ButtonComponent("Start", _resourceCache.GetFont("arial.ttf", 24), new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }, new SDL.SDL_Color { r = 0, g = 128, b = 255, a = 255 }, 100, 100, 200, 50);
+        var startButton = new ButtonComponent("Start", _resourceCache.GetFont("Pixel", 36), new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }, new SDL.SDL_Color { r = 0, g = 128, b = 255, a = 255 }, 100, 100, 200, 50, zIndex: 702);
         startButton.OnClick = () => Console.WriteLine("Game Started!");
         mainMenu.AddComponent(startButton);
 
-        var exitButton = new ButtonComponent("Exit", _resourceCache.GetFont("arial.ttf", 24), new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }, new SDL.SDL_Color { r = 255, g = 0, b = 0, a = 255 }, 100, 160, 200, 50);
+        var exitButton = new ButtonComponent("Exit", _resourceCache.GetFont("Pixel", 36), new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }, new SDL.SDL_Color { r = 255, g = 0, b = 0, a = 255 }, 100, 160, 200, 50, zIndex: 703);
         exitButton.OnClick = () => _isRunning = false;
         mainMenu.AddComponent(exitButton);
 
@@ -216,6 +222,7 @@ public class Game
         
         _playerMovementSystem.Update();
         _audioSystem.Update();
+        _uiSystem.Render(_renderer);
         
         _renderer.UpdateFade(_gameTime.DeltaTime);
         _world.Update();

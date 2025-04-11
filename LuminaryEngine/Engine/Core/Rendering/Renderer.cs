@@ -76,6 +76,14 @@ public class Renderer
                     SDL.SDL_SetRenderDrawColor(_renderer, command.ClearR, command.ClearG, command.ClearB, command.ClearA);
                     SDL.SDL_RenderClear(_renderer);
                     break;
+                case RenderCommandType.ClearUI:
+                    SDL.SDL_SetRenderDrawColor(_renderer, command.ClearR, command.ClearG, command.ClearB, command.ClearA);
+                    SDL.SDL_Rect dRect = command.DestRect;;
+                    SDL.SDL_RenderFillRect(_renderer, ref dRect);
+                    break;
+                case RenderCommandType.DrawText:
+                    DrawText(command.Font, command.Text, command.TextColor, command.DestRect);
+                    break;
                 case RenderCommandType.FadeFrame:
                     RenderFadeOverlay();
                     break;
@@ -96,6 +104,38 @@ public class Renderer
             SDL.SDL_DestroyRenderer(_renderer);
             _renderer = IntPtr.Zero;
         }
+    }
+    
+    private void DrawText(IntPtr font, string text, SDL.SDL_Color color, SDL.SDL_Rect destRect)
+    {
+        // Calculate the actual size of the text
+        int textWidth, textHeight;
+        SDL_ttf.TTF_SizeText(font, text, out textWidth, out textHeight);
+
+        // Adjust the destRect to maintain the aspect ratio
+        destRect.w = textWidth;
+        destRect.h = textHeight;
+
+        // Render the text
+        IntPtr surface = SDL_ttf.TTF_RenderText_Solid(font, text, color);
+        if (surface == IntPtr.Zero)
+        {
+            throw new Exception($"Failed to render text surface: {SDL.SDL_GetError()}");
+        }
+
+        IntPtr texture = SDL.SDL_CreateTextureFromSurface(_renderer, surface);
+        if (texture == IntPtr.Zero)
+        {
+            SDL.SDL_FreeSurface(surface);
+            throw new Exception($"Failed to create texture from text surface: {SDL.SDL_GetError()}");
+        }
+
+        SDL.SDL_FreeSurface(surface);
+
+        // Render the texture
+        SDL.SDL_RenderCopy(_renderer, texture, IntPtr.Zero, ref destRect);
+
+        SDL.SDL_DestroyTexture(texture);
     }
 
     public IntPtr GetRenderer()

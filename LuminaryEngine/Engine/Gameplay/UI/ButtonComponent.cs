@@ -1,4 +1,5 @@
 ﻿using LuminaryEngine.Engine.Core.Rendering;
+using LuminaryEngine.Engine.Core.Rendering.Fonts;
 using SDL2;
 
 namespace LuminaryEngine.Engine.Gameplay.UI;
@@ -11,7 +12,7 @@ public class ButtonComponent : UIComponent
 
     public ButtonComponent(
         string label,
-        IntPtr font,
+        Font font,
         SDL.SDL_Color labelColor,
         SDL.SDL_Color backgroundColor,
         int x,
@@ -34,7 +35,7 @@ public class ButtonComponent : UIComponent
         // Enqueue button background
         renderer.EnqueueRenderCommand(new RenderCommand
         {
-            Type = RenderCommandType.Clear, // Custom command for solid color
+            Type = RenderCommandType.ClearUI, // Custom command for solid color
             ClearR = BackgroundColor.r,
             ClearG = BackgroundColor.g,
             ClearB = BackgroundColor.b,

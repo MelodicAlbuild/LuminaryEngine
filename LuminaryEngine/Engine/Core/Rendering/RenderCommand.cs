@@ -11,6 +11,11 @@ public struct RenderCommand
     public SDL.SDL_Rect? SourceRect { get; set; }
     public SDL.SDL_Rect DestRect { get; set; }
     public float ZOrder { get; set; }
+    
+    // Draw Text Command
+    public IntPtr Font { get; set; } // SDL2 TTF Font
+    public string Text { get; set; }
+    public SDL.SDL_Color TextColor { get; set; }
 
     // Clear Command
     public byte ClearR { get; set; }
@@ -24,5 +29,7 @@ public enum RenderCommandType
     DrawTexture,
     Clear,
     FadeFrame,
-    FadeFrameHold
+    FadeFrameHold,
+    ClearUI,
+    DrawText
 }
