@@ -7,6 +7,8 @@ namespace LuminaryEngine.Engine.Core.ResourceManagement;
 
 public class ResourceCache
 {
+    public static Font DefaultFont;
+    
     private IntPtr _renderer;
     private Dictionary<string, Texture> _textureCache;
     private Dictionary<string, Texture> _spritesheetCache;
@@ -41,6 +43,9 @@ public class ResourceCache
 
         Font font = _fontLoadingSystem.LoadFont(fontPath, fontSize);
         _fontCache[cacheKey] = font;
+        
+        DefaultFont ??= font;
+        
         return font;
     }
 

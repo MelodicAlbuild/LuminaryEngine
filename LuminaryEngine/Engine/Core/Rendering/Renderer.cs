@@ -90,6 +90,9 @@ public class Renderer
                 case RenderCommandType.FadeFrameHold:
                     RenderBlackOverlay();
                     break;
+                case RenderCommandType.DrawRectangle:
+                    DrawRectangle(command.DestRect, command.RectColor, command.Filled);
+                    break;
             }
         }
 
@@ -168,6 +171,26 @@ public class Renderer
         _fadeElapsed = 0f;
         _isFading = true;
         _holdFade = hold;
+    }
+    
+    public void DrawRectangle(SDL.SDL_Rect rect, SDL.SDL_Color color, bool filled)
+    {
+        // Set the renderer color
+        SDL.SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, color.a);
+
+        if (filled)
+        {
+            // Fill the rectangle
+            SDL.SDL_RenderFillRect(_renderer, ref rect);
+        }
+        else
+        {
+            // Draw the outline of the rectangle
+            SDL.SDL_RenderDrawRect(_renderer, ref rect);
+        }
+
+        // Reset the renderer color (optional, depending on your rendering pipeline)
+        SDL.SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
     }
 
     public void RenderFade()

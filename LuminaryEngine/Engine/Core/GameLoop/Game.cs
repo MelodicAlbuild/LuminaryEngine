@@ -13,6 +13,7 @@ using LuminaryEngine.Engine.ECS.Components;
 using LuminaryEngine.Engine.ECS.Systems;
 using LuminaryEngine.Engine.Gameplay.Player;
 using LuminaryEngine.Engine.Gameplay.UI;
+using LuminaryEngine.Engine.Settings;
 using LuminaryEngine.ThirdParty.LDtk;
 using LuminaryEngine.ThirdParty.LDtk.Models;
 using SDL2;
@@ -127,6 +128,8 @@ public class Game
         
         // Initialize Resource Cache
         _resourceCache = new ResourceCache(_renderer.GetRenderer(), _textureLoadingSystem, _fontLoadingSystem, _audioManager);
+
+        _resourceCache.GetFont("Pixel", 36);
         
         // Load LDtk World
         LDtkLoadResponse resp = LDtkLoader.LoadProject($"Assets/World/World.ldtk");
@@ -146,36 +149,10 @@ public class Game
         _tilemapRenderingSystem = new TilemapRenderingSystem(_renderer, _resourceCache, _camera, _world);
         _animationSystem = new AnimationSystem(_world, _gameTime);
         
-        // Initialize UI System
-        InitializeUISystem();
-        
         // Start the stopwatch
         _stopwatch.Start();
 
         return true;
-    }
-    
-    private void InitializeUISystem()
-    {
-        // Example HUD setup
-        var gameplayHUD = new HUDSystem();
-        gameplayHUD.AddComponent(new ImageComponent(texture: _resourceCache.GetTexture("black.png"), x: 10, y: 10, width: 200, height: 20, zIndex: 700));
-        gameplayHUD.AddComponent(new TextComponent("Score: 0", font: _resourceCache.GetFont("Pixel", 24), color: new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }, x: 10, y: 40, width: 200, height: 30, zIndex: 701));
-        _uiSystem.RegisterHUD("GameplayHUD", gameplayHUD);
-        _uiSystem.ActivateHUD("GameplayHUD");
-
-        // Example Menu setup
-        var mainMenu = new MenuSystem();
-        var startButton = new ButtonComponent("Start", _resourceCache.GetFont("Pixel", 36), new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }, new SDL.SDL_Color { r = 0, g = 128, b = 255, a = 255 }, 100, 100, 200, 50, zIndex: 702);
-        startButton.OnClick = () => Console.WriteLine("Game Started!");
-        mainMenu.AddComponent(startButton);
-
-        var exitButton = new ButtonComponent("Exit", _resourceCache.GetFont("Pixel", 36), new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }, new SDL.SDL_Color { r = 255, g = 0, b = 0, a = 255 }, 100, 160, 200, 50, zIndex: 703);
-        exitButton.OnClick = () => _isRunning = false;
-        mainMenu.AddComponent(exitButton);
-
-        _uiSystem.RegisterMenu("MainMenu", mainMenu);
-        _uiSystem.ActivateMenu("MainMenu");
     }
 
     public void Run()
@@ -250,7 +227,11 @@ public class Game
 
     protected virtual void LoadContent()
     {
+        MenuSystem settingsMenuSystem = new MenuSystem();
+        settingsMenuSystem.AddComponent(new SettingsMenu(0, 0, 250, 250));
         
+        _uiSystem.RegisterMenu("Settings", settingsMenuSystem);
+        _uiSystem.ActivateMenu("Settings");
     }
 
     protected virtual void UnloadContent()

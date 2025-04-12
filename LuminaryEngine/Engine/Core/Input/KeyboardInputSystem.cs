@@ -8,7 +8,7 @@ public class KeyboardInputSystem : InputSystem
     public KeyboardInputSystem(World world) : base(world)
     {
     }
-    
+
     public override void HandleEvents(SDL.SDL_Event e)
     {
         if (e.type == SDL.SDL_EventType.SDL_KEYDOWN)
@@ -17,6 +17,16 @@ public class KeyboardInputSystem : InputSystem
             {
                 var inputState = entity.GetComponent<InputStateComponent>();
                 inputState.PressedKeys.Add(e.key.keysym.scancode);
+
+                // Check if any action is triggered
+                foreach (ActionType action in System.Enum.GetValues(typeof(ActionType)))
+                {
+                    if (InputMappingSystem.Instance.IsActionTriggered(action, inputState.PressedKeys))
+                    {
+                        // Handle the triggered action (example: log or trigger event)
+                        System.Console.WriteLine($"Action triggered: {action}");
+                    }
+                }
             }
         }
         else if (e.type == SDL.SDL_EventType.SDL_KEYUP)

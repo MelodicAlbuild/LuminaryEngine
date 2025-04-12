@@ -22,6 +22,10 @@ public struct RenderCommand
     public byte ClearG { get; set; }
     public byte ClearB { get; set; }
     public byte ClearA { get; set; }
+    
+    // Draw Rectangle Command
+    public SDL.SDL_Color RectColor { get; set; }
+    public bool Filled { get; set; }
 }
 
 public enum RenderCommandType
@@ -31,5 +35,6 @@ public enum RenderCommandType
     FadeFrame,
     FadeFrameHold,
     ClearUI,
-    DrawText
+    DrawText,
+    DrawRectangle
 }
