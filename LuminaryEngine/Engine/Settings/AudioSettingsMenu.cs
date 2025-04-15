@@ -81,12 +81,12 @@ public class AudioSettingsMenu : UIComponent
                     {
                         case ActionType.MenuUp:
                             _selectedOptionIndex = (_selectedOptionIndex - 1 + _options.Length) % _options.Length;
-                            Console.WriteLine($"Selected: {_options[_selectedOptionIndex]}");
+                            // Console.WriteLine($"Selected: {_options[_selectedOptionIndex]}");
                             break;
 
                         case ActionType.MenuDown:
                             _selectedOptionIndex = (_selectedOptionIndex + 1) % _options.Length;
-                            Console.WriteLine($"Selected: {_options[_selectedOptionIndex]}");
+                            // Console.WriteLine($"Selected: {_options[_selectedOptionIndex]}");
                             break;
 
                         case ActionType.MenuLeft:

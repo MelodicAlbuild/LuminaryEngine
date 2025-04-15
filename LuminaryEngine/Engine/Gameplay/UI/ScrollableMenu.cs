@@ -185,19 +185,19 @@ public class ScrollableMenu : UIComponent
         {
             _selectedOptionIndex = Math.Max(0, _selectedOptionIndex - 1);
             UpdateScrollOffset();
-            Console.WriteLine($"Moved selection up to: {_options[_selectedOptionIndex]}");
+            // Console.WriteLine($"Moved selection up to: {_options[_selectedOptionIndex]}");
         }
 
         private void MoveSelectionDown()
         {
             _selectedOptionIndex = Math.Min(_options.Count - 1, _selectedOptionIndex + 1);
             UpdateScrollOffset();
-            Console.WriteLine($"Moved selection down to: {_options[_selectedOptionIndex]}");
+            // Console.WriteLine($"Moved selection down to: {_options[_selectedOptionIndex]}");
         }
 
         private void SelectOption()
         {
-            Console.WriteLine($"Selected option: {_options[_selectedOptionIndex]}");
+            // Console.WriteLine($"Selected option: {_options[_selectedOptionIndex]}");
             _hasSelectedMenuItem = true; // Set the flag to indicate a menu item has been selected
             // Add logic to handle selecting the currently highlighted option
         }
