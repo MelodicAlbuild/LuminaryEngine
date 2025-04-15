@@ -114,36 +114,57 @@ public class PlayerMovementSystem : LuminSystem
         AnimationComponent anim = entity.GetComponent<AnimationComponent>();
         SmoothMovementComponent smoothMove = entity.GetComponent<SmoothMovementComponent>();
 
-        if (isc.PressedKeys.Contains(SDL.SDL_Scancode.SDL_SCANCODE_W))
+        var triggeredActions = InputMappingSystem.Instance.GetTriggeredActions(isc.PressedKeys);
+
+        foreach (var action in triggeredActions)
         {
-            if (anim.State is not { CurrentAnimation: "WalkUp" })
+            switch (action)
             {
-                anim.PlayAnimation("WalkUp");
+                case ActionType.MoveUp:
+                    if (direction == Vector2.Zero)
+                    {
+                        if (anim.State is not { CurrentAnimation: "WalkUp" })
+                        {
+                            anim.PlayAnimation("WalkUp");
+                        }
+                        direction.Y -= 1;
+                    }
+                    break;
+                case ActionType.MoveDown:
+                    if (direction == Vector2.Zero)
+                    {
+                        if (anim.State is not { CurrentAnimation: "WalkDown" })
+                        {
+                            anim.PlayAnimation("WalkDown");
+                        }
+                        direction.Y += 1;
+                    }
+                    break;
+                case ActionType.MoveLeft:
+                    if (direction == Vector2.Zero)
+                    {
+                        if (anim.State is not { CurrentAnimation: "WalkLeft" })
+                        {
+                            anim.PlayAnimation("WalkLeft");
+                        }
+
+                        direction.X -= 1;
+                    }
+                    break;
+                case ActionType.MoveRight:
+                    if (direction == Vector2.Zero)
+                    {
+                        if (anim.State is not { CurrentAnimation: "WalkRight" })
+                        {
+                            anim.PlayAnimation("WalkRight");
+                        }
+                        direction.X += 1;
+                    }
+                    break;
             }
-            direction.Y -= 1;
-        } else if (isc.PressedKeys.Contains(SDL.SDL_Scancode.SDL_SCANCODE_S))
-        {
-            if (anim.State is not { CurrentAnimation: "WalkDown" })
-            {
-                anim.PlayAnimation("WalkDown");
-            }
-            direction.Y += 1;
-        } else if (isc.PressedKeys.Contains(SDL.SDL_Scancode.SDL_SCANCODE_A))
-        {
-            if (anim.State is not { CurrentAnimation: "WalkLeft" })
-            {
-                anim.PlayAnimation("WalkLeft");
-            }
-            direction.X -= 1;
-        } else if (isc.PressedKeys.Contains(SDL.SDL_Scancode.SDL_SCANCODE_D))
-        {
-            if (anim.State is not { CurrentAnimation: "WalkRight" })
-            {
-                anim.PlayAnimation("WalkRight");
-            }
-            direction.X += 1;
         }
-        else
+
+        if (triggeredActions.Count <= 0)
         {
             if (!smoothMove.IsMoving)
             {

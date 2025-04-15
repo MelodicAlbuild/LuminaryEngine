@@ -202,7 +202,7 @@ public class Game
             {
                 _isRunning = false;
             }
-            
+
             _keyboardInputSystem.HandleEvents(e);
             _mouseInputSystem.HandleEvents(e);
             _uiSystem.HandleEvent(e);
