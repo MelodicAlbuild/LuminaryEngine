@@ -42,4 +42,9 @@ public class ImageComponent : UIComponent
         Texture = newTexture;
         SourceRect = newSourceRect;
     }
+    
+    public override void SetFocus(bool isFocused)
+    {
+        IsFocused = isFocused;
+    }
 }

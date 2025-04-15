@@ -5,18 +5,24 @@ using SDL2;
 
 namespace LuminaryEngine.Engine.Gameplay.UI;
 
-public class ScrollableMenuWithBackdrop : UIComponent
+public class ScrollableMenu : UIComponent
     {
         private List<string> _options;
         private int _selectedOptionIndex;
         private int _scrollOffset;
         private int _visibleOptionsCount; // Number of options visible at a time
+        private bool _hasSelectedMenuItem = false; // Flag to check if a menu item has been selected
+
+        private bool _horizontal;
+        private bool _interactive;
 
         private SDL.SDL_Color _backdropColor = new SDL.SDL_Color { r = 0, g = 0, b = 0, a = 150 }; // Semi-transparent black
 
-        public ScrollableMenuWithBackdrop(int x, int y, int width, int height, List<string> options, int visibleOptionsCount, int zIndex = int.MaxValue)
+        public ScrollableMenu(int x, int y, int width, int height, List<string> options, int visibleOptionsCount, int zIndex = int.MaxValue, bool horizontal = false, bool interactive = false)
             : base(x, y, width, height, zIndex)
         {
+            _interactive = interactive;
+            _horizontal = horizontal;
             _options = options;
             _selectedOptionIndex = 0;
             _scrollOffset = 0;
@@ -25,16 +31,56 @@ public class ScrollableMenuWithBackdrop : UIComponent
 
         public override void Render(Renderer renderer)
         {
-            // Render backdrop
-            renderer.EnqueueRenderCommand(new RenderCommand
+            if (_horizontal)
             {
-                Type = RenderCommandType.DrawRectangle,
-                RectColor = _backdropColor,
-                DestRect = new SDL.SDL_Rect { x = X, y = Y, w = Width, h = Height },
-                Filled = true,
-                ZOrder = ZIndex - 1 // Ensure backdrop is behind menu items
-            });
+                RenderHorizontal(renderer);
+            }
+            else
+            {
+                RenderVertical(renderer);
+            }
+        }
 
+        private void RenderHorizontal(Renderer renderer)
+        {
+            // Render visible options
+            int offsetX = X + 10;
+            for (int i = 0; i < _visibleOptionsCount; i++)
+            {
+                int optionIndex = _scrollOffset + i;
+
+                if (optionIndex >= _options.Count)
+                    break;
+
+                var isSelected = optionIndex == _selectedOptionIndex;
+                var color = isSelected
+                    ? new SDL.SDL_Color { r = 255, g = 255, b = 0, a = 255 } // Highlighted
+                    : new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }; // Normal
+                
+                if (!IsFocused)
+                {
+                    color = new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 150 }; // Dimmed color when not focused
+                }
+                
+                renderer.EnqueueRenderCommand(new RenderCommand
+                {
+                    Type = RenderCommandType.DrawText,
+                    Font = ResourceCache.DefaultFont.Handle,
+                    Text = _options[optionIndex],
+                    TextColor = color,
+                    DestRect = new SDL.SDL_Rect { x = offsetX, y = Y + 5, w = Width - 20, h = 30 },
+                    ZOrder = ZIndex
+                });
+
+                int w, h;
+                SDL_ttf.TTF_SizeText(ResourceCache.DefaultFont.Handle, _options[optionIndex], out w, out h);
+                
+                offsetX += w + 10; // Space between menu items
+            }
+        }
+
+        private void RenderVertical(Renderer renderer)
+        {
             // Render visible options
             int offsetY = Y + 10;
             for (int i = 0; i < _visibleOptionsCount; i++)
@@ -49,7 +95,10 @@ public class ScrollableMenuWithBackdrop : UIComponent
                     ? new SDL.SDL_Color { r = 255, g = 255, b = 0, a = 255 } // Highlighted
                     : new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }; // Normal
 
-                Console.WriteLine(ResourceCache.DefaultFont.Handle);
+                if (!IsFocused)
+                {
+                    color = new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 150 }; // Dimmed color when not focused
+                }
                 
                 renderer.EnqueueRenderCommand(new RenderCommand
                 {
@@ -67,32 +116,57 @@ public class ScrollableMenuWithBackdrop : UIComponent
 
         public override void HandleEvent(SDL.SDL_Event sdlEvent)
         {
+            if (_hasSelectedMenuItem) return;
+            
             // Use InputMappingSystem to determine triggered actions
             if (sdlEvent.type == SDL.SDL_EventType.SDL_KEYDOWN || sdlEvent.type == SDL.SDL_EventType.SDL_MOUSEWHEEL)
             {
                 var triggeredActions = InputMappingSystem.Instance.GetTriggeredActions(new HashSet<SDL.SDL_Scancode> { sdlEvent.key.keysym.scancode });
 
-                foreach (var action in triggeredActions)
+                if (_horizontal)
                 {
-                    switch (action)
+                    foreach (var action in triggeredActions)
                     {
-                        case ActionType.MoveUp:
-                            MoveSelectionUp();
-                            break;
+                        switch (action)
+                        {
+                            case ActionType.MenuLeft:
+                                MoveSelectionUp();
+                                break;
 
-                        case ActionType.MoveDown:
-                            MoveSelectionDown();
-                            break;
+                            case ActionType.MenuRight:
+                                MoveSelectionDown();
+                                break;
 
-                        case ActionType.MoveLeft: // Optional: Could handle left-navigation or adjustments
-                            break;
+                            case ActionType.Interact:
+                                if (_interactive)
+                                {
+                                    SelectOption();
+                                }
+                                break;
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var action in triggeredActions)
+                    {
+                        switch (action)
+                        {
+                            case ActionType.MenuUp:
+                                MoveSelectionUp();
+                                break;
 
-                        case ActionType.MoveRight: // Optional: Could handle right-navigation or adjustments
-                            break;
+                            case ActionType.MenuDown:
+                                MoveSelectionDown();
+                                break;
 
-                        case ActionType.Interact:
-                            SelectOption();
-                            break;
+                            case ActionType.Interact:
+                                if (_interactive)
+                                {
+                                    SelectOption();
+                                }
+                                break;
+                        }
                     }
                 }
 
@@ -124,7 +198,18 @@ public class ScrollableMenuWithBackdrop : UIComponent
         private void SelectOption()
         {
             Console.WriteLine($"Selected option: {_options[_selectedOptionIndex]}");
+            _hasSelectedMenuItem = true; // Set the flag to indicate a menu item has been selected
             // Add logic to handle selecting the currently highlighted option
+        }
+        
+        public bool HasSelectedMenuItem()
+        {
+            return _hasSelectedMenuItem;
+        }
+
+        public void FreeOption()
+        {
+            _hasSelectedMenuItem = false;
         }
 
         private void UpdateScrollOffset()
@@ -148,5 +233,15 @@ public class ScrollableMenuWithBackdrop : UIComponent
             }
 
             return null; // Return null if no valid option is selected
+        }
+
+        public void UpdateCurrentOption(string opt)
+        {
+            _options[_selectedOptionIndex] = opt;
+        }
+        
+        public override void SetFocus(bool focus)
+        {
+            IsFocused = focus;
         }
     }

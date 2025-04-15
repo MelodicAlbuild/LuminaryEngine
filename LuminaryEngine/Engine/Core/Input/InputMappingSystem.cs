@@ -31,6 +31,13 @@ public class InputMappingSystem
     public void MapActionToKey(ActionType action, SDL.SDL_Scancode key)
     {
         _actionKeyMap[action] = key;
+        
+        Console.WriteLine($"Mapped action {action} to {key}.");
+        
+        foreach (KeyValuePair<ActionType,SDL.SDL_Scancode> keyValuePair in _actionKeyMap)
+        {
+            Console.WriteLine($"{keyValuePair.Key} - {keyValuePair.Value}");
+        }
     }
 
     // Get the key mapped to an action

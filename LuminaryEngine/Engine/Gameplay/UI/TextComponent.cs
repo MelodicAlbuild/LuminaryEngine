@@ -61,4 +61,9 @@ public class TextComponent : UIComponent
     {
         // Handle events if needed
     }
+    
+    public override void SetFocus(bool isFocused)
+    {
+        IsFocused = isFocused;
+    }
 }

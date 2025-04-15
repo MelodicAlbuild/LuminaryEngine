@@ -9,5 +9,10 @@ public enum ActionType
     Jump,
     Attack,
     Interact,
-    Pause
+    Pause,
+    MenuUp,
+    MenuDown,
+    MenuLeft,
+    MenuRight,
+    OpenOptions
 }

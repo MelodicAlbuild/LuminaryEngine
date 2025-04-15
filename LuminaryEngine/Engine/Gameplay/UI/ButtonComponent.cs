@@ -74,4 +74,9 @@ public class ButtonComponent : UIComponent
         _textComponent.X = X + 10; // Adjust for padding
         _textComponent.Y = Y + 10; // Adjust for padding
     }
+    
+    public override void SetFocus(bool isFocused)
+    {
+        IsFocused = isFocused;
+    }
 }

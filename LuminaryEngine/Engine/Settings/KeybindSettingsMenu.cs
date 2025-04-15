@@ -11,6 +11,7 @@ public class KeybindSettingsMenu : UIComponent
     private List<ActionType> _actions;
     private int _selectedActionIndex;
     private bool _isRebinding; // Indicates if we are waiting for a key press to rebind an action
+    private ScrollableMenu _scrollableMenu;
 
     public KeybindSettingsMenu(int x, int y, int width, int height,
         int zIndex = int.MaxValue)
@@ -19,34 +20,37 @@ public class KeybindSettingsMenu : UIComponent
         _actions = new List<ActionType>((ActionType[])Enum.GetValues(typeof(ActionType)));
         _selectedActionIndex = 0;
         _isRebinding = false;
+        
+        List<string> assignedKeys = new List<string>();
+        foreach (var action in _actions)
+        {
+            var assignedKey = InputMappingSystem.Instance.GetKeyForAction(action);
+            if (assignedKey != null)
+            {
+                assignedKeys.Add(action + ": " + SDL.SDL_GetScancodeName(assignedKey!.Value));
+            }
+            else
+            {
+                assignedKeys.Add(action + ": None");
+            }
+        }
+        
+        _scrollableMenu = new ScrollableMenu(X, Y, Width, Height, assignedKeys, 5, ZIndex);
     }
 
     public override void Render(Renderer renderer)
     {
-        int offsetY = Y + 10;
-
-        for (int i = 0; i < _actions.Count; i++)
+        // Render backdrop
+        renderer.EnqueueRenderCommand(new RenderCommand
         {
-            var action = _actions[i];
-            var isSelected = i == _selectedActionIndex;
-            var assignedKey = InputMappingSystem.Instance.GetKeyForAction(action)?.ToString() ?? "None";
-
-            var color = isSelected
-                ? new SDL.SDL_Color { r = 255, g = 255, b = 0, a = 255 } // Highlighted
-                : new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }; // Normal
-
-            renderer.EnqueueRenderCommand(new RenderCommand
-            {
-                Type = RenderCommandType.DrawText,
-                Font = ResourceCache.DefaultFont.Handle,
-                Text = $"{action}: {assignedKey}",
-                TextColor = color,
-                DestRect = new SDL.SDL_Rect { x = X + 10, y = offsetY, w = Width - 20, h = 30 },
-                ZOrder = ZIndex
-            });
-
-            offsetY += 40;
-        }
+            Type = RenderCommandType.DrawRectangle,
+            RectColor = new SDL.SDL_Color() { r = 0, g = 0, b = 0, a = 255 }, // Semi-transparent black
+            DestRect = new SDL.SDL_Rect { x = X, y = Y, w = Width, h = Height },
+            Filled = true,
+            ZOrder = ZIndex - 1 // Ensure backdrop is behind menu items
+        });
+        
+        _scrollableMenu.Render(renderer);
 
         if (_isRebinding)
         {
@@ -70,46 +74,38 @@ public class KeybindSettingsMenu : UIComponent
             var pressedKey = sdlEvent.key.keysym.scancode;
 
             // Check if the key is already assigned to another action
-            foreach (var action in _actions)
+            foreach (var action in _actions.Where(action => InputMappingSystem.Instance.GetKeyForAction(action) == pressedKey))
             {
-                if (InputMappingSystem.Instance.GetKeyForAction(action) == pressedKey)
-                {
-                    Console.WriteLine($"Key {pressedKey} is already assigned to {action}. Choose another key.");
-                    _isRebinding = false; // Exit rebind mode
-                    return;
-                }
+                Console.WriteLine($"Key {pressedKey} is already assigned to {action}. Choose another key.");
+                _isRebinding = false; // Exit rebind mode
+                return;
             }
 
             // Rebind the selected action
-            var selectedAction = _actions[_selectedActionIndex];
+            Enum.TryParse(_scrollableMenu.GetSelectedOption().Split(":")[0], out ActionType selectedAction);
             InputMappingSystem.Instance.MapActionToKey(selectedAction, pressedKey);
             Console.WriteLine($"Bound {selectedAction} to {pressedKey}.");
+            _scrollableMenu.UpdateCurrentOption($"{selectedAction}: {SDL.SDL_GetScancodeName(pressedKey)}");
             _isRebinding = false; // Exit rebind mode
         }
         else if (sdlEvent.type == SDL.SDL_EventType.SDL_KEYDOWN)
         {
-            // Handle navigation and selection using the InputMappingSystem
+            _scrollableMenu.HandleEvent(sdlEvent);
+            
             var triggeredActions = InputMappingSystem.Instance.GetTriggeredActions(new HashSet<SDL.SDL_Scancode>
                 { sdlEvent.key.keysym.scancode });
 
-            foreach (var action in triggeredActions)
+            if (triggeredActions.Contains(ActionType.Interact))
             {
-                switch (action)
-                {
-                    case ActionType.MoveUp:
-                        _selectedActionIndex = (_selectedActionIndex - 1 + _actions.Count) % _actions.Count;
-                        break;
-
-                    case ActionType.MoveDown:
-                        _selectedActionIndex = (_selectedActionIndex + 1) % _actions.Count;
-                        break;
-
-                    case ActionType.Interact: // Use 'Interact' action as "Select/Rebind" action
-                        _isRebinding = true;
-                        Console.WriteLine($"Rebinding {_actions[_selectedActionIndex]}... Press a key.");
-                        break;
-                }
+                _isRebinding = true;
             }
         }
+    }
+    
+    public override void SetFocus(bool isFocused)
+    {
+        IsFocused = isFocused;
+
+        _scrollableMenu.SetFocus(isFocused);
     }
 }

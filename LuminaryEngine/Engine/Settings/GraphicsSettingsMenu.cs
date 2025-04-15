@@ -26,6 +26,16 @@ public class GraphicsSettingsMenu : UIComponent
 
     public override void Render(Renderer renderer)
     {
+        // Render backdrop
+        renderer.EnqueueRenderCommand(new RenderCommand
+        {
+            Type = RenderCommandType.DrawRectangle,
+            RectColor = new SDL.SDL_Color() { r = 0, g = 0, b = 0, a = 255 }, // Semi-transparent black
+            DestRect = new SDL.SDL_Rect { x = X, y = Y, w = Width, h = Height },
+            Filled = true,
+            ZOrder = ZIndex - 1 // Ensure backdrop is behind menu items
+        });
+        
         int offsetY = Y + 10;
 
         for (int i = 0; i < _options.Length; i++)
@@ -42,6 +52,11 @@ public class GraphicsSettingsMenu : UIComponent
             var color = isSelected
                 ? new SDL.SDL_Color { r = 255, g = 255, b = 0, a = 255 } // Highlighted
                 : new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }; // Normal
+
+            if (!IsFocused)
+            {
+                color = new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 150 }; // Dimmed color when not focused
+            }
 
             renderer.EnqueueRenderCommand(new RenderCommand
             {
@@ -69,19 +84,19 @@ public class GraphicsSettingsMenu : UIComponent
             {
                 switch (action)
                 {
-                    case ActionType.MoveUp:
+                    case ActionType.MenuUp:
                         _selectedOptionIndex = (_selectedOptionIndex - 1 + _options.Length) % _options.Length;
                         break;
 
-                    case ActionType.MoveDown:
+                    case ActionType.MenuDown:
                         _selectedOptionIndex = (_selectedOptionIndex + 1) % _options.Length;
                         break;
 
-                    case ActionType.MoveLeft:
+                    case ActionType.MenuLeft:
                         AdjustOption(false);
                         break;
 
-                    case ActionType.MoveRight:
+                    case ActionType.MenuRight:
                         AdjustOption(true);
                         break;
 
@@ -115,5 +130,10 @@ public class GraphicsSettingsMenu : UIComponent
                 Console.WriteLine($"Texture Quality set to: {_textureQualities[_selectedTextureQualityIndex]}");
                 break;
         }
+    }
+    
+    public override void SetFocus(bool isFocused)
+    {
+        IsFocused = isFocused;
     }
 }

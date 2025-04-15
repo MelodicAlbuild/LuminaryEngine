@@ -1,4 +1,5 @@
-﻿using LuminaryEngine.Engine.Core.Rendering;
+﻿using LuminaryEngine.Engine.Core.Input;
+using LuminaryEngine.Engine.Core.Rendering;
 using SDL2;
 
 namespace LuminaryEngine.Engine.Gameplay.UI;
@@ -101,6 +102,24 @@ public class UISystem
     // Handles events for the currently active HUD and Menu systems
     public void HandleEvent(SDL.SDL_Event sdlEvent)
     {
+        if (sdlEvent.type == SDL.SDL_EventType.SDL_KEYDOWN)
+        {
+            var triggeredActions = InputMappingSystem.Instance.GetTriggeredActions(new HashSet<SDL.SDL_Scancode>
+                { sdlEvent.key.keysym.scancode });
+
+            if (triggeredActions.Contains(ActionType.OpenOptions))
+            {
+                if (_activeMenu == "Settings")
+                {
+                    DeactivateMenu();
+                }
+                else
+                {
+                    ActivateMenu("Settings");
+                }
+            }
+        }
+        
         // Handle events for active HUD
         if (_activeHUD != null && _hudSystems.ContainsKey(_activeHUD))
         {

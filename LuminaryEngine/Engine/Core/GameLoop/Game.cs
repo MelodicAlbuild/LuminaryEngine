@@ -151,6 +151,21 @@ public class Game
         
         // Start the stopwatch
         _stopwatch.Start();
+        
+        #region Setup Default Keybinds
+            InputMappingSystem.Instance.MapActionToKey(ActionType.MoveUp, SDL_Scancode.SDL_SCANCODE_W);
+            InputMappingSystem.Instance.MapActionToKey(ActionType.MoveDown, SDL_Scancode.SDL_SCANCODE_S);
+            InputMappingSystem.Instance.MapActionToKey(ActionType.MoveLeft, SDL_Scancode.SDL_SCANCODE_A);
+            InputMappingSystem.Instance.MapActionToKey(ActionType.MoveRight, SDL_Scancode.SDL_SCANCODE_D);
+            
+            InputMappingSystem.Instance.MapActionToKey(ActionType.MenuUp, SDL_Scancode.SDL_SCANCODE_UP);
+            InputMappingSystem.Instance.MapActionToKey(ActionType.MenuDown, SDL_Scancode.SDL_SCANCODE_DOWN);
+            InputMappingSystem.Instance.MapActionToKey(ActionType.MenuLeft, SDL_Scancode.SDL_SCANCODE_LEFT);
+            InputMappingSystem.Instance.MapActionToKey(ActionType.MenuRight, SDL_Scancode.SDL_SCANCODE_RIGHT);
+            
+            InputMappingSystem.Instance.MapActionToKey(ActionType.Interact, SDL_Scancode.SDL_SCANCODE_E);
+            InputMappingSystem.Instance.MapActionToKey(ActionType.OpenOptions, SDL_Scancode.SDL_SCANCODE_P);
+        #endregion
 
         return true;
     }
@@ -190,6 +205,7 @@ public class Game
             
             _keyboardInputSystem.HandleEvents(e);
             _mouseInputSystem.HandleEvents(e);
+            _uiSystem.HandleEvent(e);
         }
     }
 
@@ -228,10 +244,8 @@ public class Game
     protected virtual void LoadContent()
     {
         MenuSystem settingsMenuSystem = new MenuSystem();
-        settingsMenuSystem.AddComponent(new SettingsMenu(0, 0, 250, 250));
-        
+        settingsMenuSystem.AddComponent(new SettingsMenu(5, 55, 630, 250));
         _uiSystem.RegisterMenu("Settings", settingsMenuSystem);
-        _uiSystem.ActivateMenu("Settings");
     }
 
     protected virtual void UnloadContent()

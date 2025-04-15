@@ -24,7 +24,7 @@ public class KeyboardInputSystem : InputSystem
                     if (InputMappingSystem.Instance.IsActionTriggered(action, inputState.PressedKeys))
                     {
                         // Handle the triggered action (example: log or trigger event)
-                        System.Console.WriteLine($"Action triggered: {action}");
+                        // System.Console.WriteLine($"Action triggered: {action}");
                     }
                 }
             }

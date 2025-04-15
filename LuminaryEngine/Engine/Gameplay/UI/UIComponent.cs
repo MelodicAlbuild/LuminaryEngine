@@ -11,7 +11,8 @@ public abstract class UIComponent
     public int Height { get; set; }
     public bool IsVisible { get; set; } = true;
     public int ZIndex { get; set; } // Default to top-most layer
-
+    public bool IsFocused { get; set; } = false;
+    
     public UIComponent(int x, int y, int width, int height, int zIndex = int.MaxValue - 1)
     {
         X = x;
@@ -39,4 +40,5 @@ public abstract class UIComponent
 
     public abstract void Render(Renderer renderer);
     public abstract void HandleEvent(SDL.SDL_Event sdlEvent);
+    public abstract void SetFocus(bool isFocused);
 }
