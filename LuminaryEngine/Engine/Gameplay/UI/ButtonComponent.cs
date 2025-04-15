@@ -65,7 +65,7 @@ public class ButtonComponent : UIComponent
     // Update the button's label text
     public void SetLabel(string newLabel)
     {
-        _textComponent.Text = newLabel;
+        _textComponent.SetText(newLabel);
     }
 
     // Update the button's label position (useful if the button's position changes)

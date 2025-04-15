@@ -6,64 +6,114 @@ namespace LuminaryEngine.Engine.Gameplay.UI;
 
 public class TextComponent : UIComponent
 {
-    public string Text { get; set; }
+    public string Text { get; private set; }
     public Font Font { get; set; }
     public SDL.SDL_Color Color { get; set; }
 
-    public TextComponent(string text, Font font, SDL.SDL_Color color, int x, int y, int width, int height, int zIndex = int.MaxValue)
-        : base(x, y, width, height, zIndex)
+    // Store precomputed lines for rendering
+    private List<string> wrappedLines = new();
+
+    public TextComponent(
+        string text,
+        Font font,
+        SDL.SDL_Color color,
+        int x,
+        int y,
+        int width,
+        int height,
+        int zIndex = int.MaxValue
+    ) : base(x, y, width, height, zIndex)
     {
         Text = text;
         Font = font;
         Color = color;
+
+        // Wrap the initial text
+        WrapText(Text);
+    }
+
+    /// <summary>
+    /// Wraps the provided text to fit within the width of the component.
+    /// </summary>
+    public void WrapText(string text)
+    {
+        if (Font == null || string.IsNullOrEmpty(text)) return;
+
+        wrappedLines.Clear();
+        string[] words = text.Split(' ');
+        string currentLine = "";
+        int spaceWidth, lineHeight;
+        SDL_ttf.TTF_SizeText(Font.Handle, " ", out spaceWidth, out lineHeight);
+
+        foreach (var word in words)
+        {
+            int textWidth, textHeight;
+            SDL_ttf.TTF_SizeText(Font.Handle, (currentLine + word).Trim(), out textWidth, out textHeight);
+
+            if (textWidth > Width && !string.IsNullOrEmpty(currentLine))
+            {
+                wrappedLines.Add(currentLine.Trim());
+                currentLine = word + " ";
+            }
+            else
+            {
+                currentLine += word + " ";
+            }
+        }
+
+        if (!string.IsNullOrEmpty(currentLine))
+        {
+            wrappedLines.Add(currentLine.Trim());
+        }
     }
 
     public override void Render(Renderer renderer)
     {
-        if (!IsVisible) return;
+        if (!IsVisible || Font == null) return;
 
-        // Calculate text dimensions
-        int textWidth, textHeight;
-        SDL_ttf.TTF_SizeText(Font.Handle, Text, out textWidth, out textHeight);
+        int lineHeight;
+        SDL_ttf.TTF_SizeText(Font.Handle, "A", out _, out lineHeight);
 
-        // Adjust the DestRect to maintain aspect ratio
-        SDL.SDL_Rect adjustedRect = new SDL.SDL_Rect
+        int currentY = Y;
+        foreach (var line in wrappedLines)
         {
-            x = X,
-            y = Y,
-            w = Width,
-            h = Height
-        };
+            if (currentY + lineHeight > Y + Height) break;
 
-        float aspectRatio = (float)textWidth / textHeight;
-        if (adjustedRect.w / (float)adjustedRect.h > aspectRatio)
-        {
-            adjustedRect.w = (int)(adjustedRect.h * aspectRatio);
+            SDL.SDL_Rect destRect = new SDL.SDL_Rect
+            {
+                x = X,
+                y = currentY,
+                w = Width,
+                h = lineHeight
+            };
+
+            renderer.EnqueueRenderCommand(new RenderCommand
+            {
+                Type = RenderCommandType.DrawText,
+                Font = Font.Handle,
+                Text = line,
+                TextColor = Color,
+                DestRect = destRect,
+                ZOrder = ZIndex
+            });
+
+            currentY += lineHeight;
         }
-        else
-        {
-            adjustedRect.h = (int)(adjustedRect.w / aspectRatio);
-        }
-
-        // Enqueue the DrawText render command
-        renderer.EnqueueRenderCommand(new RenderCommand
-        {
-            Type = RenderCommandType.DrawText,
-            Font = Font.Handle,
-            Text = Text,
-            TextColor = Color,
-            DestRect = adjustedRect,
-            ZOrder = ZIndex
-        });
     }
 
     public override void HandleEvent(SDL.SDL_Event sdlEvent)
     {
         // Handle events if needed
     }
-    
+
     public override void SetFocus(bool isFocused)
     {
         IsFocused = isFocused;
+    }
+
+    public void SetText(string text)
+    {
+        Text = text;
+        WrapText(text); // Recalculate wrapped lines with the new text
     }
 }

@@ -214,7 +214,9 @@ public class Game
                 if (e.key.keysym.scancode == SDL_Scancode.SDL_SCANCODE_0)
                 {
                     _uiSystem.ActivateHUD("Dialog");
-                    (_uiSystem.GetHUDSystem("Dialog").GetComponent(0) as DialogueUISystem).StartDialogue(new DialogueNode("Welcome to Luminary Engine! This is a text dialogue."));
+                    DialogueNode dialogueNode = new DialogueNode("Hello, this is a test dialogue.");
+                    dialogueNode.Choices.Add(new DialogueNode("What is your name?"));
+                    (_uiSystem.GetHUDSystem("Dialog").GetComponent(0) as DialogueUISystem).StartDialogue(dialogueNode);
                 }
             }
         }
@@ -261,7 +263,7 @@ public class Game
         _uiSystem.RegisterMenu("Settings", settingsMenuSystem);
         
         HUDSystem hudSystem = new HUDSystem();
-        hudSystem.AddComponent(new DialogueUISystem(5, 55, 200, 250));
+        hudSystem.AddComponent(new DialogueUISystem(5, 55, 400, 250));
         _uiSystem.RegisterHUD("Dialog", hudSystem);
     }
 
