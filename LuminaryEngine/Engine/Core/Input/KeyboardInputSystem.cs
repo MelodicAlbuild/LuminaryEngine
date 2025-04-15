@@ -1,4 +1,5 @@
-﻿using LuminaryEngine.Engine.ECS;
+﻿using LuminaryEngine.Engine.Core.Logging;
+using LuminaryEngine.Engine.ECS;
 using SDL2;
 
 namespace LuminaryEngine.Engine.Core.Input;
@@ -24,7 +25,7 @@ public class KeyboardInputSystem : InputSystem
                     if (InputMappingSystem.Instance.IsActionTriggered(action, inputState.PressedKeys))
                     {
                         // Handle the triggered action (example: log or trigger event)
-                        // System.Console.WriteLine($"Action triggered: {action}");
+                        LuminLog.Debug($"Action triggered: {action}");
                     }
                 }
             }

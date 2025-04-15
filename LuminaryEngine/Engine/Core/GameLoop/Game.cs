@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Security.Cryptography.Xml;
 using LuminaryEngine.Engine.Audio;
 using LuminaryEngine.Engine.Core.Input;
+using LuminaryEngine.Engine.Core.Logging;
 using LuminaryEngine.Engine.Core.Rendering;
 using LuminaryEngine.Engine.Core.Rendering.Fonts;
 using LuminaryEngine.Engine.Core.Rendering.Sprites;
@@ -69,7 +70,7 @@ public class Game
         // Initialize SDL
         if (SDL_Init(SDL_INIT_VIDEO) < 0)
         {
-            Console.WriteLine($"SDL_Init Error: {SDL_GetError()}");
+            LuminLog.Error($"SDL_Init Error: {SDL_GetError()}");
             return false;
         }
         
@@ -77,7 +78,7 @@ public class Game
         _window = SDL_CreateWindow("Luminary Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, DISPLAY_WIDTH, DISPLAY_HEIGHT, SDL_WindowFlags.SDL_WINDOW_SHOWN);
         if (_window == IntPtr.Zero)
         {
-            Console.WriteLine($"SDL_CreateWindow Error: {SDL_GetError()}");
+            LuminLog.Error($"SDL_CreateWindow Error: {SDL_GetError()}");
             return false;
         }
 
@@ -87,7 +88,7 @@ public class Game
         // Initialize SDL_image
         if (SDL_image.IMG_Init(SDL_image.IMG_InitFlags.IMG_INIT_PNG) < 0)
         {
-            Console.WriteLine($"SDL_image_Init Error: {SDL_image.IMG_GetError()}");
+            LuminLog.Error($"SDL_image_Init Error: {SDL_image.IMG_GetError()}");
             _renderer.Destroy();
             SDL_DestroyWindow(_window);
             return false;
@@ -96,7 +97,7 @@ public class Game
         // Initialize SDL_ttf
         if (SDL_ttf.TTF_Init() < 0)
         {
-            Console.WriteLine($"SDL_ttf_Init Error: {SDL_ttf.TTF_GetError()}");
+            LuminLog.Error($"SDL_ttf_Init Error: {SDL_ttf.TTF_GetError()}");
             SDL_image.IMG_Quit();
             _renderer.Destroy();
             SDL_DestroyWindow(_window);
@@ -106,7 +107,7 @@ public class Game
         // Initialize SDL_mixer
         if (SDL_mixer.Mix_Init(SDL_mixer.MIX_InitFlags.MIX_INIT_MP3) < 0)
         {
-            Console.WriteLine($"SDL_mixer_Init Error: {SDL_mixer.Mix_GetError()}");
+            LuminLog.Error($"SDL_mixer_Init Error: {SDL_mixer.Mix_GetError()}");
             SDL_ttf.TTF_Quit();
             SDL_image.IMG_Quit();
             _renderer.Destroy();
@@ -174,7 +175,7 @@ public class Game
     {
         if(!Initialize())
         {
-            Console.WriteLine("Failed to initialize Game.");
+            LuminLog.Error("Failed to initialize Game.");
             return;
         }
         
@@ -260,6 +261,8 @@ public class Game
         SDL_DestroyWindow(_window);
         SDL_image.IMG_Quit();
         SDL_Quit();
+        
+        LuminLog.FinalizeLog();
     }
     
     private void CalculateFrameRate()

@@ -1,4 +1,5 @@
 ﻿using LuminaryEngine.Engine.Core.Input;
+using LuminaryEngine.Engine.Core.Logging;
 using LuminaryEngine.Engine.Core.Rendering;
 using LuminaryEngine.Engine.Core.ResourceManagement;
 using LuminaryEngine.Engine.Gameplay.UI;
@@ -76,7 +77,7 @@ public class KeybindSettingsMenu : UIComponent
             // Check if the key is already assigned to another action
             foreach (var action in _actions.Where(action => InputMappingSystem.Instance.GetKeyForAction(action) == pressedKey))
             {
-                Console.WriteLine($"Key {pressedKey} is already assigned to {action}. Choose another key.");
+                LuminLog.Debug($"Key {pressedKey} is already assigned to {action}. Choose another key.");
                 _isRebinding = false; // Exit rebind mode
                 return;
             }
@@ -84,7 +85,7 @@ public class KeybindSettingsMenu : UIComponent
             // Rebind the selected action
             Enum.TryParse(_scrollableMenu.GetSelectedOption().Split(":")[0], out ActionType selectedAction);
             InputMappingSystem.Instance.MapActionToKey(selectedAction, pressedKey);
-            Console.WriteLine($"Bound {selectedAction} to {pressedKey}.");
+            LuminLog.Debug($"Bound {selectedAction} to {pressedKey}.");
             _scrollableMenu.UpdateCurrentOption($"{selectedAction}: {SDL.SDL_GetScancodeName(pressedKey)}");
             _isRebinding = false; // Exit rebind mode
         }

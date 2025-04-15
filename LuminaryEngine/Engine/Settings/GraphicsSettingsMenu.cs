@@ -1,4 +1,5 @@
 ﻿using LuminaryEngine.Engine.Core.Input;
+using LuminaryEngine.Engine.Core.Logging;
 using LuminaryEngine.Engine.Core.Rendering;
 using LuminaryEngine.Engine.Core.ResourceManagement;
 using LuminaryEngine.Engine.Gameplay.UI;
@@ -104,7 +105,7 @@ public class GraphicsSettingsMenu : UIComponent
                         if (_selectedOptionIndex == 1) // Fullscreen toggle
                         {
                             _isFullscreen = !_isFullscreen;
-                            Console.WriteLine($"Fullscreen: {(_isFullscreen ? "Enabled" : "Disabled")}");
+                            LuminLog.Debug($"Fullscreen: {(_isFullscreen ? "Enabled" : "Disabled")}");
                         }
 
                         break;
@@ -120,14 +121,14 @@ public class GraphicsSettingsMenu : UIComponent
             case 0: // Resolution
                 _selectedResolutionIndex = (_selectedResolutionIndex + (increase ? 1 : -1) + _resolutions.Length) %
                                            _resolutions.Length;
-                Console.WriteLine($"Resolution set to: {_resolutions[_selectedResolutionIndex]}");
+                LuminLog.Debug($"Resolution set to: {_resolutions[_selectedResolutionIndex]}");
                 break;
 
             case 2: // Texture Quality
                 _selectedTextureQualityIndex =
                     (_selectedTextureQualityIndex + (increase ? 1 : -1) + _textureQualities.Length) %
                     _textureQualities.Length;
-                Console.WriteLine($"Texture Quality set to: {_textureQualities[_selectedTextureQualityIndex]}");
+                LuminLog.Debug($"Texture Quality set to: {_textureQualities[_selectedTextureQualityIndex]}");
                 break;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using LuminaryEngine.Engine.Core.Input;
+using LuminaryEngine.Engine.Core.Logging;
 using LuminaryEngine.Engine.Core.Rendering;
 using LuminaryEngine.Engine.Core.ResourceManagement;
 using LuminaryEngine.Engine.Gameplay.UI;
@@ -81,12 +82,12 @@ public class AudioSettingsMenu : UIComponent
                     {
                         case ActionType.MenuUp:
                             _selectedOptionIndex = (_selectedOptionIndex - 1 + _options.Length) % _options.Length;
-                            // Console.WriteLine($"Selected: {_options[_selectedOptionIndex]}");
+                            LuminLog.Debug($"Selected: {_options[_selectedOptionIndex]}");
                             break;
 
                         case ActionType.MenuDown:
                             _selectedOptionIndex = (_selectedOptionIndex + 1) % _options.Length;
-                            // Console.WriteLine($"Selected: {_options[_selectedOptionIndex]}");
+                            LuminLog.Debug($"Selected: {_options[_selectedOptionIndex]}");
                             break;
 
                         case ActionType.MenuLeft:
@@ -107,17 +108,17 @@ public class AudioSettingsMenu : UIComponent
             {
                 case 0:
                     _masterVolume = Math.Clamp(_masterVolume + delta, 0, 100);
-                    Console.WriteLine($"Master Volume: {_masterVolume}%");
+                    LuminLog.Debug($"Master Volume: {_masterVolume}%");
                     break;
 
                 case 1:
                     _musicVolume = Math.Clamp(_musicVolume + delta, 0, 100);
-                    Console.WriteLine($"Music Volume: {_musicVolume}%");
+                    LuminLog.Debug($"Music Volume: {_musicVolume}%");
                     break;
 
                 case 2:
                     _sfxVolume = Math.Clamp(_sfxVolume + delta, 0, 100);
-                    Console.WriteLine($"SFX Volume: {_sfxVolume}%");
+                    LuminLog.Debug($"SFX Volume: {_sfxVolume}%");
                     break;
             }
         }

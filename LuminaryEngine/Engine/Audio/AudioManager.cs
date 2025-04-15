@@ -1,4 +1,5 @@
-﻿using LuminaryEngine.Engine.Core.ResourceManagement;
+﻿using LuminaryEngine.Engine.Core.Logging;
+using LuminaryEngine.Engine.Core.ResourceManagement;
 using SDL2;
 
 namespace LuminaryEngine.Engine.Audio;
@@ -14,7 +15,7 @@ public class AudioManager : IDisposable
     {
         if (SDL_mixer.Mix_OpenAudio(44100, SDL_mixer.MIX_DEFAULT_FORMAT, 2, 2048) == -1)
         {
-            Console.WriteLine($"SDL_mixer OpenAudio Error: {SDL_mixer.Mix_GetError()}");
+            LuminLog.Error($"SDL_mixer OpenAudio Error: {SDL_mixer.Mix_GetError()}");
             // Handle error
         }
     }
@@ -29,7 +30,7 @@ public class AudioManager : IDisposable
         IntPtr chunk = SDL_mixer.Mix_LoadWAV(filePath);
         if (chunk == IntPtr.Zero)
         {
-            Console.WriteLine($"SDL_mixer LoadWAV Error: {SDL_mixer.Mix_GetError()}");
+            LuminLog.Error($"SDL_mixer LoadWAV Error: {SDL_mixer.Mix_GetError()}");
             return null;
         }
 
@@ -54,7 +55,7 @@ public class AudioManager : IDisposable
         }
         else
         {
-            Console.WriteLine($"AudioManager: Sound '{soundId}' not found.");
+            LuminLog.Warning($"AudioManager: Sound '{soundId}' not found.");
         }
     }
 
