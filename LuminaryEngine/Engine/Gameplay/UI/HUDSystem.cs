@@ -13,6 +13,11 @@ public class HUDSystem
         _uiComponents.Add(component);
     }
 
+    public UIComponent GetComponent(int id)
+    {
+        return _uiComponents[id];
+    }
+
     // Removes a component from the HUD
     public void RemoveComponent(UIComponent component)
     {

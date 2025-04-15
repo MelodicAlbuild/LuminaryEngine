@@ -132,4 +132,14 @@ public class UISystem
             _menuSystems[_activeMenu].HandleEvent(sdlEvent);
         }
     }
+
+    public HUDSystem GetHUDSystem(string id)
+    {
+        return _hudSystems[id];
+    }
+    
+    public MenuSystem GetMenuSystem(string id)
+    {
+        return _menuSystems[id];
+    }
 }

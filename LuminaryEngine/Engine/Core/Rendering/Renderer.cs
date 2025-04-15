@@ -114,6 +114,11 @@ public class Renderer
         // Calculate the actual size of the text
         int textWidth, textHeight;
         SDL_ttf.TTF_SizeText(font, text, out textWidth, out textHeight);
+        
+        if(textWidth <= 0 || textHeight <= 0)
+        {
+            return;
+        }
 
         // Adjust the destRect to maintain the aspect ratio
         destRect.w = textWidth;

@@ -12,6 +12,7 @@ using LuminaryEngine.Engine.Core.ResourceManagement;
 using LuminaryEngine.Engine.ECS;
 using LuminaryEngine.Engine.ECS.Components;
 using LuminaryEngine.Engine.ECS.Systems;
+using LuminaryEngine.Engine.Gameplay.Dialogue;
 using LuminaryEngine.Engine.Gameplay.Player;
 using LuminaryEngine.Engine.Gameplay.UI;
 using LuminaryEngine.Engine.Settings;
@@ -207,6 +208,15 @@ public class Game
             _keyboardInputSystem.HandleEvents(e);
             _mouseInputSystem.HandleEvents(e);
             _uiSystem.HandleEvent(e);
+
+            if (e.type == SDL_EventType.SDL_KEYDOWN)
+            {
+                if (e.key.keysym.scancode == SDL_Scancode.SDL_SCANCODE_0)
+                {
+                    _uiSystem.ActivateHUD("Dialog");
+                    (_uiSystem.GetHUDSystem("Dialog").GetComponent(0) as DialogueUISystem).StartDialogue(new DialogueNode("Welcome to Luminary Engine! This is a text dialogue."));
+                }
+            }
         }
     }
 
@@ -217,6 +227,8 @@ public class Game
         _playerMovementSystem.Update();
         _audioSystem.Update();
         _uiSystem.Render(_renderer);
+        
+        (_uiSystem.GetHUDSystem("Dialog").GetComponent(0) as DialogueUISystem).Update(_gameTime.DeltaTime);
         
         _renderer.UpdateFade(_gameTime.DeltaTime);
         _world.Update();
@@ -247,6 +259,10 @@ public class Game
         MenuSystem settingsMenuSystem = new MenuSystem();
         settingsMenuSystem.AddComponent(new SettingsMenu(5, 55, 630, 250));
         _uiSystem.RegisterMenu("Settings", settingsMenuSystem);
+        
+        HUDSystem hudSystem = new HUDSystem();
+        hudSystem.AddComponent(new DialogueUISystem(5, 55, 200, 250));
+        _uiSystem.RegisterHUD("Dialog", hudSystem);
     }
 
     protected virtual void UnloadContent()
