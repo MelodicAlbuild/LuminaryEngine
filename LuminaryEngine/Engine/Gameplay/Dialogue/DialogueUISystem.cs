@@ -17,6 +17,8 @@ public class DialogueUISystem : UIComponent
     private float timeSinceLastChar = 0f;
     private bool isTyping = true;
     private bool isWaitingForInput = false;
+    private bool interactedDuringTyping = false;
+    private bool startedType = false;
 
     public DialogueUISystem(int x, int y, int width, int height)
         : base(x, y, width, height)
@@ -26,7 +28,7 @@ public class DialogueUISystem : UIComponent
         dialogueText = new TextComponent(
             "",
             ResourceCache.DefaultFont,
-            new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 }, // White color
+            new SDL.SDL_Color { r = 0, g = 0, b = 0, a = 255 }, // White color
             x + margin, // X position with margin
             y + margin, // Y position with margin
             width - 2 * margin, // Width reduced by margins
@@ -40,11 +42,16 @@ public class DialogueUISystem : UIComponent
         fullText = currentNode.Text;
         displayedText = ""; // Clear displayedText to avoid flashing
         currentCharIndex = 0;
+        timeSinceLastChar = 0f; // Reset the typewriter timer
         isTyping = true;
         isWaitingForInput = false;
+        interactedDuringTyping = false; // Reset interaction flag
 
         // Reset the text component with an empty string
-        dialogueText.SetText(""); 
+        dialogueText.SetText(" ");
+        startedType = true;
+        
+        IsVisible = true;
     }
 
     private void UpdateTypewriterEffect(float deltaTime)
@@ -68,6 +75,7 @@ public class DialogueUISystem : UIComponent
                 if (currentCharIndex >= fullText.Length)
                 {
                     isTyping = false;
+                    dialogueText.SetText(displayedText + " \u25bc");
                     isWaitingForInput = true;
                 }
             }
@@ -76,30 +84,59 @@ public class DialogueUISystem : UIComponent
 
     public void HandleInteractKey()
     {
-        if (isTyping)
+        if (isTyping && !startedType)
         {
             // Skip to the end of the current dialogue text if typing is in progress
             displayedText = fullText;
             dialogueText.SetText(displayedText);
             isTyping = false;
             isWaitingForInput = true;
-        } else if (isWaitingForInput)
+            interactedDuringTyping = true;
+        } else if (isWaitingForInput && !interactedDuringTyping)
         {
             // If there's more dialogue to display, move to the next node
-            if (currentNode.Choices != null)
+            if (currentNode != null)
             {
-                if (currentNode.Choices.Count > 0)
+                if (currentNode.Choices != null)
                 {
-                    isWaitingForInput = false;
-                    StartDialogue(currentNode.Choices[0]); // Simplified for single-choice progress
+                    if (currentNode.Choices.Count > 0)
+                    {
+                        isWaitingForInput = false;
+                        StartDialogue(currentNode.Choices[0]); // Simplified for single-choice progress
+                    }
+                    else
+                    {
+                        // End of dialogue
+                        dialogueText.SetText(" "); // Clear the text box
+                        currentNode = null;
+                        
+                        IsVisible = false; // Hide the dialogue UI if there are no choices left to display
+                    }
+                }
+                else
+                {
+                    // End of dialogue
+                    dialogueText.SetText(" "); // Clear the text box
+                    currentNode = null;
+                    
+                    IsVisible = false; // Hide the dialogue UI if there are no choices left to display
                 }
             }
             else
             {
                 // End of dialogue
+                dialogueText.SetText(" "); // Clear the text box
                 currentNode = null;
-                dialogueText.SetText(""); // Clear the text box
+                
+                IsVisible = false; // Hide the dialogue UI if there are no choices left to display
             }
+        } else if (isWaitingForInput && interactedDuringTyping)
+        {
+            // Clear the interaction flag so the next interaction can proceed
+            interactedDuringTyping = false;
+        } else if (startedType)
+        {
+            startedType = false;
         }
     }
 

@@ -131,7 +131,7 @@ public class Game
         // Initialize Resource Cache
         _resourceCache = new ResourceCache(_renderer.GetRenderer(), _textureLoadingSystem, _fontLoadingSystem, _audioManager);
 
-        _resourceCache.GetFont("Pixel", 36);
+        _resourceCache.GetFont("Pixel-Upd", 36);
         
         // Load LDtk World
         LDtkLoadResponse resp = LDtkLoader.LoadProject($"Assets/World/World.ldtk");

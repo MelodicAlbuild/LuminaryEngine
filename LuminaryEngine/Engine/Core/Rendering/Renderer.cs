@@ -113,7 +113,7 @@ public class Renderer
     {
         // Calculate the actual size of the text
         int textWidth, textHeight;
-        SDL_ttf.TTF_SizeText(font, text, out textWidth, out textHeight);
+        SDL_ttf.TTF_SizeUTF8(font, text, out textWidth, out textHeight);
         
         if(textWidth <= 0 || textHeight <= 0)
         {
@@ -125,7 +125,7 @@ public class Renderer
         destRect.h = textHeight;
 
         // Render the text
-        IntPtr surface = SDL_ttf.TTF_RenderText_Solid(font, text, color);
+        IntPtr surface = SDL_ttf.TTF_RenderUTF8_Solid(font, text, color);
         if (surface == IntPtr.Zero)
         {
             throw new Exception($"Failed to render text surface: {SDL.SDL_GetError()}");
