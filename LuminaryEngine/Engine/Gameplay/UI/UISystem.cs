@@ -8,6 +8,7 @@ public class UISystem
 {
     private Dictionary<string, HUDSystem> _hudSystems = new();
     private Dictionary<string, MenuSystem> _menuSystems = new();
+    private List<UIComponent> _uiComponents = new();
 
     private string _activeHUD = null;
     private string _activeMenu = null;
@@ -82,6 +83,18 @@ public class UISystem
             _activeMenu = null;
         }
     }
+    
+    // Adds a UI component to the system
+    public void AddUIComponent(UIComponent component)
+    {
+        _uiComponents.Add(component);
+    }
+    
+    // Removes a UI component from the system
+    public void RemoveUIComponent(UIComponent component)
+    {
+        _uiComponents.Remove(component);
+    }
 
     // Renders the currently active HUD and Menu systems
     public void Render(Renderer renderer)
@@ -96,6 +109,12 @@ public class UISystem
         if (_activeMenu != null && _menuSystems.ContainsKey(_activeMenu))
         {
             _menuSystems[_activeMenu].Render(renderer);
+        }
+        
+        // Render UI components
+        foreach (var component in _uiComponents)
+        {
+            component.Render(renderer);
         }
     }
 
@@ -130,6 +149,12 @@ public class UISystem
         if (_activeMenu != null && _menuSystems.ContainsKey(_activeMenu))
         {
             _menuSystems[_activeMenu].HandleEvent(sdlEvent);
+        }
+        
+        // Handle events for UI components
+        foreach (var component in _uiComponents)
+        {
+            component.HandleEvent(sdlEvent);
         }
     }
 
