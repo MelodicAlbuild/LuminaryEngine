@@ -36,7 +36,7 @@ public static class LuminLog
         if (level == LogLevel.DEBUG)
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine($"DEBUG: {message}");
+            Console.WriteLine($"[DEBUG]: {message}");
             Console.ResetColor();
         }
     }
