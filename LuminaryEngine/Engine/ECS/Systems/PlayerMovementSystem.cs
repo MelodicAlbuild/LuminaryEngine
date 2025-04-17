@@ -93,6 +93,7 @@ public class PlayerMovementSystem : LuminSystem
             LDtkEntityInstance entityInstance = _world.GetEntityInstance(gridTarget);
             if (entityInstance != null)
             {
+                Console.WriteLine($"Collision with {entityInstance.Identifier}");
                 switch (entityInstance.Identifier)
                 {
                     case "building_interact":

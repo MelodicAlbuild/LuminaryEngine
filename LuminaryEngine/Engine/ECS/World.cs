@@ -3,10 +3,12 @@ using LuminaryEngine.Engine.Core.Rendering;
 using LuminaryEngine.Engine.Core.Rendering.Sprites;
 using LuminaryEngine.Engine.ECS.Components;
 using LuminaryEngine.Engine.Exceptions;
+using LuminaryEngine.Engine.Gameplay.NPC;
 using LuminaryEngine.Engine.Gameplay.Player;
 using LuminaryEngine.Extras;
 using LuminaryEngine.ThirdParty.LDtk;
 using LuminaryEngine.ThirdParty.LDtk.Models;
+using SDL2;
 
 namespace LuminaryEngine.Engine.ECS;
 
@@ -14,24 +16,26 @@ public class World
 {
     private Dictionary<int, Entity> _entities = new Dictionary<int, Entity>();
     private int _nextEntityId = 0;
-    
-    private int _currentLevelId = 0;
+
+    private int _currentLevelId = -1;
 
     private LDtkProject _ldtkWorld;
     private Dictionary<int, int[,]> _collisionMaps;
     private Dictionary<int, List<Vector2>> _entityMaps;
-    
+    private Dictionary<int, List<NPCData>> _npcs;
+
     private bool _isTransitioning = false;
     private bool _hasFaded = true;
-    
+
     private Renderer _renderer;
-    
+
     public World(LDtkLoadResponse response, Renderer renderer)
     {
         _ldtkWorld = response.Project;
         _collisionMaps = response.CollisionMaps;
         _entityMaps = response.EntityMaps;
-        
+        _npcs = response.NPCs;
+
         _renderer = renderer;
     }
 
@@ -52,7 +56,7 @@ public class World
 
     public void DestroyEntity(Entity entity)
     {
-        if(_entities.ContainsKey(entity.Id))
+        if (_entities.ContainsKey(entity.Id))
         {
             _entities.Remove(entity.Id);
         }
@@ -72,7 +76,7 @@ public class World
     {
         return new List<Entity>(_entities.Values);
     }
-    
+
     public List<Entity> GetEntitiesWithComponents(params Type[] componentTypes)
     {
         List<Entity> results = new List<Entity>();
@@ -88,21 +92,21 @@ public class World
                     break;
                 }
             }
-            
+
             if (hasAllComponents)
             {
                 results.Add(entity);
             }
         }
-        
+
         return results;
     }
-    
+
     public LDtkProject GetLDtkWorld()
     {
         return _ldtkWorld;
     }
-    
+
     public bool IsTileSolid(int x, int y)
     {
         if (_collisionMaps.TryGetValue(_currentLevelId, out var collisionMap))
@@ -112,16 +116,17 @@ public class World
                 return collisionMap[x, y] == 1;
             }
         }
-        
+
         return false;
     }
 
     public LDtkEntityInstance GetEntityInstance(Vector2 position)
     {
-        return GetCurrentLevel().LayerInstances.Find(o => o.Type == "Entities").EntityInstances
+        return GetCurrentLevel().LayerInstances.Find(o => o.Type == "Entities" && o.Identifier == "entities")
+            .EntityInstances
             .Find(o => o.PositionPx[0] == (int)position.X * 32 && o.PositionPx[1] == (int)position.Y * 32);
     }
-    
+
     public bool IsEntityAtPosition(Vector2 position)
     {
         return _entityMaps[_currentLevelId].Any(entity => entity == position);
@@ -132,75 +137,120 @@ public class World
         return _ldtkWorld.Levels[_currentLevelId];
     }
 
-    public void SwitchLevel(int newLevelId, Vector2 exitLocation)
+    public void SwitchLevel(int newLevelId, Vector2 exitLocation, bool moveToExit = true)
     {
         if (newLevelId < 0 || newLevelId >= _ldtkWorld.Levels.Count)
         {
             throw new ArgumentOutOfRangeException(nameof(newLevelId), "Invalid level ID.");
         }
-        
-        SwitchLevelInternal(newLevelId, exitLocation);
+
+        SwitchLevelInternal(newLevelId, exitLocation, moveToExit);
     }
-    
-    private async void SwitchLevelInternal(int newLevelId, Vector2 exitLocation)
+
+    private async void SwitchLevelInternal(int newLevelId, Vector2 exitLocation, bool moveToExit)
     {
         _isTransitioning = true;
-        
-        Entity player = GetEntitiesWithComponents(typeof(PlayerComponent))[0];
-        
-        Vector2 dirVector = Vector2.Normalize(exitLocation - player.GetComponent<TransformComponent>().Position);
-        
-        player.GetComponent<SmoothMovementComponent>().TargetPosition = player.GetComponent<TransformComponent>().Position + (dirVector * player.GetComponent<SmoothMovementComponent>().TileSize);
-        player.GetComponent<SmoothMovementComponent>().IsMoving = true;
-        
-        await TaskEx.WaitUntilNot(player.GetComponent<SmoothMovementComponent>().GetIsMoving);
-        
-        foreach (Entity entity in GetEntitiesWithComponents(typeof(SmoothMovementComponent)))
+
+        Entity player = null;
+        if (moveToExit)
         {
-            entity.GetComponent<SmoothMovementComponent>().Freeze();
+             player = GetEntitiesWithComponents(typeof(PlayerComponent))[0];
+
+            Vector2 dirVector = Vector2.Normalize(exitLocation - player.GetComponent<TransformComponent>().Position);
+
+            player.GetComponent<SmoothMovementComponent>().TargetPosition =
+                player.GetComponent<TransformComponent>().Position +
+                (dirVector * player.GetComponent<SmoothMovementComponent>().TileSize);
+            player.GetComponent<SmoothMovementComponent>().IsMoving = true;
+
+            await TaskEx.WaitUntilNot(player.GetComponent<SmoothMovementComponent>().GetIsMoving);
+
+            foreach (Entity entity in GetEntitiesWithComponents(typeof(SmoothMovementComponent)))
+            {
+                entity.GetComponent<SmoothMovementComponent>().Freeze();
+            }
+
+            foreach (Entity entity in GetEntitiesWithComponents(typeof(AnimationComponent)))
+            {
+                entity.GetComponent<AnimationComponent>().StopAnimation();
+            }
         }
-        
-        foreach (Entity entity in GetEntitiesWithComponents(typeof(AnimationComponent)))
-        {
-            entity.GetComponent<AnimationComponent>().StopAnimation();
-        }
-        
+
         _renderer.StartFade(true, 2.0f, true);
         _hasFaded = false;
 
         await TaskEx.WaitUntil(HasFaded);
-        
+
         int oldLevelId = _currentLevelId;
-        
+
+        foreach (Entity entity in GetEntitiesWithComponents(typeof(NPCComponent)))
+        {
+            DestroyEntity(entity);
+        }
+
         _currentLevelId = newLevelId;
-        
+
         // Optionally, clear and reload entities specific to the level
         //_entities.Clear();
         // TODO: Handle level-specific entities
 
-        int[] exitPx = _ldtkWorld.Levels[_currentLevelId].LayerInstances.Find(o => o.Type == "Entities").EntityInstances
-            .Find(o => o.Identifier == "building_interact" &&
-                       o.FieldInstances.Find(o => o.Identifier == "interaction").Value.ToString() == "exit" && o.FieldInstances.Find(o => o.Identifier == "buildingId").Value.ToString() == oldLevelId.ToString()).PositionPx;
-        
-        player.GetComponent<TransformComponent>().Position = new Vector2(exitPx[0], exitPx[1]);
-        
+        if (moveToExit)
+        {
+            int[] exitPx = _ldtkWorld.Levels[_currentLevelId].LayerInstances
+                .Find(o => o.Type == "Entities" && o.Identifier == "entities").EntityInstances
+                .Find(o => o.Identifier == "building_interact" &&
+                           o.FieldInstances.Find(o => o.Identifier == "interaction").Value.ToString() == "exit" &&
+                           o.FieldInstances.Find(o => o.Identifier == "buildingId").Value.ToString() ==
+                           oldLevelId.ToString()).PositionPx;
+
+            player.GetComponent<TransformComponent>().Position = new Vector2(exitPx[0], exitPx[1]);
+        }
+
+        foreach (var d in _npcs[_currentLevelId])
+        {
+            Entity npc = CreateEntity();
+            npc.AddComponent(new TransformComponent(d.Position.X, d.Position.Y));
+            npc.AddComponent(new SpriteComponent(d.TextureName + ".png", new SDL.SDL_Rect()
+            {
+                x = 0,
+                y = 0,
+                w = 32,
+                h = 48
+            }, 17));
+            npc.AddComponent(new SpriteRaisedComponent(d.TextureName + ".png", new SDL.SDL_Rect()
+            {
+                x = 0,
+                y = 0,
+                w = 32,
+                h = 16
+            }, 18));
+            npc.AddComponent(new NPCComponent(d));
+
+            _collisionMaps[_currentLevelId][(int)d.Position.X / 32, (int)d.Position.Y / 32] = 1;
+        }
+
         await TaskEx.WaitMs(100);
-        
+
         _renderer.StartFade(false, 2.0f, false);
         _hasFaded = false;
 
         await TaskEx.WaitUntil(HasFaded);
-        
+
         _isTransitioning = false;
     }
-    
+
     public bool HasFaded()
     {
         return _hasFaded;
     }
-    
+
     public bool IsTransitioning()
     {
         return _isTransitioning;
+    }
+
+    public int GetCurrentLevelId()
+    {
+        return _currentLevelId;
     }
 }

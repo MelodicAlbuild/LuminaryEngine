@@ -27,6 +27,13 @@ public class SpriteRenderingSystem : LuminSystem
         foreach (var entity in _world.GetEntitiesWithComponents(typeof(SpriteComponent), typeof(TransformComponent)))
         {
             var spriteComponent = entity.GetComponent<SpriteComponent>();
+            SpriteRaisedComponent raisedComponent = null;
+            bool isRaised = false;
+            if (entity.HasComponent<SpriteRaisedComponent>())
+            {
+                isRaised = true;
+                raisedComponent = entity.GetComponent<SpriteRaisedComponent>();
+            }
             var transformComponent = entity.GetComponent<TransformComponent>();
             
             if (entity.HasComponent<AnimationComponent>())
@@ -73,8 +80,37 @@ public class SpriteRenderingSystem : LuminSystem
                 DestRect = destRect,
                 ZOrder = spriteComponent.ZIndex
             };
+
+            RenderCommand raisedCommand = new RenderCommand();
+
+            if (isRaised)
+            {
+                Texture raisedTexture = _resourceCache.GetTexture(raisedComponent.TextureId);
+                
+                SDL.SDL_Rect raisedDestRect = new SDL.SDL_Rect
+                {
+                    x = (int)Math.Floor(transformComponent.Position.X) - (int)_camera.X,
+                    y = (int)Math.Floor(transformComponent.Position.Y) - 16 - (int)_camera.Y,
+                    w = (int)(raisedComponent.SourceRect.Value.w * transformComponent.Scale.X),
+                    h = (int)(raisedComponent.SourceRect.Value.h * transformComponent.Scale.Y)
+                };
+                
+                raisedCommand = new RenderCommand()
+                {
+                    Type = RenderCommandType.DrawTexture,
+                    Texture = raisedTexture.Handle,
+                    SourceRect = raisedComponent.SourceRect,
+                    DestRect = raisedDestRect,
+                    ZOrder = raisedComponent.ZIndex
+                };
+            }
             
             _renderer.EnqueueRenderCommand(command);
+            
+            if (isRaised)
+            {
+                _renderer.EnqueueRenderCommand(raisedCommand);
+            }
         }
     }
 

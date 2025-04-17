@@ -20,6 +20,8 @@ public class Camera
     
     public void Follow(Vector2 target)
     {
+        if (_world.GetCurrentLevelId() < 0) return;
+        
         // Center the camera on the target immediately.
         Vector2 desiredPosition = target - new Vector2(Game.DISPLAY_WIDTH * 0.5f, Game.DISPLAY_HEIGHT * 0.5f);
         int clampedX, clampedY;

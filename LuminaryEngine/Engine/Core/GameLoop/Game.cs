@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Numerics;
 using System.Security.Cryptography.Xml;
 using LuminaryEngine.Engine.Audio;
@@ -169,6 +169,8 @@ public class Game
             InputMappingSystem.Instance.MapActionToKey(ActionType.Interact, SDL_Scancode.SDL_SCANCODE_E);
             InputMappingSystem.Instance.MapActionToKey(ActionType.OpenOptions, SDL_Scancode.SDL_SCANCODE_P);
         #endregion
+        
+        _world.SwitchLevel(0, Vector2.One, false);
 
         return true;
     }
