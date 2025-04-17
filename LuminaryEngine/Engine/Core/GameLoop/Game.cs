@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Numerics;
 using System.Security.Cryptography.Xml;
 using LuminaryEngine.Engine.Audio;
@@ -44,6 +44,7 @@ public class Game
     private TilemapRenderingSystem _tilemapRenderingSystem;
     private AnimationSystem _animationSystem;
     private UISystem _uiSystem;
+    private DialogueBox _dialogueBox;
     
     private Camera _camera;
     
@@ -213,10 +214,9 @@ public class Game
             {
                 if (e.key.keysym.scancode == SDL_Scancode.SDL_SCANCODE_0)
                 {
-                    _uiSystem.ActivateHUD("Dialog");
                     DialogueNode dialogueNode = new DialogueNode("Hello, this is a test dialogue.");
                     dialogueNode.Choices.Add(new DialogueNode("What is your name?"));
-                    (_uiSystem.GetHUDSystem("Dialog").GetComponent(0) as DialogueUISystem).StartDialogue(dialogueNode);
+                    _dialogueBox.SetDialogue(dialogueNode);
                 }
             }
         }
@@ -228,9 +228,8 @@ public class Game
         
         _playerMovementSystem.Update();
         _audioSystem.Update();
-        _uiSystem.Render(_renderer);
         
-        (_uiSystem.GetHUDSystem("Dialog").GetComponent(0) as DialogueUISystem).Update(_gameTime.DeltaTime);
+        _dialogueBox.Update(_gameTime.DeltaTime);
         
         _renderer.UpdateFade(_gameTime.DeltaTime);
         _world.Update();
@@ -250,6 +249,8 @@ public class Game
         _tilemapRenderingSystem.Draw();
         _spriteRenderingSystem.Draw();
         
+        _uiSystem.Render(_renderer);
+        
         // Render the fade overlay if applicable
         _renderer.RenderFade();
         
@@ -262,9 +263,10 @@ public class Game
         settingsMenuSystem.AddComponent(new SettingsMenu(5, 55, 630, 250));
         _uiSystem.RegisterMenu("Settings", settingsMenuSystem);
         
-        HUDSystem hudSystem = new HUDSystem();
-        hudSystem.AddComponent(new DialogueUISystem(5, 55, 400, 250));
-        _uiSystem.RegisterHUD("Dialog", hudSystem);
+        DialogueBox dialogueBox = new DialogueBox(125, 255, 390, 85);
+        _dialogueBox = dialogueBox;
+        _dialogueBox.SetVisible(false);
+        _uiSystem.AddUIComponent(dialogueBox);
     }
 
     protected virtual void UnloadContent()
