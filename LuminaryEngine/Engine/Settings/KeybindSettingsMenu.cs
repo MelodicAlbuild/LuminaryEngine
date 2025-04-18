@@ -10,7 +10,6 @@ namespace LuminaryEngine.Engine.Settings;
 public class KeybindSettingsMenu : UIComponent
 {
     private List<ActionType> _actions;
-    private int _selectedActionIndex;
     private bool _isRebinding; // Indicates if we are waiting for a key press to rebind an action
     private ScrollableMenu _scrollableMenu;
 
@@ -19,7 +18,6 @@ public class KeybindSettingsMenu : UIComponent
         : base(x, y, width, height, zIndex)
     {
         _actions = new List<ActionType>((ActionType[])Enum.GetValues(typeof(ActionType)));
-        _selectedActionIndex = 0;
         _isRebinding = false;
         
         List<string> assignedKeys = new List<string>();

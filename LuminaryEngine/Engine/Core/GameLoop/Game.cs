@@ -214,11 +214,12 @@ public class Game
 
             if (e.type == SDL_EventType.SDL_KEYDOWN)
             {
-                if (e.key.keysym.scancode == SDL_Scancode.SDL_SCANCODE_0)
+                foreach (Entity entitiesWithComponent in _world.GetEntitiesWithComponents(typeof(PlayerComponent)))
                 {
-                    DialogueNode dialogueNode = new DialogueNode("Hello, this is a test dialogue.");
-                    dialogueNode.Choices.Add(new DialogueNode("What is your name?"));
-                    _dialogueBox.SetDialogue(dialogueNode);
+                    if (!_dialogueBox.IsVisible)
+                    {
+                        entitiesWithComponent.GetComponent<PlayerComponent>().HandleInput(e);
+                    }
                 }
             }
         }
@@ -317,4 +318,6 @@ public class Game
     public Renderer Renderer => _renderer;
     public GameTime GameTime => _gameTime;
     public World World => _world;
+    public PlayerMovementSystem PlayerMovementSystem => _playerMovementSystem;
+    public DialogueBox DialogueBox => _dialogueBox;
 }

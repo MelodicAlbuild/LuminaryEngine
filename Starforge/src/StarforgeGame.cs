@@ -5,6 +5,7 @@ using LuminaryEngine.Engine.Core.Rendering.Sprites;
 using LuminaryEngine.Engine.ECS;
 using LuminaryEngine.Engine.ECS.Components;
 using LuminaryEngine.Engine.Gameplay.Player;
+using NuGet.Configuration;
 using SDL2;
 using Starforge.Gameplay.Player;
 
@@ -30,10 +31,12 @@ public class StarforgeGame : Game
             h = 48
         }, 18));
         player.AddComponent(new InputStateComponent());
-        player.AddComponent(new PlayerComponent());
+        player.AddComponent(new PlayerComponent(World, PlayerMovementSystem, this));
         player.AddComponent(new SmoothMovementComponent(100f, 32));
         player.AddComponent(new AnimationComponent());
         
         player.GetComponent<AnimationComponent>().AddAnimations(PlayerAnimations.WalkAnimations);
     }
+    
+    
 }

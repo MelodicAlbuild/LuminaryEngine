@@ -23,6 +23,7 @@ public class World
     private Dictionary<int, int[,]> _collisionMaps;
     private Dictionary<int, List<Vector2>> _entityMaps;
     private Dictionary<int, List<NPCData>> _npcs;
+    private Dictionary<int, List<Vector2>> _interactableMaps;
 
     private bool _isTransitioning = false;
     private bool _hasFaded = true;
@@ -35,6 +36,7 @@ public class World
         _collisionMaps = response.CollisionMaps;
         _entityMaps = response.EntityMaps;
         _npcs = response.NPCs;
+        _interactableMaps = response.InteractableMaps;
 
         _renderer = renderer;
     }
@@ -135,6 +137,18 @@ public class World
     public LDtkLevel GetCurrentLevel()
     {
         return _ldtkWorld.Levels[_currentLevelId];
+    }
+    
+    public bool IsInteractableAtPosition(Vector2 position)
+    {
+        return _interactableMaps[_currentLevelId].Any(entity => entity == position);
+    }
+    
+    public NPCData GetInteractableInstance(Vector2 position)
+    {
+        NPCData output = _npcs[_currentLevelId].Find(o => o.Position == position);
+        
+        return output;
     }
 
     public void SwitchLevel(int newLevelId, Vector2 exitLocation, bool moveToExit = true)

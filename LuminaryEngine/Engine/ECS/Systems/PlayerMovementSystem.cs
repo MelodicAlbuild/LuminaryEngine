@@ -11,7 +11,7 @@ namespace LuminaryEngine.Engine.ECS.Systems;
 public class PlayerMovementSystem : LuminSystem
 {
     private float _speed = 0.75f;
-    private int _tileSize = 32;
+    private Direction _direction = Direction.South;
     
     private GameTime _gameTime;
     
@@ -129,6 +129,7 @@ public class PlayerMovementSystem : LuminSystem
                             anim.PlayAnimation("WalkUp");
                         }
                         direction.Y -= 1;
+                        _direction = Direction.North;
                     }
                     break;
                 case ActionType.MoveDown:
@@ -139,6 +140,7 @@ public class PlayerMovementSystem : LuminSystem
                             anim.PlayAnimation("WalkDown");
                         }
                         direction.Y += 1;
+                        _direction = Direction.South;
                     }
                     break;
                 case ActionType.MoveLeft:
@@ -148,8 +150,8 @@ public class PlayerMovementSystem : LuminSystem
                         {
                             anim.PlayAnimation("WalkLeft");
                         }
-
                         direction.X -= 1;
+                        _direction = Direction.West;
                     }
                     break;
                 case ActionType.MoveRight:
@@ -160,6 +162,7 @@ public class PlayerMovementSystem : LuminSystem
                             anim.PlayAnimation("WalkRight");
                         }
                         direction.X += 1;
+                        _direction = Direction.East;
                     }
                     break;
             }
@@ -174,5 +177,10 @@ public class PlayerMovementSystem : LuminSystem
         }
 
         return direction != Vector2.Zero;
+    }
+
+    public Direction GetDirection()
+    {
+        return _direction;
     }
 }

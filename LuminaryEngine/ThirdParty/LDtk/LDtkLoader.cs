@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Diagnostics;
 using System.Numerics;
 using LuminaryEngine.Engine.Gameplay.Dialogue;
 using LuminaryEngine.Engine.Gameplay.NPC;
@@ -14,6 +15,7 @@ namespace LuminaryEngine.ThirdParty.LDtk
         public Dictionary<int, int[,]> CollisionMaps { get; set; }
         public Dictionary<int, List<Vector2>> EntityMaps { get; set; }
         public Dictionary<int, List<NPCData>> NPCs { get; set; }
+        public Dictionary<int, List<Vector2>> InteractableMaps { get; set; }
     }
     
     public class LDtkLoader
@@ -36,6 +38,7 @@ namespace LuminaryEngine.ThirdParty.LDtk
             Dictionary<int, int[,]> collisionMaps = new Dictionary<int, int[,]>();
             Dictionary<int, List<Vector2>> entityMaps = new Dictionary<int, List<Vector2>>();
             Dictionary<int, List<NPCData>> npcMaps = new Dictionary<int, List<NPCData>>();
+            Dictionary<int, List<Vector2>> interactableMaps = new Dictionary<int, List<Vector2>>();
 
             // If the JSON does not explicitly include layerId for each layer instance,
             // assign it from the UID as a default.
@@ -94,6 +97,7 @@ namespace LuminaryEngine.ThirdParty.LDtk
                                     case "npcs":
                                     {
                                         List<NPCData> npcs = new List<NPCData>();
+                                        List<Vector2> interactables = new List<Vector2>();
                                     
                                         foreach (var entity in layer.EntityInstances)
                                         {
@@ -105,7 +109,7 @@ namespace LuminaryEngine.ThirdParty.LDtk
                                                 case NPCType.Dialogue:
                                                     string[] diStrings = ((IEnumerable)entity.FieldInstances.Find(o => o.Identifier == "npcDialogue")!.Value).Cast<object>()
                                                         .Select(x => x.ToString())
-                                                        .ToArray();
+                                                        .ToArray()!;
 
                                                     List<DialogueNode> dialogue = new List<DialogueNode>();
                                                 
@@ -123,28 +127,35 @@ namespace LuminaryEngine.ThirdParty.LDtk
                                                 
                                                     DialogueNode n1;
                                                     
-                                                    if (dialogue.Count > 1)
-                                                    {
-                                                        n1 = dialogue[^1];
-                                                    }
-                                                    else
-                                                    {
-                                                        n1 = dialogue[0];
-                                                    }
-                                        
-                                                    npcs.Add(new NPCData()
+                                                    n1 = dialogue.Count > 1 ? dialogue[^1] : dialogue[0];
+
+                                                    NPCData d = new NPCData()
                                                     {
                                                         Type = t,
-                                                        Interactive = Convert.ToBoolean(entity.FieldInstances.Find(o => o.Identifier == "interactive")!.Value),
-                                                        TextureName = (string)entity.FieldInstances.Find(o => o.Identifier == "textureName")!.Value,
+                                                        Interactive = Convert.ToBoolean(
+                                                            entity.FieldInstances.Find(o =>
+                                                                o.Identifier == "interactive")!.Value),
+                                                        TextureName =
+                                                            (string)entity.FieldInstances.Find(o =>
+                                                                o.Identifier == "textureName")!.Value,
                                                         Dialogue = n1,
-                                                        Position = new Vector2(entity.PositionPx[0], entity.PositionPx[1]),
-                                                    });
+                                                        Position = new Vector2(entity.PositionPx[0],
+                                                            entity.PositionPx[1]),
+                                                    };
+                                                    
+                                                    npcs.Add(d);
+                                                    
+                                                    if (d.Interactive)
+                                                    {
+                                                        interactables.Add(new Vector2(entity.PositionPx[0],
+                                                            entity.PositionPx[1]));
+                                                    }
                                                     break;
                                             }
                                         }
                                     
                                         npcMaps.Add(int.Parse(level.Identifier.Split("_")[1]), npcs);
+                                        interactableMaps.Add(int.Parse(level.Identifier.Split("_")[1]), interactables);
                                         break;
                                     }
                                 }
@@ -154,12 +165,14 @@ namespace LuminaryEngine.ThirdParty.LDtk
                 }
             }
 
+            Debug.Assert(project != null, nameof(project) + " != null");
             return new LDtkLoadResponse()
             {
                 Project = project,
                 CollisionMaps = collisionMaps,
                 EntityMaps = entityMaps,
-                NPCs = npcMaps
+                NPCs = npcMaps,
+                InteractableMaps = interactableMaps
             };
         }
     }
