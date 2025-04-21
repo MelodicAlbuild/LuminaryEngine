@@ -88,7 +88,7 @@ public class DialogueUISystem : UIComponent
         {
             // Skip to the end of the current dialogue text if typing is in progress
             displayedText = fullText;
-            dialogueText.SetText(displayedText);
+            dialogueText.SetText(displayedText + " \u25bc");
             isTyping = false;
             isWaitingForInput = true;
             interactedDuringTyping = true;
