@@ -13,6 +13,7 @@ using LuminaryEngine.Engine.ECS;
 using LuminaryEngine.Engine.ECS.Components;
 using LuminaryEngine.Engine.ECS.Systems;
 using LuminaryEngine.Engine.Gameplay.Dialogue;
+using LuminaryEngine.Engine.Gameplay.Items;
 using LuminaryEngine.Engine.Gameplay.Player;
 using LuminaryEngine.Engine.Gameplay.UI;
 using LuminaryEngine.Engine.Settings;
@@ -221,6 +222,20 @@ public class Game
                         entitiesWithComponent.GetComponent<PlayerComponent>().HandleInput(e);
                     }
                 }
+
+                if (e.key.keysym.scancode == SDL_Scancode.SDL_SCANCODE_0)
+                {
+                    _world.GetEntitiesWithComponents(typeof(PlayerComponent))[0].GetComponent<InventoryComponent>().AddItem("basic_item");
+                }
+                
+                if (e.key.keysym.scancode == SDL_Scancode.SDL_SCANCODE_1)
+                {
+                    LuminLog.Debug("Inventory:");
+                    foreach (var keyValuePair in _world.GetEntitiesWithComponents(typeof(PlayerComponent))[0].GetComponent<InventoryComponent>().GetInventory())
+                    {
+                        LuminLog.Debug(keyValuePair.Key + ": " + keyValuePair.Value);
+                    }
+                }
             }
         }
     }
@@ -262,6 +277,8 @@ public class Game
 
     protected virtual void LoadContent()
     {
+        ItemManager.Instance.LoadItems();
+        
         MenuSystem settingsMenuSystem = new MenuSystem();
         settingsMenuSystem.AddComponent(new SettingsMenu(5, 55, 630, 250));
         _uiSystem.RegisterMenu("Settings", settingsMenuSystem);

@@ -151,6 +151,111 @@ namespace LuminaryEngine.ThirdParty.LDtk
                                                             entity.PositionPx[1]));
                                                     }
                                                     break;
+                                                case NPCType.ItemGiver:
+                                                    string[] diStrings1 = ((IEnumerable)entity.FieldInstances.Find(o => o.Identifier == "npcDialogue")!.Value).Cast<object>()
+                                                        .Select(x => x.ToString())
+                                                        .ToArray()!;
+
+                                                    List<DialogueNode> dialogue1 = new List<DialogueNode>();
+                                                
+                                                    foreach (var s in diStrings1)
+                                                    {
+                                                        dialogue1.Add(new DialogueNode(s));
+                                                    }
+
+                                                    dialogue1.Reverse();
+
+                                                    for (int i = 0; i < dialogue1.Count - 1; i++)
+                                                    {
+                                                        dialogue1[i + 1].Choices.Add(dialogue1[i]);
+                                                    }
+                                                
+                                                    DialogueNode nl1;
+                                                    
+                                                    nl1 = dialogue1.Count > 1 ? dialogue1[^1] : dialogue1[0];
+                                                    
+                                                    bool repeat = Convert.ToBoolean(
+                                                        entity.FieldInstances.Find(o =>
+                                                            o.Identifier == "isRepeatable")!.Value);
+
+                                                    NPCData d1;
+                                                    
+                                                    if (!repeat)
+                                                    {
+                                                        string[] diStringsError1 = ((IEnumerable)entity.FieldInstances.Find(o => o.Identifier == "errorDialogue")!.Value).Cast<object>()
+                                                            .Select(x => x.ToString())
+                                                            .ToArray()!;
+
+                                                        List<DialogueNode> dialogueError1 = new List<DialogueNode>();
+                                                
+                                                        foreach (var s in diStringsError1)
+                                                        {
+                                                            dialogueError1.Add(new DialogueNode(s));
+                                                        }
+
+                                                        dialogueError1.Reverse();
+
+                                                        for (int i = 0; i < dialogueError1.Count - 1; i++)
+                                                        {
+                                                            dialogueError1[i + 1].Choices.Add(dialogueError1[i]);
+                                                        }
+                                                
+                                                        DialogueNode nlE1;
+                                                    
+                                                        nlE1 = dialogueError1.Count > 1 ? dialogueError1[^1] : dialogueError1[0];
+                                                        
+                                                        d1 = new NPCData()
+                                                        {
+                                                            Type = t,
+                                                            Interactive = Convert.ToBoolean(
+                                                                entity.FieldInstances.Find(o =>
+                                                                    o.Identifier == "interactive")!.Value),
+                                                            TextureName =
+                                                                (string)entity.FieldInstances.Find(o =>
+                                                                    o.Identifier == "textureName")!.Value,
+                                                            Dialogue = nl1,
+                                                            Position = new Vector2(entity.PositionPx[0],
+                                                                entity.PositionPx[1]),
+                                                            ItemId = (string)entity.FieldInstances.Find(o =>
+                                                                o.Identifier == "itemId")!.Value,
+                                                            ItemAmount = Convert.ToInt32(
+                                                                entity.FieldInstances.Find(o =>
+                                                                    o.Identifier == "itemAmount")!.Value),
+                                                            IsRepeatable = repeat,
+                                                            ErrorDialogue = nlE1
+                                                        };
+                                                    }
+                                                    else
+                                                    {
+                                                        d1 = new NPCData()
+                                                        {
+                                                            Type = t,
+                                                            Interactive = Convert.ToBoolean(
+                                                                entity.FieldInstances.Find(o =>
+                                                                    o.Identifier == "interactive")!.Value),
+                                                            TextureName =
+                                                                (string)entity.FieldInstances.Find(o =>
+                                                                    o.Identifier == "textureName")!.Value,
+                                                            Dialogue = nl1,
+                                                            Position = new Vector2(entity.PositionPx[0],
+                                                                entity.PositionPx[1]),
+                                                            ItemId = (string)entity.FieldInstances.Find(o =>
+                                                                o.Identifier == "itemId")!.Value,
+                                                            ItemAmount = Convert.ToInt32(
+                                                                entity.FieldInstances.Find(o =>
+                                                                    o.Identifier == "itemAmount")!.Value),
+                                                            IsRepeatable = repeat
+                                                        };
+                                                    }
+                                                    
+                                                    npcs.Add(d1);
+                                                    
+                                                    if (d1.Interactive)
+                                                    {
+                                                        interactables.Add(new Vector2(entity.PositionPx[0],
+                                                            entity.PositionPx[1]));
+                                                    }
+                                                    break;
                                             }
                                         }
                                     

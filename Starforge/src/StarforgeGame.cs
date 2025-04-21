@@ -34,6 +34,7 @@ public class StarforgeGame : Game
         player.AddComponent(new PlayerComponent(World, PlayerMovementSystem, this));
         player.AddComponent(new SmoothMovementComponent(100f, 32));
         player.AddComponent(new AnimationComponent());
+        player.AddComponent(new InventoryComponent());
         
         player.GetComponent<AnimationComponent>().AddAnimations(PlayerAnimations.WalkAnimations);
     }
