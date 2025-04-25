@@ -11,6 +11,7 @@ using LuminaryEngine.Engine.Core.ResourceManagement;
 using LuminaryEngine.Engine.ECS;
 using LuminaryEngine.Engine.ECS.Components;
 using LuminaryEngine.Engine.ECS.Systems;
+using LuminaryEngine.Engine.Gameplay.Crafting;
 using LuminaryEngine.Engine.Gameplay.Dialogue;
 using LuminaryEngine.Engine.Gameplay.Items;
 using LuminaryEngine.Engine.Gameplay.Player;
@@ -302,6 +303,8 @@ public class Game
     {
         ItemManager.Instance.LoadItems();
         SpiritEssenceManager.Instance.LoadSpiritEssence();
+
+        new CraftingSystem();
 
         MenuSystem settingsMenuSystem = new MenuSystem();
         settingsMenuSystem.AddComponent(new SettingsMenu(5, 55, 630, 250));

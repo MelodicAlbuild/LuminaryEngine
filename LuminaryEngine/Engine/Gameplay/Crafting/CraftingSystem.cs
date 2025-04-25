@@ -5,22 +5,26 @@ namespace LuminaryEngine.Engine.Gameplay.Crafting;
 
 public class CraftingSystem
 {
+    public CraftingSystem Instance;
+    
     private readonly Dictionary<string, Recipe> _recipes = new();
 
     public CraftingSystem()
     {
+        Instance = this;
         LoadRecipes();
     }
 
     private void LoadRecipes()
     {
-        const string filePath = "recipes.json";
-        if (!File.Exists(filePath))
+        var path = Path.Combine("Assets", "Recipes", "recipes.json");
+        
+        if (!File.Exists(path))
         {
-            throw new FileNotFoundException($"Recipe file not found at {filePath}");
+            throw new FileNotFoundException("Items JSON file not found", path);
         }
 
-        var jsonContent = File.ReadAllText(filePath);
+        var jsonContent = File.ReadAllText(path);
         var recipes = JsonConvert.DeserializeObject<List<Recipe>>(jsonContent);
 
         if (recipes == null) return;
@@ -70,7 +74,14 @@ public class CraftingSystem
         }
 
         // Add the crafted item
-        inventory.AddItem(recipe.ResultItemID, 1);
+        if (recipe.Result.IsSpiritEssence)
+        {
+            inventory.AddSpiritEssence(recipe.Result.ResultItemID, recipe.Result.Count);
+        }
+        else
+        {
+            inventory.AddItem(recipe.Result.ResultItemID, recipe.Result.Count);
+        }
 
         return true;
     }
