@@ -21,7 +21,7 @@ public static class ConfigManager
 
         return config[key]?.ToString() ?? throw new KeyNotFoundException($"Key '{key}' not found in configuration.");
     }
-    
+
     /// <summary>
     /// Retrieves a value from the configuration file.
     /// </summary>

@@ -6,10 +6,13 @@ namespace LuminaryEngine.Engine.Gameplay.Player;
 public class InventoryComponent : IComponent
 {
     private readonly Dictionary<string, int> _items = new Dictionary<string, int>();
+    private readonly Dictionary<string, int> _spiritEssences = new Dictionary<string, int>();
+
     public int Capacity { get; set; } = 30; // Default inventory capacity
     public int UsedSlots => _items.Count;
     public int RemainingSlots => Capacity - UsedSlots;
 
+    // Item Management
     public void AddItem(string itemID, int quantity = 1)
     {
         if (quantity <= 0)
@@ -27,7 +30,6 @@ public class InventoryComponent : IComponent
         }
         else
         {
-            // Optionally handle inventory full (e.g., queue for later, drop item)
             LuminLog.Warning($"Inventory is full, cannot add item: {itemID}");
         }
     }
@@ -42,18 +44,15 @@ public class InventoryComponent : IComponent
         if (_items[itemID] > quantity)
         {
             _items[itemID] -= quantity;
-            // No event system, handle UI updates externally
             return true;
         }
 
         if (_items[itemID] == quantity)
         {
             _items.Remove(itemID);
-            // No event system, handle UI updates externally
             return true;
         }
 
-        // _items[itemID] < quantity
         LuminLog.Warning($"Attempted to remove more of item '{itemID}' than present in inventory.");
         return false;
     }
@@ -72,7 +71,7 @@ public class InventoryComponent : IComponent
     {
         return new Dictionary<string, int>(_items); // Return a copy
     }
-    
+
     public void SetInventory(Dictionary<string, int> items)
     {
         _items.Clear();
@@ -85,6 +84,75 @@ public class InventoryComponent : IComponent
         }
     }
 
+    // Spirit Essence Management
+    public void AddSpiritEssence(string essenceID, int quantity = 1)
+    {
+        if (quantity <= 0)
+        {
+            return;
+        }
+
+        if (_spiritEssences.ContainsKey(essenceID))
+        {
+            _spiritEssences[essenceID] += quantity;
+        }
+        else
+        {
+            _spiritEssences.Add(essenceID, quantity);
+        }
+    }
+
+    public bool RemoveSpiritEssence(string essenceID, int quantity = 1)
+    {
+        if (quantity <= 0 || !_spiritEssences.ContainsKey(essenceID))
+        {
+            return false;
+        }
+
+        if (_spiritEssences[essenceID] > quantity)
+        {
+            _spiritEssences[essenceID] -= quantity;
+            return true;
+        }
+
+        if (_spiritEssences[essenceID] == quantity)
+        {
+            _spiritEssences.Remove(essenceID);
+            return true;
+        }
+
+        LuminLog.Warning($"Attempted to remove more of spirit essence '{essenceID}' than present in inventory.");
+        return false;
+    }
+
+    public bool HasSpiritEssence(string essenceID, int quantity = 1)
+    {
+        return _spiritEssences.ContainsKey(essenceID) && _spiritEssences[essenceID] >= quantity;
+    }
+
+    public int GetSpiritEssenceCount(string essenceID)
+    {
+        return _spiritEssences.TryGetValue(essenceID, out int count) ? count : 0;
+    }
+
+    public Dictionary<string, int> GetSpiritEssences()
+    {
+        return new Dictionary<string, int>(_spiritEssences); // Return a copy
+    }
+
+    public void SetSpiritEssences(Dictionary<string, int> spiritEssences)
+    {
+        _spiritEssences.Clear();
+        foreach (var essence in spiritEssences)
+        {
+            if (essence.Value > 0)
+            {
+                _spiritEssences[essence.Key] = essence.Value;
+            }
+        }
+    }
+
+    // Other Inventory Operations
     public bool CanAddItem(string itemID, int quantity = 1)
     {
         if (quantity <= 0)
@@ -108,6 +176,7 @@ public class InventoryComponent : IComponent
     public void Clear()
     {
         _items.Clear();
+        _spiritEssences.Clear();
     }
 
     public void Expand(int amount)
@@ -129,10 +198,6 @@ public class InventoryComponent : IComponent
         {
             Capacity -= amount;
             LuminLog.Debug($"Inventory shrunk by {amount}. New capacity: {Capacity}");
-        }
-        else
-        {
-            LuminLog.Warning($"Attempted to shrink inventory by an invalid amount: {amount}");
         }
     }
 }

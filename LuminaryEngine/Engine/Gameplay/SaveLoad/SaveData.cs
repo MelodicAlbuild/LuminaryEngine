@@ -20,7 +20,7 @@ public class SaveData
 
     // Map Data
     public int CurrentMap { get; set; }
-    
+
     // Save timestamp
     public DateTime SaveTimestamp { get; set; }
 

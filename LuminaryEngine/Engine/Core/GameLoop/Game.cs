@@ -191,7 +191,7 @@ public class Game
         {
             _world.SwitchLevel(0, Vector2.One, false);
         }
-        
+
         return true;
     }
 
@@ -321,7 +321,7 @@ public class Game
         SDL_DestroyWindow(_window);
         SDL_image.IMG_Quit();
         SDL_Quit();
-        
+
         UpdateSave();
         _saveLoadSystem.SaveGame(_saveData, "BaseSave.lumsav");
 
@@ -334,7 +334,7 @@ public class Game
         {
             _saveData = new SaveData();
         }
-        
+
         Entity player = _world.GetEntitiesWithComponents(typeof(PlayerComponent))[0];
         _saveData.InventoryItems = player.GetComponent<InventoryComponent>().GetInventory();
         _saveData.SavePosition(player.GetComponent<TransformComponent>().Position);

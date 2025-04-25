@@ -195,7 +195,7 @@ public class PlayerMovementSystem : LuminSystem
     {
         return _direction;
     }
-    
+
     public void SetDirection(Direction direction, AnimationComponent anim = null)
     {
         _direction = direction;
@@ -217,7 +217,7 @@ public class PlayerMovementSystem : LuminSystem
                     anim.PlayAnimation("WalkRight");
                     break;
             }
-            
+
             anim.StopAnimation();
         }
     }

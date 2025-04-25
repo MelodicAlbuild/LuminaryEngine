@@ -33,7 +33,7 @@ public class StarforgeGame : Game
         {
             player.AddComponent(new TransformComponent(512, 544));
         }
-        
+
         player.AddComponent(new SpriteComponent("player.png", new SDL.SDL_Rect()
         {
             x = 0,
@@ -55,7 +55,8 @@ public class StarforgeGame : Game
 
         if (SaveData != null)
         {
-            PlayerMovementSystem.SetDirection(SaveData.PlayerFacingDirection, player.GetComponent<AnimationComponent>());
+            PlayerMovementSystem.SetDirection(SaveData.PlayerFacingDirection,
+                player.GetComponent<AnimationComponent>());
         }
 
         GridInventoryMenu gridInventoryMenu =
