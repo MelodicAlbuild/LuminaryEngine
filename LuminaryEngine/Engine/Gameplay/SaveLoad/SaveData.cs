@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+using System.Numerics;
 using LuminaryEngine.Engine.Core.Input;
 
 namespace LuminaryEngine.Engine.Gameplay.SaveLoad;
@@ -17,6 +17,7 @@ public class SaveData
 
     // Inventory-related data
     public Dictionary<string, int> InventoryItems { get; set; }
+    public Dictionary<string, int> SpiritEssences { get; set; }
 
     // Map Data
     public int CurrentMap { get; set; }

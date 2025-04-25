@@ -49,6 +49,7 @@ public class StarforgeGame : Game
         if (SaveData != null)
         {
             player.GetComponent<InventoryComponent>().SetInventory(SaveData.InventoryItems);
+            player.GetComponent<InventoryComponent>().SetSpiritEssences(SaveData.SpiritEssences);
         }
 
         player.GetComponent<AnimationComponent>().AddAnimations(PlayerAnimations.WalkAnimations);

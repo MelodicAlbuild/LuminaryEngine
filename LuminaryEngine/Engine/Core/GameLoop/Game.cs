@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Numerics;
 using LuminaryEngine.Engine.Audio;
 using LuminaryEngine.Engine.Core.Input;
@@ -299,6 +299,7 @@ public class Game
     protected virtual void LoadContent()
     {
         ItemManager.Instance.LoadItems();
+        SpiritEssenceManager.Instance.LoadSpiritEssence();
 
         MenuSystem settingsMenuSystem = new MenuSystem();
         settingsMenuSystem.AddComponent(new SettingsMenu(5, 55, 630, 250));
@@ -337,6 +338,7 @@ public class Game
 
         Entity player = _world.GetEntitiesWithComponents(typeof(PlayerComponent))[0];
         _saveData.InventoryItems = player.GetComponent<InventoryComponent>().GetInventory();
+        _saveData.SpiritEssences = player.GetComponent<InventoryComponent>().GetSpiritEssences();
         _saveData.SavePosition(player.GetComponent<TransformComponent>().Position);
         _saveData.CurrentMap = _world.GetCurrentLevelId();
         _saveData.PlayerFacingDirection = _playerMovementSystem.GetDirection();
