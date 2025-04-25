@@ -8,6 +8,7 @@ public class SpriteComponent : IComponent
     public string TextureId { get; set; }
     public SDL.SDL_Rect? SourceRect { get; set; }
     public int ZIndex { get; set; } = 0;
+    public bool IsShifted { get; set; } = true;
 
     public SpriteComponent(string textureId)
     {
@@ -32,5 +33,13 @@ public class SpriteComponent : IComponent
         TextureId = textureId;
         SourceRect = sourceRect;
         ZIndex = zIndex;
+    }
+    
+    public SpriteComponent(string textureId, SDL.SDL_Rect sourceRect, int zIndex, bool isShifted)
+    {
+        TextureId = textureId;
+        SourceRect = sourceRect;
+        ZIndex = zIndex;
+        IsShifted = isShifted;
     }
 }

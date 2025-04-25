@@ -5,58 +5,55 @@ namespace LuminaryEngine.Engine.Gameplay.Crafting;
 
 public class CraftingSystem
 {
-    private Dictionary<string, Recipe> _recipes;
+    private readonly Dictionary<string, Recipe> _recipes = new();
 
     public CraftingSystem()
     {
-        _recipes = new Dictionary<string, Recipe>();
         LoadRecipes();
     }
 
     private void LoadRecipes()
     {
-        string filePath = "recipes.json";
+        const string filePath = "recipes.json";
         if (!File.Exists(filePath))
+        {
             throw new FileNotFoundException($"Recipe file not found at {filePath}");
+        }
 
         var jsonContent = File.ReadAllText(filePath);
         var recipes = JsonConvert.DeserializeObject<List<Recipe>>(jsonContent);
 
+        if (recipes == null) return;
+
         foreach (var recipe in recipes)
         {
-            if (!_recipes.ContainsKey(recipe.RecipeID))
-                _recipes[recipe.RecipeID] = recipe;
+            _recipes.TryAdd(recipe.RecipeID, recipe);
         }
     }
 
     public bool CanCraft(string recipeID, InventoryComponent inventory)
     {
-        if (!_recipes.ContainsKey(recipeID))
+        if (!_recipes.TryGetValue(recipeID, out var recipe))
+        {
             return false;
-
-        var recipe = _recipes[recipeID];
+        }
 
         // Check required items
-        foreach (var item in recipe.RequiredItems)
+        if (recipe.RequiredItems.Any(item => !inventory.HasItem(item.Key, item.Value)))
         {
-            if (!inventory.HasItem(item.Key, item.Value))
-                return false;
+            return false;
         }
 
         // Check required spirit essences
-        foreach (var essence in recipe.RequiredSpiritEssences)
-        {
-            if (!inventory.HasSpiritEssence(essence.Key, essence.Value))
-                return false;
-        }
-
-        return true;
+        return recipe.RequiredSpiritEssences.All(essence => inventory.HasSpiritEssence(essence.Key, essence.Value));
     }
 
     public bool Craft(string recipeID, InventoryComponent inventory)
     {
         if (!CanCraft(recipeID, inventory))
+        {
             return false;
+        }
 
         var recipe = _recipes[recipeID];
 
@@ -80,17 +77,10 @@ public class CraftingSystem
 
     public List<Recipe> GetKnownRecipesForStation(string craftingStationTag, CraftingKnowledgeComponent knowledge)
     {
-        var knownRecipes = new List<Recipe>();
-
-        foreach (var recipeID in knowledge.KnownRecipeIDs)
-        {
-            if (_recipes.ContainsKey(recipeID) &&
-                _recipes[recipeID].CraftingStationTag == craftingStationTag)
-            {
-                knownRecipes.Add(_recipes[recipeID]);
-            }
-        }
-
-        return knownRecipes;
+        return knowledge.KnownRecipeIDs
+            .Where(recipeID => _recipes.TryGetValue(recipeID, out var recipe) &&
+                               recipe.CraftingStationTag == craftingStationTag)
+            .Select(recipeID => _recipes[recipeID])
+            .ToList();
     }
 }

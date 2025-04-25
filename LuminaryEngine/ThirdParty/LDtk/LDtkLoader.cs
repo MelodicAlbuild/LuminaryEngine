@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Diagnostics;
 using System.Numerics;
+using LuminaryEngine.Engine.Gameplay.Crafting;
 using LuminaryEngine.Engine.Gameplay.Dialogue;
 using LuminaryEngine.Engine.Gameplay.NPC;
+using LuminaryEngine.Engine.Gameplay.Stations;
 using LuminaryEngine.Extras;
 using LuminaryEngine.ThirdParty.LDtk.Models;
 using Newtonsoft.Json;
@@ -16,6 +18,7 @@ namespace LuminaryEngine.ThirdParty.LDtk
         public Dictionary<int, List<Vector2>> EntityMaps { get; set; }
         public Dictionary<int, List<NPCData>> NPCs { get; set; }
         public Dictionary<int, List<Vector2>> InteractableMaps { get; set; }
+        public Dictionary<int, List<IStation>> CraftingStationMaps { get; set; }
     }
 
     public class LDtkLoader
@@ -39,6 +42,7 @@ namespace LuminaryEngine.ThirdParty.LDtk
             Dictionary<int, List<Vector2>> entityMaps = new Dictionary<int, List<Vector2>>();
             Dictionary<int, List<NPCData>> npcMaps = new Dictionary<int, List<NPCData>>();
             Dictionary<int, List<Vector2>> interactableMaps = new Dictionary<int, List<Vector2>>();
+            Dictionary<int, List<IStation>> craftingStationMaps = new Dictionary<int, List<IStation>>();
 
             // If the JSON does not explicitly include layerId for each layer instance,
             // assign it from the UID as a default.
@@ -48,6 +52,8 @@ namespace LuminaryEngine.ThirdParty.LDtk
                 {
                     if (level.LayerInstances != null)
                     {
+                        List<Vector2> interactables = new List<Vector2>();
+                        
                         foreach (var layer in level.LayerInstances)
                         {
                             if (layer.LayerId == 0) // assuming a 0 value means unassigned
@@ -100,7 +106,6 @@ namespace LuminaryEngine.ThirdParty.LDtk
                                     case "npcs":
                                     {
                                         List<NPCData> npcs = new List<NPCData>();
-                                        List<Vector2> interactables = new List<Vector2>();
 
                                         foreach (var entity in layer.EntityInstances)
                                         {
@@ -273,12 +278,49 @@ namespace LuminaryEngine.ThirdParty.LDtk
                                         }
 
                                         npcMaps.Add(int.Parse(level.Identifier.Split("_")[1]), npcs);
-                                        interactableMaps.Add(int.Parse(level.Identifier.Split("_")[1]), interactables);
+                                        break;
+                                    }
+                                    case "stations":
+                                    {
+                                        List<IStation> craftingStations = new List<IStation>();
+
+                                        foreach (var entity in layer.EntityInstances)
+                                        {
+                                            switch (project.Definitions.EntityDefs.Find(o => o.Uid == entity.DefUid)!
+                                                        .Identifier)
+                                            {
+                                                case "crafting_station":
+                                                {
+                                                    CraftingStation station = new CraftingStation();
+                                                    
+                                                    station.TextureId =
+                                                        (string)entity.FieldInstances.Find(o =>
+                                                            o.Identifier == "textureName")!.Value;
+                                                    
+                                                    station.Position = new Vector2(entity.PositionPx[0],
+                                                        entity.PositionPx[1]);
+                                                    
+                                                    station.StationTag = (string)entity.FieldInstances.Find(o =>
+                                                        o.Identifier == "stationTag")!.Value;
+                                                    
+                                                    craftingStations.Add(station);
+                                                    interactables.Add(new Vector2(entity.PositionPx[0],
+                                                        entity.PositionPx[1]));
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        // Add the crafting stations to the dictionary with the level ID as the key
+                                        craftingStationMaps.Add(int.Parse(level.Identifier.Split("_")[1]),
+                                            craftingStations);
                                         break;
                                     }
                                 }
                             }
                         }
+                        
+                        interactableMaps.Add(int.Parse(level.Identifier.Split("_")[1]), interactables);
                     }
                 }
             }
@@ -290,7 +332,8 @@ namespace LuminaryEngine.ThirdParty.LDtk
                 CollisionMaps = collisionMaps,
                 EntityMaps = entityMaps,
                 NPCs = npcMaps,
-                InteractableMaps = interactableMaps
+                InteractableMaps = interactableMaps,
+                CraftingStationMaps = craftingStationMaps
             };
         }
     }

@@ -66,13 +66,28 @@ public class SpriteRenderingSystem : LuminSystem
                 throw new UnknownTextureException($"Failed to load texture: {spriteComponent.TextureId}");
             }
 
-            SDL.SDL_Rect destRect = new SDL.SDL_Rect
+            SDL.SDL_Rect destRect;
+
+            if (spriteComponent.IsShifted)
             {
-                x = (int)Math.Floor(transformComponent.Position.X) - (int)_camera.X,
-                y = (int)Math.Floor(transformComponent.Position.Y) - 16 - (int)_camera.Y,
-                w = (int)(spriteComponent.SourceRect.Value.w * transformComponent.Scale.X),
-                h = (int)(spriteComponent.SourceRect.Value.h * transformComponent.Scale.Y)
-            };
+                destRect = new SDL.SDL_Rect
+                {
+                    x = (int)Math.Floor(transformComponent.Position.X) - (int)_camera.X,
+                    y = (int)Math.Floor(transformComponent.Position.Y) - 16 - (int)_camera.Y,
+                    w = (int)(spriteComponent.SourceRect.Value.w * transformComponent.Scale.X),
+                    h = (int)(spriteComponent.SourceRect.Value.h * transformComponent.Scale.Y)
+                };
+            }
+            else
+            {
+                destRect = new SDL.SDL_Rect
+                {
+                    x = (int)Math.Floor(transformComponent.Position.X) - (int)_camera.X,
+                    y = (int)Math.Floor(transformComponent.Position.Y) - (int)_camera.Y,
+                    w = (int)(spriteComponent.SourceRect.Value.w * transformComponent.Scale.X),
+                    h = (int)(spriteComponent.SourceRect.Value.h * transformComponent.Scale.Y)
+                };
+            }
 
             RenderCommand command = new RenderCommand()
             {

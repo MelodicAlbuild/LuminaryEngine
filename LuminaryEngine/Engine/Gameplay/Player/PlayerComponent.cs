@@ -5,8 +5,10 @@ using LuminaryEngine.Engine.Core.Logging;
 using LuminaryEngine.Engine.ECS;
 using LuminaryEngine.Engine.ECS.Components;
 using LuminaryEngine.Engine.ECS.Systems;
+using LuminaryEngine.Engine.Gameplay.Crafting;
 using LuminaryEngine.Engine.Gameplay.Dialogue;
 using LuminaryEngine.Engine.Gameplay.NPC;
+using LuminaryEngine.Engine.Gameplay.Stations;
 using SDL2;
 
 namespace LuminaryEngine.Engine.Gameplay.Player;
@@ -41,85 +43,109 @@ public class PlayerComponent : IComponent
 
                 if (_world.IsInteractableAtPosition(target))
                 {
-                    NPCData data = _world.GetInteractableInstance(target);
-                    if (data != null)
+                    switch (_world.GetInteractableType(target))
                     {
-                        switch (data.Type)
+                        case InteractableType.NPC:
                         {
-                            case NPCType.Dialogue:
-                                _game.DialogueBox.SetDialogue(data.Dialogue);
-                                break;
-                            case NPCType.ItemGiver:
-                                if (data.HasInteracted)
+                            NPCData data = _world.GetNPCInstance(target);
+                            if (data != null)
+                            {
+                                switch (data.Type)
                                 {
-                                    if (data.IsRepeatable)
-                                    {
-                                        _game.World.GetEntitiesWithComponents(typeof(PlayerComponent))[0]
-                                            .GetComponent<InventoryComponent>().AddItem(data.ItemId, data.ItemAmount);
-                                        DialogueNode node = data.Dialogue;
-                                        if (node.Choices == null)
+                                    case NPCType.Dialogue:
+                                        _game.DialogueBox.SetDialogue(data.Dialogue);
+                                        break;
+                                    case NPCType.ItemGiver:
+                                        if (data.HasInteracted)
                                         {
-                                            node.Choices = new List<DialogueNode>();
-                                            node.Choices.Add(
-                                                new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
-                                        }
-                                        else if (node.Choices.Count == 0)
-                                        {
-                                            node.Choices.Add(
-                                                new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
+                                            if (data.IsRepeatable)
+                                            {
+                                                _game.World.GetEntitiesWithComponents(typeof(PlayerComponent))[0]
+                                                    .GetComponent<InventoryComponent>()
+                                                    .AddItem(data.ItemId, data.ItemAmount);
+                                                DialogueNode node = data.Dialogue;
+                                                if (node.Choices == null)
+                                                {
+                                                    node.Choices = new List<DialogueNode>();
+                                                    node.Choices.Add(
+                                                        new DialogueNode(
+                                                            $"You received {data.ItemAmount}x {data.ItemId}"));
+                                                }
+                                                else if (node.Choices.Count == 0)
+                                                {
+                                                    node.Choices.Add(
+                                                        new DialogueNode(
+                                                            $"You received {data.ItemAmount}x {data.ItemId}"));
+                                                }
+                                                else
+                                                {
+                                                    DialogueNode nodeNew = node.Choices[0];
+                                                    while (nodeNew.Choices != null && nodeNew.Choices.Count > 0)
+                                                    {
+                                                        nodeNew = nodeNew.Choices[0];
+                                                    }
+
+                                                    nodeNew.Choices.Add(
+                                                        new DialogueNode(
+                                                            $"You received {data.ItemAmount}x {data.ItemId}"));
+                                                }
+
+                                                _game.DialogueBox.SetDialogue(node);
+                                            }
+                                            else
+                                            {
+                                                _game.DialogueBox.SetDialogue(data.ErrorDialogue);
+                                            }
                                         }
                                         else
                                         {
-                                            DialogueNode nodeNew = node.Choices[0];
-                                            while (nodeNew.Choices != null && nodeNew.Choices.Count > 0)
+                                            _game.World.GetEntitiesWithComponents(typeof(PlayerComponent))[0]
+                                                .GetComponent<InventoryComponent>()
+                                                .AddItem(data.ItemId, data.ItemAmount);
+                                            DialogueNode node = data.Dialogue;
+                                            if (node.Choices == null)
                                             {
-                                                nodeNew = nodeNew.Choices[0];
+                                                node.Choices = new List<DialogueNode>();
+                                                node.Choices.Add(
+                                                    new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
+                                            }
+                                            else if (node.Choices.Count == 0)
+                                            {
+                                                node.Choices.Add(
+                                                    new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
+                                            }
+                                            else
+                                            {
+                                                DialogueNode nodeNew = node.Choices[0];
+                                                while (nodeNew.Choices != null && nodeNew.Choices.Count > 0)
+                                                {
+                                                    nodeNew = nodeNew.Choices[0];
+                                                }
+
+                                                nodeNew.Choices.Add(
+                                                    new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
                                             }
 
-                                            nodeNew.Choices.Add(
-                                                new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
+                                            _game.DialogueBox.SetDialogue(node);
+                                            data.HasInteracted = true;
                                         }
 
-                                        _game.DialogueBox.SetDialogue(node);
-                                    }
-                                    else
-                                    {
-                                        _game.DialogueBox.SetDialogue(data.ErrorDialogue);
-                                    }
+                                        break;
                                 }
-                                else
-                                {
-                                    _game.World.GetEntitiesWithComponents(typeof(PlayerComponent))[0]
-                                        .GetComponent<InventoryComponent>().AddItem(data.ItemId, data.ItemAmount);
-                                    DialogueNode node = data.Dialogue;
-                                    if (node.Choices == null)
-                                    {
-                                        node.Choices = new List<DialogueNode>();
-                                        node.Choices.Add(
-                                            new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
-                                    }
-                                    else if (node.Choices.Count == 0)
-                                    {
-                                        node.Choices.Add(
-                                            new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
-                                    }
-                                    else
-                                    {
-                                        DialogueNode nodeNew = node.Choices[0];
-                                        while (nodeNew.Choices != null && nodeNew.Choices.Count > 0)
-                                        {
-                                            nodeNew = nodeNew.Choices[0];
-                                        }
+                            }
 
-                                        nodeNew.Choices.Add(
-                                            new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
-                                    }
+                            break;
+                        }
+                        case InteractableType.Station:
+                        {
+                            IStation station = _world.GetStationInstance(target);
 
-                                    _game.DialogueBox.SetDialogue(node);
-                                    data.HasInteracted = true;
-                                }
-
-                                break;
+                            if (station is CraftingStation craftingStation)
+                            {
+                                LuminLog.Debug("Crafting station found");
+                            }
+                            
+                            break;
                         }
                     }
                 }

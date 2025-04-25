@@ -1,10 +1,13 @@
 ﻿using System.Numerics;
+using LuminaryEngine.Engine.Core.Logging;
 using LuminaryEngine.Engine.Core.Rendering;
 using LuminaryEngine.Engine.Core.Rendering.Sprites;
 using LuminaryEngine.Engine.ECS.Components;
 using LuminaryEngine.Engine.Exceptions;
+using LuminaryEngine.Engine.Gameplay.Crafting;
 using LuminaryEngine.Engine.Gameplay.NPC;
 using LuminaryEngine.Engine.Gameplay.Player;
+using LuminaryEngine.Engine.Gameplay.Stations;
 using LuminaryEngine.Extras;
 using LuminaryEngine.ThirdParty.LDtk;
 using LuminaryEngine.ThirdParty.LDtk.Models;
@@ -24,6 +27,7 @@ public class World
     private Dictionary<int, List<Vector2>> _entityMaps;
     private Dictionary<int, List<NPCData>> _npcs;
     private Dictionary<int, List<Vector2>> _interactableMaps;
+    private Dictionary<int, List<IStation>> _stationMaps;
 
     private bool _isTransitioning = false;
     private bool _hasFaded = true;
@@ -37,8 +41,17 @@ public class World
         _entityMaps = response.EntityMaps;
         _npcs = response.NPCs;
         _interactableMaps = response.InteractableMaps;
+        _stationMaps = response.CraftingStationMaps;
 
         _renderer = renderer;
+        
+        foreach (var station in _stationMaps[0])
+        {
+            if (station is CraftingStation craftingStation)
+            {
+                LuminLog.Debug($"Texture: {craftingStation.TextureId}, Position: {craftingStation.Position}, ID: {craftingStation.StationTag}");
+            }
+        }
     }
 
     public void Update()
@@ -143,10 +156,34 @@ public class World
     {
         return _interactableMaps[_currentLevelId].Any(entity => entity == position);
     }
+    
+    public InteractableType GetInteractableType(Vector2 position)
+    {
+        var interactable = _interactableMaps[_currentLevelId].Find(o => o == position);
+        
+        if(_npcs[_currentLevelId].Any(o => o.Position == interactable))
+        {
+            return InteractableType.NPC;
+        }
+        
+        if (_stationMaps[_currentLevelId].Any(o => o.Position == interactable))
+        {
+            return InteractableType.Station;
+        }
 
-    public NPCData GetInteractableInstance(Vector2 position)
+        throw new ArgumentException("No interactable found at the specified position.");
+    }
+
+    public NPCData GetNPCInstance(Vector2 position)
     {
         NPCData output = _npcs[_currentLevelId].Find(o => o.Position == position);
+
+        return output;
+    }
+
+    public IStation GetStationInstance(Vector2 position)
+    {
+        IStation output = _stationMaps[_currentLevelId].Find(o => o.Position == position);
 
         return output;
     }
@@ -239,6 +276,21 @@ public class World
                 h = 16
             }, 18));
             npc.AddComponent(new NPCComponent(d));
+
+            _collisionMaps[_currentLevelId][(int)d.Position.X / 32, (int)d.Position.Y / 32] = 1;
+        }
+        
+        foreach (var d in _stationMaps[_currentLevelId])
+        {
+            Entity npc = CreateEntity();
+            npc.AddComponent(new TransformComponent(d.Position.X, d.Position.Y));
+            npc.AddComponent(new SpriteComponent(d.TextureId + ".png", new SDL.SDL_Rect()
+            {
+                x = 0,
+                y = 0,
+                w = 32,
+                h = 32
+            }, 17, false));
 
             _collisionMaps[_currentLevelId][(int)d.Position.X / 32, (int)d.Position.Y / 32] = 1;
         }
