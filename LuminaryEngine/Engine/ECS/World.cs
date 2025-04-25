@@ -117,6 +117,20 @@ public class World
         return results;
     }
 
+    public void LoadInteractionData(Dictionary<int, List<SerializableVector2>> interactionData)
+    {
+        foreach (var keyValuePair in interactionData)
+        {
+            foreach (SerializableVector2 vector2 in keyValuePair.Value)
+            {
+                if (_npcs[keyValuePair.Key].Any(o => o.Position == vector2.ToVector2()))
+                {
+                    _npcs[keyValuePair.Key].Find(o => o.Position == vector2.ToVector2()).HasInteracted = true;
+                }
+            }
+        }
+    }
+
     public LDtkProject GetLDtkWorld()
     {
         return _ldtkWorld;
@@ -318,5 +332,26 @@ public class World
     public int GetCurrentLevelId()
     {
         return _currentLevelId;
+    }
+
+    public Dictionary<int, List<SerializableVector2>> GetInteractionData()
+    {
+        Dictionary<int, List<SerializableVector2>> output = new Dictionary<int, List<SerializableVector2>>();
+        
+        foreach (var keyValuePair in _npcs)
+        {
+            List<SerializableVector2> list = new List<SerializableVector2>();
+            foreach (var npc in keyValuePair.Value)
+            {
+                if (npc.HasInteracted)
+                {
+                    list.Add(new SerializableVector2(npc.Position));
+                }
+            }
+            
+            output.Add(keyValuePair.Key, list);
+        }
+        
+        return output;
     }
 }

@@ -1,5 +1,6 @@
-using System.Numerics;
+﻿using System.Numerics;
 using LuminaryEngine.Engine.Core.Input;
+using LuminaryEngine.Extras;
 
 namespace LuminaryEngine.Engine.Gameplay.SaveLoad;
 
@@ -21,6 +22,7 @@ public class SaveData
 
     // Map Data
     public int CurrentMap { get; set; }
+    public Dictionary<int, List<SerializableVector2>> InteractionData { get; set; }
 
     // Save timestamp
     public DateTime SaveTimestamp { get; set; }

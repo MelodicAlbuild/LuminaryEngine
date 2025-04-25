@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Numerics;
 using LuminaryEngine.Engine.Audio;
 using LuminaryEngine.Engine.Core.Input;
@@ -15,6 +15,7 @@ using LuminaryEngine.Engine.Gameplay.Dialogue;
 using LuminaryEngine.Engine.Gameplay.Items;
 using LuminaryEngine.Engine.Gameplay.Player;
 using LuminaryEngine.Engine.Gameplay.SaveLoad;
+using LuminaryEngine.Engine.Gameplay.Spirits;
 using LuminaryEngine.Engine.Gameplay.UI;
 using LuminaryEngine.Engine.Settings;
 using LuminaryEngine.ThirdParty.LDtk;
@@ -185,6 +186,7 @@ public class Game
 
         if (_saveData != null)
         {
+            _world.LoadInteractionData(_saveData.InteractionData);
             _world.SwitchLevel(_saveData.CurrentMap, Vector2.One, false);
         }
         else
@@ -341,6 +343,7 @@ public class Game
         _saveData.SpiritEssences = player.GetComponent<InventoryComponent>().GetSpiritEssences();
         _saveData.SavePosition(player.GetComponent<TransformComponent>().Position);
         _saveData.CurrentMap = _world.GetCurrentLevelId();
+        _saveData.InteractionData = _world.GetInteractionData();
         _saveData.PlayerFacingDirection = _playerMovementSystem.GetDirection();
         _saveData.SaveTimestamp = DateTime.UtcNow;
     }
