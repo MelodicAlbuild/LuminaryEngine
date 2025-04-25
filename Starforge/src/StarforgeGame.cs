@@ -5,6 +5,7 @@ using LuminaryEngine.Engine.Core.Rendering.Sprites;
 using LuminaryEngine.Engine.ECS;
 using LuminaryEngine.Engine.ECS.Components;
 using LuminaryEngine.Engine.Gameplay.Player;
+using LuminaryEngine.Engine.Gameplay.UI;
 using NuGet.Configuration;
 using SDL2;
 using Starforge.Gameplay.Player;
@@ -37,6 +38,9 @@ public class StarforgeGame : Game
         player.AddComponent(new InventoryComponent());
         
         player.GetComponent<AnimationComponent>().AddAnimations(PlayerAnimations.WalkAnimations);
+        
+        GridInventoryMenu gridInventoryMenu = new GridInventoryMenu(player.GetComponent<InventoryComponent>(), ResourceCache, 80, 50, 480, 250);
+        UISystem.RegisterMenu("Inventory", gridInventoryMenu);
     }
     
     

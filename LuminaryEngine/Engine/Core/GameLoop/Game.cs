@@ -169,6 +169,7 @@ public class Game
             
             InputMappingSystem.Instance.MapActionToKey(ActionType.Interact, SDL_Scancode.SDL_SCANCODE_E);
             InputMappingSystem.Instance.MapActionToKey(ActionType.OpenOptions, SDL_Scancode.SDL_SCANCODE_P);
+            InputMappingSystem.Instance.MapActionToKey(ActionType.OpenInventory, SDL_Scancode.SDL_SCANCODE_I);
         #endregion
         
         _world.SwitchLevel(0, Vector2.One, false);
@@ -337,4 +338,5 @@ public class Game
     public World World => _world;
     public PlayerMovementSystem PlayerMovementSystem => _playerMovementSystem;
     public DialogueBox DialogueBox => _dialogueBox;
+    public UISystem UISystem => _uiSystem;
 }

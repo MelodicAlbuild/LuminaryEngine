@@ -19,21 +19,26 @@ public class MenuSystem
     {
         _menuComponents.Remove(component);
     }
+    
+    public void ClearComponents()
+    {
+        _menuComponents.Clear();
+    }
 
     // Activates the menu (enables rendering and event handling)
-    public void Activate()
+    public virtual void Activate()
     {
         _isActive = true;
     }
 
     // Deactivates the menu (disables rendering and event handling)
-    public void Deactivate()
+    public virtual void Deactivate()
     {
         _isActive = false;
     }
 
     // Renders all components in the menu when active
-    public void Render(Renderer renderer)
+    public virtual void Render(Renderer renderer)
     {
         if (!_isActive) return;
 
@@ -44,7 +49,7 @@ public class MenuSystem
     }
 
     // Handles events for all menu components when active
-    public void HandleEvent(SDL.SDL_Event sdlEvent)
+    public virtual void HandleEvent(SDL.SDL_Event sdlEvent)
     {
         if (!_isActive) return;
 
@@ -52,5 +57,10 @@ public class MenuSystem
         {
             component.HandleEvent(sdlEvent);
         }
+    }
+
+    public List<UIComponent> GetMenuComponents()
+    {
+        return _menuComponents;
     }
 }

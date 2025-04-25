@@ -1,4 +1,5 @@
-﻿using SDL2;
+﻿using LuminaryEngine.Engine.Core.Logging;
+using SDL2;
 
 namespace LuminaryEngine.Engine.Core.Rendering;
 

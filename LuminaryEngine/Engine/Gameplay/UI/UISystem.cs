@@ -136,6 +136,16 @@ public class UISystem
                 {
                     ActivateMenu("Settings");
                 }
+            } else if (triggeredActions.Contains(ActionType.OpenInventory))
+            {
+                if (_activeMenu == "Inventory")
+                {
+                    DeactivateMenu();
+                }
+                else
+                {
+                    ActivateMenu("Inventory");
+                }
             }
         }
         

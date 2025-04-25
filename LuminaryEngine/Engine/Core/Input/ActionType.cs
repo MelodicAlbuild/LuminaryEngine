@@ -14,5 +14,6 @@ public enum ActionType
     MenuDown,
     MenuLeft,
     MenuRight,
-    OpenOptions
+    OpenOptions,
+    OpenInventory,
 }

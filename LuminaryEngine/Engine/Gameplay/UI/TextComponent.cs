@@ -1,4 +1,5 @@
-﻿using LuminaryEngine.Engine.Core.Rendering;
+﻿using LuminaryEngine.Engine.Core.Logging;
+using LuminaryEngine.Engine.Core.Rendering;
 using LuminaryEngine.Engine.Core.Rendering.Fonts;
 using SDL2;
 
