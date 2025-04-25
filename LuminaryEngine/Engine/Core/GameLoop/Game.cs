@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Numerics;
-using System.Security.Cryptography.Xml;
 using LuminaryEngine.Engine.Audio;
 using LuminaryEngine.Engine.Core.Input;
 using LuminaryEngine.Engine.Core.Logging;
@@ -15,10 +14,10 @@ using LuminaryEngine.Engine.ECS.Systems;
 using LuminaryEngine.Engine.Gameplay.Dialogue;
 using LuminaryEngine.Engine.Gameplay.Items;
 using LuminaryEngine.Engine.Gameplay.Player;
+using LuminaryEngine.Engine.Gameplay.SaveLoad;
 using LuminaryEngine.Engine.Gameplay.UI;
 using LuminaryEngine.Engine.Settings;
 using LuminaryEngine.ThirdParty.LDtk;
-using LuminaryEngine.ThirdParty.LDtk.Models;
 using SDL2;
 
 namespace LuminaryEngine.Engine.Core.GameLoop;
@@ -30,6 +29,8 @@ public class Game
     private IntPtr _window;
     private bool _isRunning;
     private World _world;
+    private SaveData _saveData;
+    private SaveLoadSystem _saveLoadSystem;
 
     private Renderer _renderer;
     private ResourceCache _resourceCache;
@@ -66,6 +67,12 @@ public class Game
         _frameRate = 0.0f;
 
         _uiSystem = new UISystem();
+        _saveLoadSystem = new SaveLoadSystem();
+
+        if (_saveLoadSystem.SaveExists("BaseSave.lumsav") && !DevModeConfig.IgnoreSaves)
+        {
+            _saveData = _saveLoadSystem.LoadGame("BaseSave.lumsav");
+        }
     }
 
     private bool Initialize()
@@ -176,8 +183,15 @@ public class Game
 
         #endregion
 
-        _world.SwitchLevel(0, Vector2.One, false);
-
+        if (_saveData != null)
+        {
+            _world.SwitchLevel(_saveData.CurrentMap, Vector2.One, false);
+        }
+        else
+        {
+            _world.SwitchLevel(0, Vector2.One, false);
+        }
+        
         return true;
     }
 
@@ -307,8 +321,26 @@ public class Game
         SDL_DestroyWindow(_window);
         SDL_image.IMG_Quit();
         SDL_Quit();
+        
+        UpdateSave();
+        _saveLoadSystem.SaveGame(_saveData, "BaseSave.lumsav");
 
         LuminLog.FinalizeLog();
+    }
+
+    private void UpdateSave()
+    {
+        if (_saveData == null)
+        {
+            _saveData = new SaveData();
+        }
+        
+        Entity player = _world.GetEntitiesWithComponents(typeof(PlayerComponent))[0];
+        _saveData.InventoryItems = player.GetComponent<InventoryComponent>().GetInventory();
+        _saveData.SavePosition(player.GetComponent<TransformComponent>().Position);
+        _saveData.CurrentMap = _world.GetCurrentLevelId();
+        _saveData.PlayerFacingDirection = _playerMovementSystem.GetDirection();
+        _saveData.SaveTimestamp = DateTime.UtcNow;
     }
 
     private void CalculateFrameRate()
@@ -344,4 +376,5 @@ public class Game
     public PlayerMovementSystem PlayerMovementSystem => _playerMovementSystem;
     public DialogueBox DialogueBox => _dialogueBox;
     public UISystem UISystem => _uiSystem;
+    public SaveData SaveData => _saveData;
 }

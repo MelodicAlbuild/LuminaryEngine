@@ -8,9 +8,11 @@ public class DevModeConfig
     public static bool ShowCollisionBoxes => false;
     public static bool MuteAllSounds => true;
     public static bool IsDebugEnabled => true;
+    public static bool IgnoreSaves => false;
 #else
     public static bool ShowCollisionBoxes => false;
     public static bool MuteAllSounds => false;
     public static bool IsDebugEnabled => false;
+    public static bool IgnoreSaves => false;
 #endif
 }

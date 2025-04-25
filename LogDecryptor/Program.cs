@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using LuminaryEngine.Extras;
+using LunimaryEngine.Engine.Configuration;
 
 namespace LogDecryptor;
 
@@ -12,7 +13,7 @@ class Program
 
     static void Main(string[] args)
     {
-        _encryptionPassword = ConfigManager.GetConfigValue("EncryptionKey");
+        _encryptionPassword = ConfigManager.GetConfigValue("EncryptionKey", "./appsettings.json");
 
         Console.WriteLine("Log Decrypt Utility");
         Console.WriteLine("======================\n");

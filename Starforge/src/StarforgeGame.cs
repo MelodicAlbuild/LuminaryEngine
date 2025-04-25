@@ -24,7 +24,16 @@ public class StarforgeGame : Game
             { PlayOnAwake = true, Volume = 0.7f, Loop = true });
 
         Entity player = World.CreateEntity();
-        player.AddComponent(new TransformComponent(512, 544));
+
+        if (SaveData != null)
+        {
+            player.AddComponent(new TransformComponent(SaveData.PlayerPositionX, SaveData.PlayerPositionY));
+        }
+        else
+        {
+            player.AddComponent(new TransformComponent(512, 544));
+        }
+        
         player.AddComponent(new SpriteComponent("player.png", new SDL.SDL_Rect()
         {
             x = 0,
@@ -37,8 +46,17 @@ public class StarforgeGame : Game
         player.AddComponent(new SmoothMovementComponent(100f, 32));
         player.AddComponent(new AnimationComponent());
         player.AddComponent(new InventoryComponent());
+        if (SaveData != null)
+        {
+            player.GetComponent<InventoryComponent>().SetInventory(SaveData.InventoryItems);
+        }
 
         player.GetComponent<AnimationComponent>().AddAnimations(PlayerAnimations.WalkAnimations);
+
+        if (SaveData != null)
+        {
+            PlayerMovementSystem.SetDirection(SaveData.PlayerFacingDirection, player.GetComponent<AnimationComponent>());
+        }
 
         GridInventoryMenu gridInventoryMenu =
             new GridInventoryMenu(player.GetComponent<InventoryComponent>(), ResourceCache, 80, 50, 480, 250);

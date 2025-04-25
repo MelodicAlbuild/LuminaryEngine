@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Starforge", "Starforge\Star
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogDecryptor", "LogDecryptor\LogDecryptor.csproj", "{1E1E1341-877E-43D4-9259-D68BDA24B108}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveDecryptor", "SaveDecryptor\SaveDecryptor.csproj", "{3F793409-AF14-4093-8618-DE29D25B3A05}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,10 @@ Global
 		{1E1E1341-877E-43D4-9259-D68BDA24B108}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E1E1341-877E-43D4-9259-D68BDA24B108}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E1E1341-877E-43D4-9259-D68BDA24B108}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F793409-AF14-4093-8618-DE29D25B3A05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F793409-AF14-4093-8618-DE29D25B3A05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F793409-AF14-4093-8618-DE29D25B3A05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F793409-AF14-4093-8618-DE29D25B3A05}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

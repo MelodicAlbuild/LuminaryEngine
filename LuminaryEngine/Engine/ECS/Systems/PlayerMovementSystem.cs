@@ -195,4 +195,30 @@ public class PlayerMovementSystem : LuminSystem
     {
         return _direction;
     }
+    
+    public void SetDirection(Direction direction, AnimationComponent anim = null)
+    {
+        _direction = direction;
+
+        if (anim != null)
+        {
+            switch (direction)
+            {
+                case Direction.North:
+                    anim.PlayAnimation("WalkUp");
+                    break;
+                case Direction.South:
+                    anim.PlayAnimation("WalkDown");
+                    break;
+                case Direction.West:
+                    anim.PlayAnimation("WalkLeft");
+                    break;
+                case Direction.East:
+                    anim.PlayAnimation("WalkRight");
+                    break;
+            }
+            
+            anim.StopAnimation();
+        }
+    }
 }

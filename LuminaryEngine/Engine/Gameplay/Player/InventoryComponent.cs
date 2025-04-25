@@ -72,6 +72,18 @@ public class InventoryComponent : IComponent
     {
         return new Dictionary<string, int>(_items); // Return a copy
     }
+    
+    public void SetInventory(Dictionary<string, int> items)
+    {
+        _items.Clear();
+        foreach (var item in items)
+        {
+            if (item.Value > 0)
+            {
+                _items[item.Key] = item.Value;
+            }
+        }
+    }
 
     public bool CanAddItem(string itemID, int quantity = 1)
     {
