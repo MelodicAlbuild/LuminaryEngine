@@ -233,6 +233,9 @@ namespace LuminaryEngine.ThirdParty.LDtk
                                                             Dialogue = nl1,
                                                             Position = new Vector2(entity.PositionPx[0],
                                                                 entity.PositionPx[1]),
+                                                            IsSpiritEssence = Convert.ToBoolean(
+                                                                entity.FieldInstances.Find(o =>
+                                                                    o.Identifier == "isSpiritEssence")!.Value),
                                                             ItemId = (string)entity.FieldInstances.Find(o =>
                                                                 o.Identifier == "itemId")!.Value,
                                                             ItemAmount = Convert.ToInt32(
@@ -256,6 +259,9 @@ namespace LuminaryEngine.ThirdParty.LDtk
                                                             Dialogue = nl1,
                                                             Position = new Vector2(entity.PositionPx[0],
                                                                 entity.PositionPx[1]),
+                                                            IsSpiritEssence = Convert.ToBoolean(
+                                                                entity.FieldInstances.Find(o =>
+                                                                    o.Identifier == "isSpiritEssence")!.Value),
                                                             ItemId = (string)entity.FieldInstances.Find(o =>
                                                                 o.Identifier == "itemId")!.Value,
                                                             ItemAmount = Convert.ToInt32(

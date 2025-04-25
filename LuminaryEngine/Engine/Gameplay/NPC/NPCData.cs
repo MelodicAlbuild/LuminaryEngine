@@ -12,6 +12,7 @@ public class NPCData
     public DialogueNode Dialogue { get; set; }
 
     // Item Giver Specific
+    public bool IsSpiritEssence { get; set; }
     public string ItemId { get; set; }
     public int ItemAmount { get; set; }
     public bool IsRepeatable { get; set; }
