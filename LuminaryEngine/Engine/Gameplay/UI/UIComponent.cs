@@ -12,7 +12,7 @@ public abstract class UIComponent
     public bool IsVisible { get; set; } = true;
     public int ZIndex { get; set; } // Default to top-most layer
     public bool IsFocused { get; set; } = false;
-    
+
     public UIComponent(int x, int y, int width, int height, int zIndex = int.MaxValue - 1)
     {
         X = x;

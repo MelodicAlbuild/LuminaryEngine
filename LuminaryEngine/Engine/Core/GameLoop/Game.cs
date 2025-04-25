@@ -30,7 +30,7 @@ public class Game
     private IntPtr _window;
     private bool _isRunning;
     private World _world;
-    
+
     private Renderer _renderer;
     private ResourceCache _resourceCache;
     private GameTime _gameTime;
@@ -46,13 +46,13 @@ public class Game
     private AnimationSystem _animationSystem;
     private UISystem _uiSystem;
     private DialogueBox _dialogueBox;
-    
+
     private Camera _camera;
-    
+
     private Stopwatch _stopwatch;
     private int _frameCount;
     private float _frameRate;
-    
+
     public static readonly int DISPLAY_WIDTH = 640;
     public static readonly int DISPLAY_HEIGHT = 360;
 
@@ -60,11 +60,11 @@ public class Game
     {
         _isRunning = true;
         _gameTime = new GameTime();
-        
+
         _stopwatch = new Stopwatch();
         _frameCount = 0;
         _frameRate = 0.0f;
-        
+
         _uiSystem = new UISystem();
     }
 
@@ -76,9 +76,10 @@ public class Game
             LuminLog.Error($"SDL_Init Error: {SDL_GetError()}");
             return false;
         }
-        
+
         // Create Window
-        _window = SDL_CreateWindow("Luminary Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, DISPLAY_WIDTH, DISPLAY_HEIGHT, SDL_WindowFlags.SDL_WINDOW_SHOWN);
+        _window = SDL_CreateWindow("Luminary Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, DISPLAY_WIDTH,
+            DISPLAY_HEIGHT, SDL_WindowFlags.SDL_WINDOW_SHOWN);
         if (_window == IntPtr.Zero)
         {
             LuminLog.Error($"SDL_CreateWindow Error: {SDL_GetError()}");
@@ -96,7 +97,7 @@ public class Game
             SDL_DestroyWindow(_window);
             return false;
         }
-        
+
         // Initialize SDL_ttf
         if (SDL_ttf.TTF_Init() < 0)
         {
@@ -106,7 +107,7 @@ public class Game
             SDL_DestroyWindow(_window);
             return false;
         }
-        
+
         // Initialize SDL_mixer
         if (SDL_mixer.Mix_Init(SDL_mixer.MIX_InitFlags.MIX_INIT_MP3) < 0)
         {
@@ -117,33 +118,34 @@ public class Game
             SDL_DestroyWindow(_window);
             return false;
         }
-        
+
         // SDL Hints
         SDL.SDL_SetHint(SDL.SDL_HINT_RENDER_SCALE_QUALITY, "0");
-        
+
         // Initialize Texture Loading System
         _textureLoadingSystem = new TextureLoadingSystem();
-        
+
         // Font Loading System
         _fontLoadingSystem = new FontLoadingSystem();
-        
+
         // Initialize Audio Manager
         _audioManager = new AudioManager();
-        
+
         // Initialize Resource Cache
-        _resourceCache = new ResourceCache(_renderer.GetRenderer(), _textureLoadingSystem, _fontLoadingSystem, _audioManager);
+        _resourceCache = new ResourceCache(_renderer.GetRenderer(), _textureLoadingSystem, _fontLoadingSystem,
+            _audioManager);
 
         _resourceCache.GetFont("Pixel-Upd", 36);
-        
+
         // Load LDtk World
         LDtkLoadResponse resp = LDtkLoader.LoadProject($"Assets/World/World.ldtk");
-        
+
         // Initialize World
         _world = new World(resp, _renderer);
-        
+
         // Initialize Camera
         _camera = new Camera(0, 0, _world);
-        
+
         // Initialize Systems
         _spriteRenderingSystem = new SpriteRenderingSystem(_renderer, _resourceCache, _camera, _world);
         _keyboardInputSystem = new KeyboardInputSystem(_world);
@@ -152,26 +154,28 @@ public class Game
         _audioSystem = new AudioSystem(_world, _audioManager);
         _tilemapRenderingSystem = new TilemapRenderingSystem(_renderer, _resourceCache, _camera, _world);
         _animationSystem = new AnimationSystem(_world, _gameTime);
-        
+
         // Start the stopwatch
         _stopwatch.Start();
-        
+
         #region Setup Default Keybinds
-            InputMappingSystem.Instance.MapActionToKey(ActionType.MoveUp, SDL_Scancode.SDL_SCANCODE_W);
-            InputMappingSystem.Instance.MapActionToKey(ActionType.MoveDown, SDL_Scancode.SDL_SCANCODE_S);
-            InputMappingSystem.Instance.MapActionToKey(ActionType.MoveLeft, SDL_Scancode.SDL_SCANCODE_A);
-            InputMappingSystem.Instance.MapActionToKey(ActionType.MoveRight, SDL_Scancode.SDL_SCANCODE_D);
-            
-            InputMappingSystem.Instance.MapActionToKey(ActionType.MenuUp, SDL_Scancode.SDL_SCANCODE_UP);
-            InputMappingSystem.Instance.MapActionToKey(ActionType.MenuDown, SDL_Scancode.SDL_SCANCODE_DOWN);
-            InputMappingSystem.Instance.MapActionToKey(ActionType.MenuLeft, SDL_Scancode.SDL_SCANCODE_LEFT);
-            InputMappingSystem.Instance.MapActionToKey(ActionType.MenuRight, SDL_Scancode.SDL_SCANCODE_RIGHT);
-            
-            InputMappingSystem.Instance.MapActionToKey(ActionType.Interact, SDL_Scancode.SDL_SCANCODE_E);
-            InputMappingSystem.Instance.MapActionToKey(ActionType.OpenOptions, SDL_Scancode.SDL_SCANCODE_P);
-            InputMappingSystem.Instance.MapActionToKey(ActionType.OpenInventory, SDL_Scancode.SDL_SCANCODE_I);
+
+        InputMappingSystem.Instance.MapActionToKey(ActionType.MoveUp, SDL_Scancode.SDL_SCANCODE_W);
+        InputMappingSystem.Instance.MapActionToKey(ActionType.MoveDown, SDL_Scancode.SDL_SCANCODE_S);
+        InputMappingSystem.Instance.MapActionToKey(ActionType.MoveLeft, SDL_Scancode.SDL_SCANCODE_A);
+        InputMappingSystem.Instance.MapActionToKey(ActionType.MoveRight, SDL_Scancode.SDL_SCANCODE_D);
+
+        InputMappingSystem.Instance.MapActionToKey(ActionType.MenuUp, SDL_Scancode.SDL_SCANCODE_UP);
+        InputMappingSystem.Instance.MapActionToKey(ActionType.MenuDown, SDL_Scancode.SDL_SCANCODE_DOWN);
+        InputMappingSystem.Instance.MapActionToKey(ActionType.MenuLeft, SDL_Scancode.SDL_SCANCODE_LEFT);
+        InputMappingSystem.Instance.MapActionToKey(ActionType.MenuRight, SDL_Scancode.SDL_SCANCODE_RIGHT);
+
+        InputMappingSystem.Instance.MapActionToKey(ActionType.Interact, SDL_Scancode.SDL_SCANCODE_E);
+        InputMappingSystem.Instance.MapActionToKey(ActionType.OpenOptions, SDL_Scancode.SDL_SCANCODE_P);
+        InputMappingSystem.Instance.MapActionToKey(ActionType.OpenInventory, SDL_Scancode.SDL_SCANCODE_I);
+
         #endregion
-        
+
         _world.SwitchLevel(0, Vector2.One, false);
 
         return true;
@@ -179,15 +183,15 @@ public class Game
 
     public void Run()
     {
-        if(!Initialize())
+        if (!Initialize())
         {
             LuminLog.Error("Failed to initialize Game.");
             return;
         }
-        
+
         LoadContent();
-        
-        while(_isRunning) 
+
+        while (_isRunning)
         {
             HandleEvents();
             Update();
@@ -195,7 +199,7 @@ public class Game
             CalculateFrameRate();
             UpdateWindowTitle();
         }
-        
+
         UnloadContent();
         Shutdown();
     }
@@ -226,13 +230,15 @@ public class Game
 
                 if (e.key.keysym.scancode == SDL_Scancode.SDL_SCANCODE_0)
                 {
-                    _world.GetEntitiesWithComponents(typeof(PlayerComponent))[0].GetComponent<InventoryComponent>().AddItem("basic_item");
+                    _world.GetEntitiesWithComponents(typeof(PlayerComponent))[0].GetComponent<InventoryComponent>()
+                        .AddItem("basic_item");
                 }
-                
+
                 if (e.key.keysym.scancode == SDL_Scancode.SDL_SCANCODE_1)
                 {
                     LuminLog.Debug("Inventory:");
-                    foreach (var keyValuePair in _world.GetEntitiesWithComponents(typeof(PlayerComponent))[0].GetComponent<InventoryComponent>().GetInventory())
+                    foreach (var keyValuePair in _world.GetEntitiesWithComponents(typeof(PlayerComponent))[0]
+                                 .GetComponent<InventoryComponent>().GetInventory())
                     {
                         LuminLog.Debug(keyValuePair.Key + ": " + keyValuePair.Value);
                     }
@@ -244,46 +250,46 @@ public class Game
     protected virtual void Update()
     {
         _gameTime.Update();
-        
+
         _playerMovementSystem.Update();
         _audioSystem.Update();
-        
+
         _dialogueBox.Update(_gameTime.DeltaTime);
-        
+
         _renderer.UpdateFade(_gameTime.DeltaTime);
         _world.Update();
-        
+
         _animationSystem.Update();
-        
+
         Entity player = _world.GetEntitiesWithComponents(typeof(PlayerComponent))[0];
         TransformComponent playerTransform = player.GetComponent<TransformComponent>();
-        
+
         _camera.Follow(playerTransform.Position);
     }
 
     private void Draw()
     {
         _renderer.Clear(0, 0, 0, 255);
-        
+
         _tilemapRenderingSystem.Draw();
         _spriteRenderingSystem.Draw();
-        
+
         _uiSystem.Render(_renderer);
-        
+
         // Render the fade overlay if applicable
         _renderer.RenderFade();
-        
+
         _renderer.Present();
     }
 
     protected virtual void LoadContent()
     {
         ItemManager.Instance.LoadItems();
-        
+
         MenuSystem settingsMenuSystem = new MenuSystem();
         settingsMenuSystem.AddComponent(new SettingsMenu(5, 55, 630, 250));
         _uiSystem.RegisterMenu("Settings", settingsMenuSystem);
-        
+
         DialogueBox dialogueBox = new DialogueBox(125, 255, 390, 85);
         _dialogueBox = dialogueBox;
         _dialogueBox.SetVisible(false);
@@ -292,20 +298,19 @@ public class Game
 
     protected virtual void UnloadContent()
     {
-        
     }
-    
+
     private void Shutdown()
     {
         _renderer.Destroy();
-        
+
         SDL_DestroyWindow(_window);
         SDL_image.IMG_Quit();
         SDL_Quit();
-        
+
         LuminLog.FinalizeLog();
     }
-    
+
     private void CalculateFrameRate()
     {
         // Increment frame count
@@ -331,7 +336,7 @@ public class Game
         string title = $"Luminary Engine - FPS: {_frameRate:F0}";
         SDL_SetWindowTitle(_window, title);
     }
-    
+
     public ResourceCache ResourceCache => _resourceCache;
     public Renderer Renderer => _renderer;
     public GameTime GameTime => _gameTime;

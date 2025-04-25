@@ -27,6 +27,7 @@ public static class ArrayReflection
                 reflected[j, i] = matrix[i, j];
             }
         }
+
         return reflected;
     }
 }

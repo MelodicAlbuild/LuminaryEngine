@@ -138,16 +138,16 @@ public class World
     {
         return _ldtkWorld.Levels[_currentLevelId];
     }
-    
+
     public bool IsInteractableAtPosition(Vector2 position)
     {
         return _interactableMaps[_currentLevelId].Any(entity => entity == position);
     }
-    
+
     public NPCData GetInteractableInstance(Vector2 position)
     {
         NPCData output = _npcs[_currentLevelId].Find(o => o.Position == position);
-        
+
         return output;
     }
 
@@ -168,7 +168,7 @@ public class World
         Entity player = null;
         if (moveToExit)
         {
-             player = GetEntitiesWithComponents(typeof(PlayerComponent))[0];
+            player = GetEntitiesWithComponents(typeof(PlayerComponent))[0];
 
             Vector2 dirVector = Vector2.Normalize(exitLocation - player.GetComponent<TransformComponent>().Position);
 

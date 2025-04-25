@@ -9,7 +9,8 @@ public class ImageComponent : UIComponent
     public Texture Texture { get; private set; }
     public SDL.SDL_Rect? SourceRect { get; private set; }
 
-    public ImageComponent(Texture texture, int x, int y, int width, int height, SDL.SDL_Rect? sourceRect = null, int zIndex = int.MaxValue)
+    public ImageComponent(Texture texture, int x, int y, int width, int height, SDL.SDL_Rect? sourceRect = null,
+        int zIndex = int.MaxValue)
         : base(x, y, width, height, zIndex)
     {
         Texture = texture;
@@ -42,7 +43,7 @@ public class ImageComponent : UIComponent
         Texture = newTexture;
         SourceRect = newSourceRect;
     }
-    
+
     public override void SetFocus(bool isFocused)
     {
         IsFocused = isFocused;

@@ -16,10 +16,11 @@ public class InputMappingSystem
             {
                 _instance = new InputMappingSystem();
             }
+
             return _instance;
         }
     }
-    
+
     private Dictionary<ActionType, SDL.SDL_Scancode> _actionKeyMap;
 
     public InputMappingSystem()

@@ -10,7 +10,7 @@ public class NPCData
     public NPCType Type { get; set; }
     public bool Interactive { get; set; }
     public DialogueNode Dialogue { get; set; }
-    
+
     // Item Giver Specific
     public string ItemId { get; set; }
     public int ItemAmount { get; set; }

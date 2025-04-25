@@ -5,7 +5,9 @@ namespace LuminaryEngine.Engine.Core.Input;
 
 public abstract class InputSystem : LuminSystem
 {
-    public InputSystem(World world) : base(world) { }
-    
+    public InputSystem(World world) : base(world)
+    {
+    }
+
     public abstract void HandleEvents(SDL.SDL_Event e);
 }

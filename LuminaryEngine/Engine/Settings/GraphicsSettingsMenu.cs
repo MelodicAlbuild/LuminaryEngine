@@ -36,7 +36,7 @@ public class GraphicsSettingsMenu : UIComponent
             Filled = true,
             ZOrder = ZIndex - 1 // Ensure backdrop is behind menu items
         });
-        
+
         int offsetY = Y + 10;
 
         for (int i = 0; i < _options.Length; i++)
@@ -132,7 +132,7 @@ public class GraphicsSettingsMenu : UIComponent
                 break;
         }
     }
-    
+
     public override void SetFocus(bool isFocused)
     {
         IsFocused = isFocused;

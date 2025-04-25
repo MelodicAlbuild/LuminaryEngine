@@ -18,7 +18,7 @@ public class Sound : IDisposable
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-    
+
     protected virtual void Dispose(bool disposing)
     {
         if (Chunk != IntPtr.Zero)

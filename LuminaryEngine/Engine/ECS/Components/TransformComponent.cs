@@ -22,12 +22,12 @@ public class TransformComponent : IComponent
         Position = new Vector2(x, y);
         PrecisePosition = new Vector2(x, y);
     }
-    
+
     public TransformComponent(float x, float y, float rotation) : this(x, y)
     {
         Rotation = rotation;
     }
-    
+
     public TransformComponent(float x, float y, float rotation, float scaleX, float scaleY) : this(x, y, rotation)
     {
         Scale = new Vector2(scaleX, scaleY);

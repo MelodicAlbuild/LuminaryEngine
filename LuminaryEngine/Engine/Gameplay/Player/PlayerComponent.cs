@@ -16,14 +16,14 @@ public class PlayerComponent : IComponent
     private World _world;
     private PlayerMovementSystem _playerMovementSystem;
     private Game _game;
-    
+
     public PlayerComponent(World world, PlayerMovementSystem playerMovementSystem, Game game)
     {
         _world = world;
         _playerMovementSystem = playerMovementSystem;
         _game = game;
     }
-    
+
     public void HandleInput(SDL.SDL_Event sdlEvent)
     {
         if (sdlEvent.type == SDL.SDL_EventType.SDL_KEYDOWN)
@@ -38,7 +38,7 @@ public class PlayerComponent : IComponent
                         .GetComponent<TransformComponent>().Position;
                 Vector2 direction = _playerMovementSystem.GetDirection().ToVector2() * 32;
                 Vector2 target = position + direction;
-                
+
                 if (_world.IsInteractableAtPosition(target))
                 {
                     NPCData data = _world.GetInteractableInstance(target);
@@ -54,15 +54,19 @@ public class PlayerComponent : IComponent
                                 {
                                     if (data.IsRepeatable)
                                     {
-                                        _game.World.GetEntitiesWithComponents(typeof(PlayerComponent))[0].GetComponent<InventoryComponent>().AddItem(data.ItemId, data.ItemAmount);
+                                        _game.World.GetEntitiesWithComponents(typeof(PlayerComponent))[0]
+                                            .GetComponent<InventoryComponent>().AddItem(data.ItemId, data.ItemAmount);
                                         DialogueNode node = data.Dialogue;
                                         if (node.Choices == null)
                                         {
                                             node.Choices = new List<DialogueNode>();
-                                            node.Choices.Add(new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
-                                        } else if (node.Choices.Count == 0)
+                                            node.Choices.Add(
+                                                new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
+                                        }
+                                        else if (node.Choices.Count == 0)
                                         {
-                                            node.Choices.Add(new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
+                                            node.Choices.Add(
+                                                new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
                                         }
                                         else
                                         {
@@ -71,9 +75,11 @@ public class PlayerComponent : IComponent
                                             {
                                                 nodeNew = nodeNew.Choices[0];
                                             }
-                                    
-                                            nodeNew.Choices.Add(new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
+
+                                            nodeNew.Choices.Add(
+                                                new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
                                         }
+
                                         _game.DialogueBox.SetDialogue(node);
                                     }
                                     else
@@ -83,15 +89,19 @@ public class PlayerComponent : IComponent
                                 }
                                 else
                                 {
-                                    _game.World.GetEntitiesWithComponents(typeof(PlayerComponent))[0].GetComponent<InventoryComponent>().AddItem(data.ItemId, data.ItemAmount);
+                                    _game.World.GetEntitiesWithComponents(typeof(PlayerComponent))[0]
+                                        .GetComponent<InventoryComponent>().AddItem(data.ItemId, data.ItemAmount);
                                     DialogueNode node = data.Dialogue;
                                     if (node.Choices == null)
                                     {
                                         node.Choices = new List<DialogueNode>();
-                                        node.Choices.Add(new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
-                                    } else if (node.Choices.Count == 0)
+                                        node.Choices.Add(
+                                            new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
+                                    }
+                                    else if (node.Choices.Count == 0)
                                     {
-                                        node.Choices.Add(new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
+                                        node.Choices.Add(
+                                            new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
                                     }
                                     else
                                     {
@@ -100,12 +110,15 @@ public class PlayerComponent : IComponent
                                         {
                                             nodeNew = nodeNew.Choices[0];
                                         }
-                                    
-                                        nodeNew.Choices.Add(new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
+
+                                        nodeNew.Choices.Add(
+                                            new DialogueNode($"You received {data.ItemAmount}x {data.ItemId}"));
                                     }
+
                                     _game.DialogueBox.SetDialogue(node);
                                     data.HasInteracted = true;
                                 }
+
                                 break;
                         }
                     }

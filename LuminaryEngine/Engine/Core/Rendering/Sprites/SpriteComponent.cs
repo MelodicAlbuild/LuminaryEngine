@@ -20,13 +20,13 @@ public class SpriteComponent : IComponent
         TextureId = textureId;
         SourceRect = sourceRect;
     }
-    
+
     public SpriteComponent(string textureId, int zIndex)
     {
         TextureId = textureId;
         ZIndex = zIndex;
     }
-    
+
     public SpriteComponent(string textureId, SDL.SDL_Rect sourceRect, int zIndex)
     {
         TextureId = textureId;

@@ -12,14 +12,14 @@ public class PlayerMovementSystem : LuminSystem
 {
     private float _speed = 0.75f;
     private Direction _direction = Direction.South;
-    
+
     private GameTime _gameTime;
-    
+
     public PlayerMovementSystem(World world, GameTime gameTime) : base(world)
     {
         _gameTime = gameTime;
     }
-    
+
     public PlayerMovementSystem(World world, float speed, GameTime gameTime) : base(world)
     {
         _speed = speed;
@@ -28,7 +28,8 @@ public class PlayerMovementSystem : LuminSystem
 
     public override void Update()
     {
-        foreach (var entity in _world.GetEntitiesWithComponents(typeof(TransformComponent), typeof(InputStateComponent)))
+        foreach (var entity in
+                 _world.GetEntitiesWithComponents(typeof(TransformComponent), typeof(InputStateComponent)))
         {
             // Assume entity has InputComponent, TransformComponent, and SmoothMovementComponent.
             var input = entity.GetComponent<InputStateComponent>();
@@ -36,7 +37,8 @@ public class PlayerMovementSystem : LuminSystem
             var smoothMove = entity.GetComponent<SmoothMovementComponent>();
 
             // When a movement input is detected and no move is currently in progress:
-            if (!smoothMove.IsMoving && IsMovementKeyPressed(input, entity, out Vector2 direction) && !_world.IsTransitioning())
+            if (!smoothMove.IsMoving && IsMovementKeyPressed(input, entity, out Vector2 direction) &&
+                !_world.IsTransitioning())
             {
                 // Calculate new target position based on a grid move
                 Vector2 newTarget = transform.Position + (direction * smoothMove.TileSize);
@@ -72,7 +74,7 @@ public class PlayerMovementSystem : LuminSystem
             }
         }
     }
-    
+
     private bool IsValidTarget(Vector2 target, Entity entity)
     {
         if (_world.IsTileSolid((int)(target.X / 32), (int)(target.Y / 32)))
@@ -80,7 +82,7 @@ public class PlayerMovementSystem : LuminSystem
             OnCollide(target, entity);
             return false;
         }
-        
+
         return true;
     }
 
@@ -100,15 +102,17 @@ public class PlayerMovementSystem : LuminSystem
                         // Handle building interaction
                         if (entityInstance.FieldInstances.Find(o => o.Identifier == "buildingId") != null)
                         {
-                            int bId = Convert.ToInt32(entityInstance.FieldInstances.Find(o => o.Identifier == "buildingId").Value);
+                            int bId = Convert.ToInt32(entityInstance.FieldInstances
+                                .Find(o => o.Identifier == "buildingId").Value);
                             _world.SwitchLevel(bId, target);
                         }
+
                         break;
                 }
             }
         }
     }
-    
+
     private bool IsMovementKeyPressed(InputStateComponent isc, Entity entity, out Vector2 direction)
     {
         direction = Vector2.Zero;
@@ -128,9 +132,11 @@ public class PlayerMovementSystem : LuminSystem
                         {
                             anim.PlayAnimation("WalkUp");
                         }
+
                         direction.Y -= 1;
                         _direction = Direction.North;
                     }
+
                     break;
                 case ActionType.MoveDown:
                     if (direction == Vector2.Zero)
@@ -139,9 +145,11 @@ public class PlayerMovementSystem : LuminSystem
                         {
                             anim.PlayAnimation("WalkDown");
                         }
+
                         direction.Y += 1;
                         _direction = Direction.South;
                     }
+
                     break;
                 case ActionType.MoveLeft:
                     if (direction == Vector2.Zero)
@@ -150,9 +158,11 @@ public class PlayerMovementSystem : LuminSystem
                         {
                             anim.PlayAnimation("WalkLeft");
                         }
+
                         direction.X -= 1;
                         _direction = Direction.West;
                     }
+
                     break;
                 case ActionType.MoveRight:
                     if (direction == Vector2.Zero)
@@ -161,9 +171,11 @@ public class PlayerMovementSystem : LuminSystem
                         {
                             anim.PlayAnimation("WalkRight");
                         }
+
                         direction.X += 1;
                         _direction = Direction.East;
                     }
+
                     break;
             }
         }

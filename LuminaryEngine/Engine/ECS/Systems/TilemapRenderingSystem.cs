@@ -26,7 +26,7 @@ public class TilemapRenderingSystem : LuminSystem
     public void Draw()
     {
         if (_world.GetCurrentLevelId() < 0) return;
-        
+
         Texture black = _resourceCache.GetTexture("black.png");
 
         // Get the LDtk project from the world

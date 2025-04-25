@@ -7,32 +7,32 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="ENet-CSharp" Version="2.4.8" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-      <PackageReference Include="Nuke.Common" Version="9.0.4" />
+        <PackageReference Include="ENet-CSharp" Version="2.4.8"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+        <PackageReference Include="Nuke.Common" Version="9.0.4"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ContentWithTargetPath Include="ThirdParty\SDL2\SDL2.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        <TargetPath>SDL2.dll</TargetPath>
-      </ContentWithTargetPath>
-      <ContentWithTargetPath Include="ThirdParty\SDL2\SDL2_image.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        <TargetPath>SDL2_image.dll</TargetPath>
-      </ContentWithTargetPath>
-      <ContentWithTargetPath Include="ThirdParty\SDL2\SDL2_ttf.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        <TargetPath>SDL2_ttf.dll</TargetPath>
-      </ContentWithTargetPath>
+        <ContentWithTargetPath Include="ThirdParty\SDL2\SDL2.dll">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <TargetPath>SDL2.dll</TargetPath>
+        </ContentWithTargetPath>
+        <ContentWithTargetPath Include="ThirdParty\SDL2\SDL2_image.dll">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <TargetPath>SDL2_image.dll</TargetPath>
+        </ContentWithTargetPath>
+        <ContentWithTargetPath Include="ThirdParty\SDL2\SDL2_ttf.dll">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <TargetPath>SDL2_ttf.dll</TargetPath>
+        </ContentWithTargetPath>
         <ContentWithTargetPath Include="ThirdParty\SDL2\SDL2_mixer.dll">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <TargetPath>SDL2_mixer.dll</TargetPath>

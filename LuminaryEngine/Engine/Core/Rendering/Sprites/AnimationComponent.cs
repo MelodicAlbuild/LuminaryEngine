@@ -20,7 +20,7 @@ public class AnimationComponent : IComponent
     {
         Animations[animation.Name] = animation;
     }
-    
+
     public void AddAnimations(IEnumerable<Animation> animations)
     {
         foreach (var animation in animations)
@@ -36,7 +36,7 @@ public class AnimationComponent : IComponent
             State = new AnimationState(animationName);
         }
     }
-    
+
     public void StopAnimation()
     {
         if (State != null)

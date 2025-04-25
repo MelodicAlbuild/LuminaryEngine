@@ -15,7 +15,8 @@ public class SpriteRenderingSystem : LuminSystem
     private ResourceCache _resourceCache;
     private Camera _camera;
 
-    public SpriteRenderingSystem(Renderer renderer, ResourceCache resourceCache, Camera camera, World world) : base(world)
+    public SpriteRenderingSystem(Renderer renderer, ResourceCache resourceCache, Camera camera, World world) :
+        base(world)
     {
         _renderer = renderer;
         _resourceCache = resourceCache;
@@ -34,8 +35,9 @@ public class SpriteRenderingSystem : LuminSystem
                 isRaised = true;
                 raisedComponent = entity.GetComponent<SpriteRaisedComponent>();
             }
+
             var transformComponent = entity.GetComponent<TransformComponent>();
-            
+
             if (entity.HasComponent<AnimationComponent>())
             {
                 var animationComponent = entity.GetComponent<AnimationComponent>();
@@ -57,13 +59,13 @@ public class SpriteRenderingSystem : LuminSystem
                     }
                 }
             }
-            
+
             Texture texture = _resourceCache.GetTexture(spriteComponent.TextureId);
             if (texture == null)
             {
                 throw new UnknownTextureException($"Failed to load texture: {spriteComponent.TextureId}");
             }
-            
+
             SDL.SDL_Rect destRect = new SDL.SDL_Rect
             {
                 x = (int)Math.Floor(transformComponent.Position.X) - (int)_camera.X,
@@ -86,7 +88,7 @@ public class SpriteRenderingSystem : LuminSystem
             if (isRaised)
             {
                 Texture raisedTexture = _resourceCache.GetTexture(raisedComponent.TextureId);
-                
+
                 SDL.SDL_Rect raisedDestRect = new SDL.SDL_Rect
                 {
                     x = (int)Math.Floor(transformComponent.Position.X) - (int)_camera.X,
@@ -94,7 +96,7 @@ public class SpriteRenderingSystem : LuminSystem
                     w = (int)(raisedComponent.SourceRect.Value.w * transformComponent.Scale.X),
                     h = (int)(raisedComponent.SourceRect.Value.h * transformComponent.Scale.Y)
                 };
-                
+
                 raisedCommand = new RenderCommand()
                 {
                     Type = RenderCommandType.DrawTexture,
@@ -104,9 +106,9 @@ public class SpriteRenderingSystem : LuminSystem
                     ZOrder = raisedComponent.ZIndex
                 };
             }
-            
+
             _renderer.EnqueueRenderCommand(command);
-            
+
             if (isRaised)
             {
                 _renderer.EnqueueRenderCommand(raisedCommand);
@@ -116,6 +118,5 @@ public class SpriteRenderingSystem : LuminSystem
 
     public override void Update()
     {
-        
     }
 }

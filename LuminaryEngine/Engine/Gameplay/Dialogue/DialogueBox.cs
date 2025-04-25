@@ -7,12 +7,12 @@ namespace LuminaryEngine.Engine.Gameplay.Dialogue;
 public class DialogueBox : UIComponent
 {
     private DialogueUISystem _dialogueUISystem;
-    
+
     public DialogueBox(int x, int y, int width, int height, int zIndex = 2147483646) : base(x, y, width, height, zIndex)
     {
         _dialogueUISystem = new DialogueUISystem(x, y, width, height);
     }
-    
+
     public void SetDialogue(DialogueNode dialogue)
     {
         _dialogueUISystem.StartDialogue(dialogue);
@@ -30,19 +30,19 @@ public class DialogueBox : UIComponent
             Filled = true,
             ZOrder = ZIndex - 1 // Ensure backdrop is behind menu items
         };
-        
+
         renderer.EnqueueRenderCommand(command); // Render the background rectangle
-        
+
         // Render the dialogue UI system
         _dialogueUISystem.Render(renderer);
     }
-    
+
     public void Update(float deltaTime)
     {
         IsVisible = _dialogueUISystem.IsVisible;
         _dialogueUISystem.Update(deltaTime);
     }
-    
+
     public override void HandleEvent(SDL.SDL_Event sdlEvent)
     {
         _dialogueUISystem.HandleEvent(sdlEvent);
@@ -53,7 +53,7 @@ public class DialogueBox : UIComponent
         IsFocused = isFocused;
         _dialogueUISystem.SetFocus(isFocused);
     }
-    
+
     public void SetVisible(bool isVisible)
     {
         IsVisible = isVisible;

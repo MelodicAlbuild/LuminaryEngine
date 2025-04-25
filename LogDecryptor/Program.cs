@@ -13,7 +13,7 @@ class Program
     static void Main(string[] args)
     {
         _encryptionPassword = ConfigManager.GetConfigValue("EncryptionKey");
-        
+
         Console.WriteLine("Log Decrypt Utility");
         Console.WriteLine("======================\n");
 

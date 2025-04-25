@@ -19,7 +19,7 @@ public class MenuSystem
     {
         _menuComponents.Remove(component);
     }
-    
+
     public void ClearComponents()
     {
         _menuComponents.Clear();

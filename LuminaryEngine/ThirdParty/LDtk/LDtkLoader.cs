@@ -17,7 +17,7 @@ namespace LuminaryEngine.ThirdParty.LDtk
         public Dictionary<int, List<NPCData>> NPCs { get; set; }
         public Dictionary<int, List<Vector2>> InteractableMaps { get; set; }
     }
-    
+
     public class LDtkLoader
     {
         /// <summary>
@@ -34,7 +34,7 @@ namespace LuminaryEngine.ThirdParty.LDtk
 
             string json = System.IO.File.ReadAllText(filePath);
             var project = JsonConvert.DeserializeObject<Models.LDtkProject>(json);
-            
+
             Dictionary<int, int[,]> collisionMaps = new Dictionary<int, int[,]>();
             Dictionary<int, List<Vector2>> entityMaps = new Dictionary<int, List<Vector2>>();
             Dictionary<int, List<NPCData>> npcMaps = new Dictionary<int, List<NPCData>>();
@@ -42,15 +42,15 @@ namespace LuminaryEngine.ThirdParty.LDtk
 
             // If the JSON does not explicitly include layerId for each layer instance,
             // assign it from the UID as a default.
-            if(project?.Levels != null)
+            if (project?.Levels != null)
             {
-                foreach(var level in project.Levels)
+                foreach (var level in project.Levels)
                 {
-                    if(level.LayerInstances != null)
+                    if (level.LayerInstances != null)
                     {
-                        foreach(var layer in level.LayerInstances)
+                        foreach (var layer in level.LayerInstances)
                         {
-                            if(layer.LayerId == 0)  // assuming a 0 value means unassigned
+                            if (layer.LayerId == 0) // assuming a 0 value means unassigned
                             {
                                 layer.LayerId = layer.Uid;
                             }
@@ -61,7 +61,7 @@ namespace LuminaryEngine.ThirdParty.LDtk
                                 if (layer is { IntGrid: not null, Identifier: "collision_grid" })
                                 {
                                     int[,] intGridValues = new int[layer.CellWidth, layer.CellHeight];
-                                    
+
                                     for (int i = 0; i < layer.CellHeight; i++)
                                     {
                                         for (int j = 0; j < layer.CellWidth; j++)
@@ -69,27 +69,30 @@ namespace LuminaryEngine.ThirdParty.LDtk
                                             intGridValues[i, j] = layer.IntGrid[i * layer.CellWidth + j];
                                         }
                                     }
-                                    
+
                                     // Assign the 2D array to the layer
-                                    collisionMaps.Add(int.Parse(level.Identifier.Split("_")[1]), ArrayReflection.ReflectOverAntiDiagonal(intGridValues));
+                                    collisionMaps.Add(int.Parse(level.Identifier.Split("_")[1]),
+                                        ArrayReflection.ReflectOverAntiDiagonal(intGridValues));
                                 }
-                            } else if (layer.Type == "Entities")
+                            }
+                            else if (layer.Type == "Entities")
                             {
                                 switch (layer.Identifier)
                                 {
                                     case "entities":
                                     {
                                         List<Vector2> entities = new List<Vector2>();
-                                
+
                                         foreach (var entity in layer.EntityInstances)
                                         {
                                             // Assuming the entity has a PositionPx property
                                             if (entity.PositionPx != null && entity.PositionPx.Length == 2)
                                             {
-                                                entities.Add(new Vector2(entity.PositionPx[0] / 32, entity.PositionPx[1] / 32));
+                                                entities.Add(new Vector2(entity.PositionPx[0] / 32,
+                                                    entity.PositionPx[1] / 32));
                                             }
                                         }
-                                
+
                                         // Add the entities to the dictionary with the level ID as the key
                                         entityMaps.Add(int.Parse(level.Identifier.Split("_")[1]), entities);
                                         break;
@@ -98,7 +101,7 @@ namespace LuminaryEngine.ThirdParty.LDtk
                                     {
                                         List<NPCData> npcs = new List<NPCData>();
                                         List<Vector2> interactables = new List<Vector2>();
-                                    
+
                                         foreach (var entity in layer.EntityInstances)
                                         {
                                             NPCType t = (NPCType)Convert.ToInt32(entity.FieldInstances.Find(o =>
@@ -107,12 +110,14 @@ namespace LuminaryEngine.ThirdParty.LDtk
                                             switch (t)
                                             {
                                                 case NPCType.Dialogue:
-                                                    string[] diStrings = ((IEnumerable)entity.FieldInstances.Find(o => o.Identifier == "npcDialogue")!.Value).Cast<object>()
+                                                    string[] diStrings =
+                                                        ((IEnumerable)entity.FieldInstances.Find(o =>
+                                                            o.Identifier == "npcDialogue")!.Value).Cast<object>()
                                                         .Select(x => x.ToString())
                                                         .ToArray()!;
 
                                                     List<DialogueNode> dialogue = new List<DialogueNode>();
-                                                
+
                                                     foreach (var s in diStrings)
                                                     {
                                                         dialogue.Add(new DialogueNode(s));
@@ -124,9 +129,9 @@ namespace LuminaryEngine.ThirdParty.LDtk
                                                     {
                                                         dialogue[i + 1].Choices.Add(dialogue[i]);
                                                     }
-                                                
+
                                                     DialogueNode n1;
-                                                    
+
                                                     n1 = dialogue.Count > 1 ? dialogue[^1] : dialogue[0];
 
                                                     NPCData d = new NPCData()
@@ -142,22 +147,25 @@ namespace LuminaryEngine.ThirdParty.LDtk
                                                         Position = new Vector2(entity.PositionPx[0],
                                                             entity.PositionPx[1]),
                                                     };
-                                                    
+
                                                     npcs.Add(d);
-                                                    
+
                                                     if (d.Interactive)
                                                     {
                                                         interactables.Add(new Vector2(entity.PositionPx[0],
                                                             entity.PositionPx[1]));
                                                     }
+
                                                     break;
                                                 case NPCType.ItemGiver:
-                                                    string[] diStrings1 = ((IEnumerable)entity.FieldInstances.Find(o => o.Identifier == "npcDialogue")!.Value).Cast<object>()
+                                                    string[] diStrings1 =
+                                                        ((IEnumerable)entity.FieldInstances.Find(o =>
+                                                            o.Identifier == "npcDialogue")!.Value).Cast<object>()
                                                         .Select(x => x.ToString())
                                                         .ToArray()!;
 
                                                     List<DialogueNode> dialogue1 = new List<DialogueNode>();
-                                                
+
                                                     foreach (var s in diStrings1)
                                                     {
                                                         dialogue1.Add(new DialogueNode(s));
@@ -169,25 +177,27 @@ namespace LuminaryEngine.ThirdParty.LDtk
                                                     {
                                                         dialogue1[i + 1].Choices.Add(dialogue1[i]);
                                                     }
-                                                
+
                                                     DialogueNode nl1;
-                                                    
+
                                                     nl1 = dialogue1.Count > 1 ? dialogue1[^1] : dialogue1[0];
-                                                    
+
                                                     bool repeat = Convert.ToBoolean(
                                                         entity.FieldInstances.Find(o =>
                                                             o.Identifier == "isRepeatable")!.Value);
 
                                                     NPCData d1;
-                                                    
+
                                                     if (!repeat)
                                                     {
-                                                        string[] diStringsError1 = ((IEnumerable)entity.FieldInstances.Find(o => o.Identifier == "errorDialogue")!.Value).Cast<object>()
+                                                        string[] diStringsError1 =
+                                                            ((IEnumerable)entity.FieldInstances.Find(o =>
+                                                                o.Identifier == "errorDialogue")!.Value).Cast<object>()
                                                             .Select(x => x.ToString())
                                                             .ToArray()!;
 
                                                         List<DialogueNode> dialogueError1 = new List<DialogueNode>();
-                                                
+
                                                         foreach (var s in diStringsError1)
                                                         {
                                                             dialogueError1.Add(new DialogueNode(s));
@@ -199,11 +209,13 @@ namespace LuminaryEngine.ThirdParty.LDtk
                                                         {
                                                             dialogueError1[i + 1].Choices.Add(dialogueError1[i]);
                                                         }
-                                                
+
                                                         DialogueNode nlE1;
-                                                    
-                                                        nlE1 = dialogueError1.Count > 1 ? dialogueError1[^1] : dialogueError1[0];
-                                                        
+
+                                                        nlE1 = dialogueError1.Count > 1
+                                                            ? dialogueError1[^1]
+                                                            : dialogueError1[0];
+
                                                         d1 = new NPCData()
                                                         {
                                                             Type = t,
@@ -247,18 +259,19 @@ namespace LuminaryEngine.ThirdParty.LDtk
                                                             IsRepeatable = repeat
                                                         };
                                                     }
-                                                    
+
                                                     npcs.Add(d1);
-                                                    
+
                                                     if (d1.Interactive)
                                                     {
                                                         interactables.Add(new Vector2(entity.PositionPx[0],
                                                             entity.PositionPx[1]));
                                                     }
+
                                                     break;
                                             }
                                         }
-                                    
+
                                         npcMaps.Add(int.Parse(level.Identifier.Split("_")[1]), npcs);
                                         interactableMaps.Add(int.Parse(level.Identifier.Split("_")[1]), interactables);
                                         break;

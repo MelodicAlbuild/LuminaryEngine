@@ -17,7 +17,7 @@ public class PlayerAnimations
                 new SDL.SDL_Rect { x = 96, y = 0, w = 32, h = 48 }
             ],
             0.2f, // Frame duration in seconds
-            true  // Looping
+            true // Looping
         ),
         // Left
         new Animation(
@@ -29,7 +29,7 @@ public class PlayerAnimations
                 new SDL.SDL_Rect { x = 96, y = 48, w = 32, h = 48 }
             ],
             0.2f, // Frame duration in seconds
-            true  // Looping
+            true // Looping
         ),
         // Right
         new Animation(
@@ -41,7 +41,7 @@ public class PlayerAnimations
                 new SDL.SDL_Rect { x = 96, y = 96, w = 32, h = 48 }
             ],
             0.2f, // Frame duration in seconds
-            true  // Looping
+            true // Looping
         ),
         // Up
         new Animation(
@@ -53,7 +53,7 @@ public class PlayerAnimations
                 new SDL.SDL_Rect { x = 96, y = 144, w = 32, h = 48 }
             ],
             0.2f, // Frame duration in seconds
-            true  // Looping
+            true // Looping
         )
     };
 }

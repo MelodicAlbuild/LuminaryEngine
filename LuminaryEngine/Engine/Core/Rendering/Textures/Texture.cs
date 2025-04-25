@@ -7,9 +7,9 @@ public class Texture
     public int Height { get; private set; }
     public uint Format { get; private set; }
     public int Access { get; private set; }
-    
+
     public string TextureId { get; private set; }
-    
+
     public Texture(IntPtr handle, uint format, int access, int width, int height)
     {
         Handle = handle;
@@ -18,7 +18,7 @@ public class Texture
         Width = width;
         Height = height;
     }
-    
+
     public void AssignTextureId(string textureId)
     {
         TextureId = textureId;

@@ -83,13 +83,13 @@ public class UISystem
             _activeMenu = null;
         }
     }
-    
+
     // Adds a UI component to the system
     public void AddUIComponent(UIComponent component)
     {
         _uiComponents.Add(component);
     }
-    
+
     // Removes a UI component from the system
     public void RemoveUIComponent(UIComponent component)
     {
@@ -110,7 +110,7 @@ public class UISystem
         {
             _menuSystems[_activeMenu].Render(renderer);
         }
-        
+
         // Render UI components
         foreach (var component in _uiComponents)
         {
@@ -136,7 +136,8 @@ public class UISystem
                 {
                     ActivateMenu("Settings");
                 }
-            } else if (triggeredActions.Contains(ActionType.OpenInventory))
+            }
+            else if (triggeredActions.Contains(ActionType.OpenInventory))
             {
                 if (_activeMenu == "Inventory")
                 {
@@ -148,7 +149,7 @@ public class UISystem
                 }
             }
         }
-        
+
         // Handle events for active HUD
         if (_activeHUD != null && _hudSystems.ContainsKey(_activeHUD))
         {
@@ -160,7 +161,7 @@ public class UISystem
         {
             _menuSystems[_activeMenu].HandleEvent(sdlEvent);
         }
-        
+
         // Handle events for UI components
         foreach (var component in _uiComponents)
         {
@@ -172,7 +173,7 @@ public class UISystem
     {
         return _hudSystems[id];
     }
-    
+
     public MenuSystem GetMenuSystem(string id)
     {
         return _menuSystems[id];

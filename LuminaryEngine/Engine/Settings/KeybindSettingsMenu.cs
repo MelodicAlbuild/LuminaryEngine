@@ -19,7 +19,7 @@ public class KeybindSettingsMenu : UIComponent
     {
         _actions = new List<ActionType>((ActionType[])Enum.GetValues(typeof(ActionType)));
         _isRebinding = false;
-        
+
         List<string> assignedKeys = new List<string>();
         foreach (var action in _actions)
         {
@@ -33,7 +33,7 @@ public class KeybindSettingsMenu : UIComponent
                 assignedKeys.Add(action + ": None");
             }
         }
-        
+
         _scrollableMenu = new ScrollableMenu(X, Y, Width, Height, assignedKeys, 5, ZIndex);
     }
 
@@ -48,7 +48,7 @@ public class KeybindSettingsMenu : UIComponent
             Filled = true,
             ZOrder = ZIndex - 1 // Ensure backdrop is behind menu items
         });
-        
+
         _scrollableMenu.Render(renderer);
 
         if (_isRebinding)
@@ -73,7 +73,8 @@ public class KeybindSettingsMenu : UIComponent
             var pressedKey = sdlEvent.key.keysym.scancode;
 
             // Check if the key is already assigned to another action
-            foreach (var action in _actions.Where(action => InputMappingSystem.Instance.GetKeyForAction(action) == pressedKey))
+            foreach (var action in _actions.Where(action =>
+                         InputMappingSystem.Instance.GetKeyForAction(action) == pressedKey))
             {
                 LuminLog.Debug($"Key {pressedKey} is already assigned to {action}. Choose another key.");
                 _isRebinding = false; // Exit rebind mode
@@ -90,7 +91,7 @@ public class KeybindSettingsMenu : UIComponent
         else if (sdlEvent.type == SDL.SDL_EventType.SDL_KEYDOWN)
         {
             _scrollableMenu.HandleEvent(sdlEvent);
-            
+
             var triggeredActions = InputMappingSystem.Instance.GetTriggeredActions(new HashSet<SDL.SDL_Scancode>
                 { sdlEvent.key.keysym.scancode });
 
@@ -100,7 +101,7 @@ public class KeybindSettingsMenu : UIComponent
             }
         }
     }
-    
+
     public override void SetFocus(bool isFocused)
     {
         IsFocused = isFocused;

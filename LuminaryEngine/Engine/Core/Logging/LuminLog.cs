@@ -50,7 +50,7 @@ public static class LuminLog
     public static void FinalizeLog()
     {
         _encryptionPassword = ConfigManager.GetConfigValue("EncryptionKey");
-        
+
         if (!File.Exists(_tempLogFilePath))
         {
             Console.WriteLine("No logs to finalize.");

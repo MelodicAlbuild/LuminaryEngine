@@ -92,12 +92,12 @@ public class InventoryComponent : IComponent
     {
         return UsedSlots >= Capacity;
     }
-    
+
     public void Clear()
     {
         _items.Clear();
     }
-    
+
     public void Expand(int amount)
     {
         if (amount > 0)
@@ -110,7 +110,7 @@ public class InventoryComponent : IComponent
             LuminLog.Warning($"Attempted to expand inventory by a non-positive amount: {amount}");
         }
     }
-    
+
     public void Shrink(int amount)
     {
         if (amount > 0 && Capacity - amount >= UsedSlots)

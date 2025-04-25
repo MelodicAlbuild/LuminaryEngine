@@ -6,9 +6,9 @@ namespace LuminaryEngine.Extras;
 public static class EncryptionUtils
 {
     private const int SaltSize = 16; // 128-bit salt
-    private const int KeySize = 32;  // 256-bit key
-    private const int IvSize = 12;   // 96-bit IV (recommended for AES-GCM)
-    private const int TagSize = 16;  // 128-bit authentication tag
+    private const int KeySize = 32; // 256-bit key
+    private const int IvSize = 12; // 96-bit IV (recommended for AES-GCM)
+    private const int TagSize = 16; // 128-bit authentication tag
     private const int Iterations = 10000; // PBKDF2 iteration count
 
     /// <summary>

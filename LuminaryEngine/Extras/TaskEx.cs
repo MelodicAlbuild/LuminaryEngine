@@ -17,7 +17,7 @@ public static class TaskEx
             while (condition()) await Task.Delay(frequency);
         });
 
-        if(waitTask != await Task.WhenAny(waitTask, Task.Delay(timeout)))
+        if (waitTask != await Task.WhenAny(waitTask, Task.Delay(timeout)))
             throw new TimeoutException();
     }
 
@@ -35,11 +35,11 @@ public static class TaskEx
             while (!condition()) await Task.Delay(frequency);
         });
 
-        if (waitTask != await Task.WhenAny(waitTask, 
-                Task.Delay(timeout))) 
+        if (waitTask != await Task.WhenAny(waitTask,
+                Task.Delay(timeout)))
             throw new TimeoutException();
     }
-    
+
     /// <summary>
     /// Blocks until condition is not true or timeout occurs.
     /// </summary>
@@ -54,11 +54,11 @@ public static class TaskEx
             while (condition()) await Task.Delay(frequency);
         });
 
-        if (waitTask != await Task.WhenAny(waitTask, 
-                Task.Delay(timeout))) 
+        if (waitTask != await Task.WhenAny(waitTask,
+                Task.Delay(timeout)))
             throw new TimeoutException();
     }
-    
+
     /// <summary>
     /// Blocks until amount of time is met.
     /// </summary>
@@ -67,13 +67,10 @@ public static class TaskEx
     /// <returns></returns>
     public static async Task WaitMs(int ms, int timeout = -1)
     {
-        var waitTask = Task.Run(async () =>
-        {
-            await Task.Delay(ms);
-        });
+        var waitTask = Task.Run(async () => { await Task.Delay(ms); });
 
-        if (waitTask != await Task.WhenAny(waitTask, 
-                Task.Delay(timeout))) 
+        if (waitTask != await Task.WhenAny(waitTask,
+                Task.Delay(timeout)))
             throw new TimeoutException();
     }
 }

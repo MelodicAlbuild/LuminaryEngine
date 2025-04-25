@@ -6,7 +6,9 @@ namespace LuminaryEngine.Engine.Core.Input;
 
 public class MouseInputSystem : InputSystem
 {
-    public MouseInputSystem(World world) : base(world) { }
+    public MouseInputSystem(World world) : base(world)
+    {
+    }
 
     public override void HandleEvents(SDL.SDL_Event e)
     {
@@ -35,7 +37,7 @@ public class MouseInputSystem : InputSystem
             }
         }
     }
-    
+
     public override void Update()
     {
     }

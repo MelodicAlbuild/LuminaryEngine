@@ -20,16 +20,17 @@ public class SettingsMenu : UIComponent
     {
         _height = height;
         _width = width;
-        
+
         // Define categories
         var categories = new List<string>
-            { "Keybindings", 
-                "Audio", 
-                "Graphics", 
-                "Gameplay", 
-                "Network", 
-                "Accessibility" 
-            };
+        {
+            "Keybindings",
+            "Audio",
+            "Graphics",
+            "Gameplay",
+            "Network",
+            "Accessibility"
+        };
 
         // Create the scrollable menu
         _scrollableMenu = new ScrollableMenu(x, y, width, 150, categories, 5, zIndex, true, true); // 5 visible items
@@ -60,7 +61,7 @@ public class SettingsMenu : UIComponent
             Filled = true,
             ZOrder = ZIndex - 1 // Ensure backdrop is behind menu items
         });
-        
+
         // Render the scrollable menu for categories
         _scrollableMenu.Render(renderer);
 
@@ -75,7 +76,7 @@ public class SettingsMenu : UIComponent
         {
             _currentMenu.SetFocus(true);
             _scrollableMenu.SetFocus(false);
-            
+
             if (sdlEvent.type == SDL.SDL_EventType.SDL_KEYDOWN)
             {
                 if (sdlEvent.key.keysym.sym == SDL.SDL_Keycode.SDLK_ESCAPE)
@@ -83,7 +84,7 @@ public class SettingsMenu : UIComponent
                     _scrollableMenu.FreeOption();
                 }
             }
-            
+
             _currentMenu.HandleEvent(sdlEvent);
         }
         else
@@ -91,7 +92,7 @@ public class SettingsMenu : UIComponent
             _currentMenu.SetFocus(false);
             _scrollableMenu.SetFocus(true);
         }
-        
+
         // Handle input for the scrollable menu
         _scrollableMenu.HandleEvent(sdlEvent);
 
@@ -102,7 +103,7 @@ public class SettingsMenu : UIComponent
             _currentMenu = newMenu;
         }
     }
-    
+
     public override void SetFocus(bool isFocused)
     {
         IsFocused = isFocused;

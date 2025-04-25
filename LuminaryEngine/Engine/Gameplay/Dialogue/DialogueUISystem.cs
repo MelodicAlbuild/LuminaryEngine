@@ -50,7 +50,7 @@ public class DialogueUISystem : UIComponent
         // Reset the text component with an empty string
         dialogueText.SetText(" ");
         startedType = true;
-        
+
         IsVisible = true;
     }
 
@@ -92,7 +92,8 @@ public class DialogueUISystem : UIComponent
             isTyping = false;
             isWaitingForInput = true;
             interactedDuringTyping = true;
-        } else if (isWaitingForInput && !interactedDuringTyping)
+        }
+        else if (isWaitingForInput && !interactedDuringTyping)
         {
             // If there's more dialogue to display, move to the next node
             if (currentNode != null)
@@ -109,7 +110,7 @@ public class DialogueUISystem : UIComponent
                         // End of dialogue
                         dialogueText.SetText(" "); // Clear the text box
                         currentNode = null;
-                        
+
                         IsVisible = false; // Hide the dialogue UI if there are no choices left to display
                     }
                 }
@@ -118,7 +119,7 @@ public class DialogueUISystem : UIComponent
                     // End of dialogue
                     dialogueText.SetText(" "); // Clear the text box
                     currentNode = null;
-                    
+
                     IsVisible = false; // Hide the dialogue UI if there are no choices left to display
                 }
             }
@@ -127,14 +128,16 @@ public class DialogueUISystem : UIComponent
                 // End of dialogue
                 dialogueText.SetText(" "); // Clear the text box
                 currentNode = null;
-                
+
                 IsVisible = false; // Hide the dialogue UI if there are no choices left to display
             }
-        } else if (isWaitingForInput && interactedDuringTyping)
+        }
+        else if (isWaitingForInput && interactedDuringTyping)
         {
             // Clear the interaction flag so the next interaction can proceed
             interactedDuringTyping = false;
-        } else if (startedType)
+        }
+        else if (startedType)
         {
             startedType = false;
         }

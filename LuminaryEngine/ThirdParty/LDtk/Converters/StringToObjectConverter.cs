@@ -17,7 +17,7 @@ public class StringToObjectConverter : JsonConverter
 
         if (jToken.Type == JTokenType.String)
         {
-            jToken = JToken.Parse((string) jToken);
+            jToken = JToken.Parse((string)jToken);
         }
 
         return jToken.ToObject(objectType);

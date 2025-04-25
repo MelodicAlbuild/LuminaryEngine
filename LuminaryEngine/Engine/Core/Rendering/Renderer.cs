@@ -7,23 +7,24 @@ public class Renderer
 {
     private IntPtr _renderer;
     private List<RenderCommand> renderQueue = new List<RenderCommand>();
-    
+
     private bool _isFading = false;
     private float _fadeDuration = 0f; // Duration of the fade (seconds).
-    private float _fadeElapsed = 0f;  // Time elapsed since starting fade (seconds).
-    private bool _fadeIn = true;      // true for fade in (black->clear), false for fade out (clear->black).
+    private float _fadeElapsed = 0f; // Time elapsed since starting fade (seconds).
+    private bool _fadeIn = true; // true for fade in (black->clear), false for fade out (clear->black).
     private bool _holdFade = false; // Whether to hold the fade at the end.
-    
+
     public Renderer(IntPtr window)
     {
-        _renderer = SDL.SDL_CreateRenderer(window, -1, SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED | SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC);
-        
+        _renderer = SDL.SDL_CreateRenderer(window, -1,
+            SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED | SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC);
+
         if (_renderer == IntPtr.Zero)
         {
             throw new Exception($"Failed to create renderer: {SDL.SDL_GetError()}");
         }
     }
-    
+
     public void Clear(byte r, byte g, byte b, byte a)
     {
         EnqueueRenderCommand(new RenderCommand()
@@ -36,7 +37,7 @@ public class Renderer
             ZOrder = float.MinValue
         });
     }
-    
+
     public void EnqueueRenderCommand(RenderCommand command)
     {
         int insertIndex = renderQueue.FindIndex(cmd => cmd.ZOrder > command.ZOrder);
@@ -49,7 +50,7 @@ public class Renderer
             renderQueue.Insert(insertIndex, command);
         }
     }
-    
+
     public void DrawTexture(IntPtr texture, SDL.SDL_Rect? sourceRect, SDL.SDL_Rect destRect)
     {
         if (sourceRect.HasValue)
@@ -62,7 +63,7 @@ public class Renderer
             SDL.SDL_RenderCopy(_renderer, texture, IntPtr.Zero, ref destRect);
         }
     }
-    
+
     public void Present()
     {
         // Process the entire queue
@@ -74,12 +75,15 @@ public class Renderer
                     DrawTexture(command.Texture, command.SourceRect, command.DestRect);
                     break;
                 case RenderCommandType.Clear:
-                    SDL.SDL_SetRenderDrawColor(_renderer, command.ClearR, command.ClearG, command.ClearB, command.ClearA);
+                    SDL.SDL_SetRenderDrawColor(_renderer, command.ClearR, command.ClearG, command.ClearB,
+                        command.ClearA);
                     SDL.SDL_RenderClear(_renderer);
                     break;
                 case RenderCommandType.ClearUI:
-                    SDL.SDL_SetRenderDrawColor(_renderer, command.ClearR, command.ClearG, command.ClearB, command.ClearA);
-                    SDL.SDL_Rect dRect = command.DestRect;;
+                    SDL.SDL_SetRenderDrawColor(_renderer, command.ClearR, command.ClearG, command.ClearB,
+                        command.ClearA);
+                    SDL.SDL_Rect dRect = command.DestRect;
+                    ;
                     SDL.SDL_RenderFillRect(_renderer, ref dRect);
                     break;
                 case RenderCommandType.DrawText:
@@ -100,7 +104,7 @@ public class Renderer
         SDL.SDL_RenderPresent(_renderer);
         renderQueue.Clear();
     }
-    
+
     public void Destroy()
     {
         if (_renderer != IntPtr.Zero)
@@ -109,14 +113,14 @@ public class Renderer
             _renderer = IntPtr.Zero;
         }
     }
-    
+
     private void DrawText(IntPtr font, string text, SDL.SDL_Color color, SDL.SDL_Rect destRect)
     {
         // Calculate the actual size of the text
         int textWidth, textHeight;
         SDL_ttf.TTF_SizeUTF8(font, text, out textWidth, out textHeight);
-        
-        if(textWidth <= 0 || textHeight <= 0)
+
+        if (textWidth <= 0 || textHeight <= 0)
         {
             return;
         }
@@ -151,7 +155,7 @@ public class Renderer
     {
         return _renderer;
     }
-    
+
     public void UpdateFade(float deltaTime)
     {
         if (_isFading)
@@ -164,12 +168,12 @@ public class Renderer
             }
         }
     }
-    
+
     public bool IsFading()
     {
         return _isFading;
     }
-    
+
     public void StartFade(bool fadeIn, float duration, bool hold)
     {
         _fadeIn = fadeIn;
@@ -178,7 +182,7 @@ public class Renderer
         _isFading = true;
         _holdFade = hold;
     }
-    
+
     public void DrawRectangle(SDL.SDL_Rect rect, SDL.SDL_Color color, bool filled)
     {
         // Set the renderer color
@@ -206,7 +210,7 @@ public class Renderer
             Type = RenderCommandType.FadeFrame,
             ZOrder = float.MaxValue // Ensure fade is rendered last
         };
-        
+
         EnqueueRenderCommand(command);
 
         if (_holdFade && !_isFading)
@@ -216,11 +220,11 @@ public class Renderer
                 Type = RenderCommandType.FadeFrameHold,
                 ZOrder = float.MaxValue // Ensure fade is rendered last
             };
-        
+
             EnqueueRenderCommand(command2);
         }
     }
-    
+
     private void RenderFadeOverlay()
     {
         if (!_isFading) return;
@@ -243,15 +247,15 @@ public class Renderer
         SDL.SDL_SetRenderDrawBlendMode(_renderer, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
         // Set draw color to black with the calculated alpha.
         SDL.SDL_SetRenderDrawColor(_renderer, 0, 0, 0, alpha);
-        
+
         SDL.SDL_Rect viewport = new SDL.SDL_Rect()
         {
             x = 0,
             y = 0,
             w = 640, // Assuming a fixed width for the viewport
-            h = 360  // Assuming a fixed height for the viewport
+            h = 360 // Assuming a fixed height for the viewport
         };
-        
+
         // Render a rectangle covering the entire viewport.
         SDL.SDL_RenderFillRect(_renderer, ref viewport);
     }
@@ -262,15 +266,15 @@ public class Renderer
         SDL.SDL_SetRenderDrawBlendMode(_renderer, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
         // Set draw color to black with the calculated alpha.
         SDL.SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
-        
+
         SDL.SDL_Rect viewport = new SDL.SDL_Rect()
         {
             x = 0,
             y = 0,
             w = 640, // Assuming a fixed width for the viewport
-            h = 360  // Assuming a fixed height for the viewport
+            h = 360 // Assuming a fixed height for the viewport
         };
-        
+
         // Render a rectangle covering the entire viewport.
         SDL.SDL_RenderFillRect(_renderer, ref viewport);
     }

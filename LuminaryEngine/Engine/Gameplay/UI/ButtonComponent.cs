@@ -25,7 +25,9 @@ public class ButtonComponent : UIComponent
         BackgroundColor = backgroundColor;
 
         // Initialize the TextComponent for the button's label
-        _textComponent = new TextComponent(label, font, labelColor, x + 10, y + 10, width - 20, height - 20, zIndex + 1); // Padding for the label
+        _textComponent =
+            new TextComponent(label, font, labelColor, x + 10, y + 10, width - 20, height - 20,
+                zIndex + 1); // Padding for the label
     }
 
     public override void Render(Renderer renderer)
@@ -74,7 +76,7 @@ public class ButtonComponent : UIComponent
         _textComponent.X = X + 10; // Adjust for padding
         _textComponent.Y = Y + 10; // Adjust for padding
     }
-    
+
     public override void SetFocus(bool isFocused)
     {
         IsFocused = isFocused;
