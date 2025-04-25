@@ -44,14 +44,6 @@ public class World
         _stationMaps = response.CraftingStationMaps;
 
         _renderer = renderer;
-        
-        foreach (var station in _stationMaps[0])
-        {
-            if (station is CraftingStation craftingStation)
-            {
-                LuminLog.Debug($"Texture: {craftingStation.TextureId}, Position: {craftingStation.Position}, ID: {craftingStation.StationTag}");
-            }
-        }
     }
 
     public void Update()
