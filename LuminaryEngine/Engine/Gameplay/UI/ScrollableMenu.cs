@@ -1,6 +1,7 @@
 ﻿using LuminaryEngine.Engine.Core.Input;
 using LuminaryEngine.Engine.Core.Logging;
 using LuminaryEngine.Engine.Core.Rendering;
+using LuminaryEngine.Engine.Core.Rendering.Fonts;
 using LuminaryEngine.Engine.Core.ResourceManagement;
 using SDL2;
 
@@ -13,6 +14,8 @@ public class ScrollableMenu : UIComponent
     private int _scrollOffset;
     private int _visibleOptionsCount; // Number of options visible at a time
     private bool _hasSelectedMenuItem = false; // Flag to check if a menu item has been selected
+    
+    private Font _defaultFont;
 
     private bool _horizontal;
     private bool _interactive;
@@ -29,6 +32,7 @@ public class ScrollableMenu : UIComponent
         _selectedOptionIndex = 0;
         _scrollOffset = 0;
         _visibleOptionsCount = visibleOptionsCount;
+        _defaultFont = ResourceCache.DefaultFont;
     }
 
     public override void Render(Renderer renderer)
@@ -67,7 +71,7 @@ public class ScrollableMenu : UIComponent
             renderer.EnqueueRenderCommand(new RenderCommand
             {
                 Type = RenderCommandType.DrawText,
-                Font = ResourceCache.DefaultFont.Handle,
+                Font = _defaultFont.Handle,
                 Text = _options[optionIndex],
                 TextColor = color,
                 DestRect = new SDL.SDL_Rect { x = offsetX, y = Y + 5, w = Width - 20, h = 30 },
@@ -75,7 +79,7 @@ public class ScrollableMenu : UIComponent
             });
 
             int w, h;
-            SDL_ttf.TTF_SizeText(ResourceCache.DefaultFont.Handle, _options[optionIndex], out w, out h);
+            SDL_ttf.TTF_SizeText(_defaultFont.Handle, _options[optionIndex], out w, out h);
 
             offsetX += w + 10; // Space between menu items
         }
@@ -105,7 +109,7 @@ public class ScrollableMenu : UIComponent
             renderer.EnqueueRenderCommand(new RenderCommand
             {
                 Type = RenderCommandType.DrawText,
-                Font = ResourceCache.DefaultFont.Handle,
+                Font = _defaultFont.Handle,
                 Text = _options[optionIndex],
                 TextColor = color,
                 DestRect = new SDL.SDL_Rect { x = X + 10, y = offsetY, w = Width - 20, h = 30 },
@@ -248,5 +252,28 @@ public class ScrollableMenu : UIComponent
     public override void SetFocus(bool focus)
     {
         IsFocused = focus;
+    }
+    
+    // New Methods
+    public void AddOption(string option)
+    {
+        _options.Add(option);
+    }
+
+    public void Clear()
+    {
+        _options.Clear();
+        _selectedOptionIndex = 0;
+        _scrollOffset = 0;
+    }
+
+    public bool HasSelection()
+    {
+        return _selectedOptionIndex >= 0 && _selectedOptionIndex < _options.Count;
+    }
+    
+    public void SetFont(Font font)
+    {
+        _defaultFont = font;
     }
 }

@@ -178,4 +178,14 @@ public class UISystem
     {
         return _menuSystems[id];
     }
+    
+    public bool IsMenuActive(string id)
+    {
+        return _activeMenu == id;
+    }
+    
+    public bool IsHUDActive(string id)
+    {
+        return _activeHUD == id;
+    }
 }

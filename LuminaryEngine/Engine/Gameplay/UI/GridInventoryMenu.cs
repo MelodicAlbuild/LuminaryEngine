@@ -1,4 +1,5 @@
-﻿using LuminaryEngine.Engine.Core.Rendering;
+﻿using LuminaryEngine.Engine.Core.Logging;
+using LuminaryEngine.Engine.Core.Rendering;
 using LuminaryEngine.Engine.Core.Rendering.Textures;
 using LuminaryEngine.Engine.Core.ResourceManagement;
 using LuminaryEngine.Engine.Gameplay.Items;

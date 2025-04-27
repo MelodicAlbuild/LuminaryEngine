@@ -16,4 +16,5 @@ public enum ActionType
     MenuRight,
     OpenOptions,
     OpenInventory,
+    Escape
 }

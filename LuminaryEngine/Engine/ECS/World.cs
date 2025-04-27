@@ -196,6 +196,11 @@ public class World
 
     public void SwitchLevel(int newLevelId, Vector2 exitLocation, bool moveToExit = true)
     {
+        if (newLevelId == -1)
+        {
+            newLevelId = 0;
+        }
+        
         if (newLevelId < 0 || newLevelId >= _ldtkWorld.Levels.Count)
         {
             throw new ArgumentOutOfRangeException(nameof(newLevelId), "Invalid level ID.");

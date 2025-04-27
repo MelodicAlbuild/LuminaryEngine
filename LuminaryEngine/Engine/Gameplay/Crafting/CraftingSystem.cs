@@ -5,7 +5,7 @@ namespace LuminaryEngine.Engine.Gameplay.Crafting;
 
 public class CraftingSystem
 {
-    public CraftingSystem Instance;
+    public static CraftingSystem Instance;
     
     private readonly Dictionary<string, Recipe> _recipes = new();
 
@@ -33,6 +33,11 @@ public class CraftingSystem
         {
             _recipes.TryAdd(recipe.RecipeID, recipe);
         }
+    }
+
+    public bool TryGetRecipe(string recipeID, out Recipe recipe)
+    {
+        return _recipes.TryGetValue(recipeID, out recipe);
     }
 
     public bool CanCraft(string recipeID, InventoryComponent inventory)

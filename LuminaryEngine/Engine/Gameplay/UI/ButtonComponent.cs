@@ -10,6 +10,9 @@ public class ButtonComponent : UIComponent
     public Action OnClick { get; set; }
     private TextComponent _textComponent;
 
+    private SDL.SDL_Color _defaultBackgroundColor;
+    private SDL.SDL_Color _defaultTextColor;
+
     public ButtonComponent(
         string label,
         Font font,
@@ -28,6 +31,9 @@ public class ButtonComponent : UIComponent
         _textComponent =
             new TextComponent(label, font, labelColor, x + 10, y + 10, width - 20, height - 20,
                 zIndex + 1); // Padding for the label
+        
+        _defaultBackgroundColor = backgroundColor;
+        _defaultTextColor = labelColor;
     }
 
     public override void Render(Renderer renderer)
@@ -80,5 +86,17 @@ public class ButtonComponent : UIComponent
     public override void SetFocus(bool isFocused)
     {
         IsFocused = isFocused;
+    }
+    
+    public void Dim()
+    {
+        BackgroundColor = _defaultBackgroundColor with { a = 150 }; // Dimmed color
+        _textComponent.SetColor(_defaultTextColor with { a = 150 }); // Dimmed text color
+    }
+    
+    public void Undim() 
+    {
+        BackgroundColor = _defaultBackgroundColor with { a = 255 }; // Original color
+        _textComponent.SetColor(_defaultTextColor with { a = 255 }); // Original text color
     }
 }

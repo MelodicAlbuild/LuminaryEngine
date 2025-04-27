@@ -11,6 +11,7 @@ using LuminaryEngine.Engine.Gameplay.Items;
 using LuminaryEngine.Engine.Gameplay.NPC;
 using LuminaryEngine.Engine.Gameplay.Spirits;
 using LuminaryEngine.Engine.Gameplay.Stations;
+using LuminaryEngine.Engine.Gameplay.UI;
 using SDL2;
 
 namespace LuminaryEngine.Engine.Gameplay.Player;
@@ -215,7 +216,11 @@ public class PlayerComponent : IComponent
 
                             if (station is CraftingStation craftingStation)
                             {
-                                LuminLog.Debug("Crafting station found");
+                                if (!_game.UISystem.IsMenuActive("Crafting"))
+                                {
+                                    (_game.UISystem.GetMenuSystem("Crafting") as CraftingMenuSystem).SetStation(craftingStation);
+                                    _game.UISystem.ActivateMenu("Crafting");
+                                }
                             }
                             
                             break;

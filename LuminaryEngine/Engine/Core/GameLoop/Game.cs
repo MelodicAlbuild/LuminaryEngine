@@ -183,6 +183,8 @@ public class Game
         InputMappingSystem.Instance.MapActionToKey(ActionType.OpenOptions, SDL_Scancode.SDL_SCANCODE_P);
         InputMappingSystem.Instance.MapActionToKey(ActionType.OpenInventory, SDL_Scancode.SDL_SCANCODE_I);
 
+        InputMappingSystem.Instance.MapActionToKey(ActionType.Escape, SDL_Scancode.SDL_SCANCODE_ESCAPE);
+        
         #endregion
 
         if (_saveData != null)

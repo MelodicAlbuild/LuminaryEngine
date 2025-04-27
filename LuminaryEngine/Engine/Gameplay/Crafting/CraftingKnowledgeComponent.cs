@@ -1,6 +1,8 @@
-﻿namespace LuminaryEngine.Engine.Gameplay.Crafting;
+﻿using LuminaryEngine.Engine.ECS;
 
-public class CraftingKnowledgeComponent
+namespace LuminaryEngine.Engine.Gameplay.Crafting;
+
+public class CraftingKnowledgeComponent : IComponent
 {
     // A set of known recipe IDs for the player.
     public HashSet<string> KnownRecipeIDs { get; private set; }

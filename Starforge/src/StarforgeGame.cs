@@ -4,6 +4,7 @@ using LuminaryEngine.Engine.Core.Input;
 using LuminaryEngine.Engine.Core.Rendering.Sprites;
 using LuminaryEngine.Engine.ECS;
 using LuminaryEngine.Engine.ECS.Components;
+using LuminaryEngine.Engine.Gameplay.Crafting;
 using LuminaryEngine.Engine.Gameplay.Player;
 using LuminaryEngine.Engine.Gameplay.UI;
 using NuGet.Configuration;
@@ -46,6 +47,8 @@ public class StarforgeGame : Game
         player.AddComponent(new SmoothMovementComponent(100f, 32));
         player.AddComponent(new AnimationComponent());
         player.AddComponent(new InventoryComponent());
+        player.AddComponent(new CraftingKnowledgeComponent());
+        
         if (SaveData != null)
         {
             player.GetComponent<InventoryComponent>().SetInventory(SaveData.InventoryItems);
@@ -60,8 +63,13 @@ public class StarforgeGame : Game
                 player.GetComponent<AnimationComponent>());
         }
 
+        player.GetComponent<CraftingKnowledgeComponent>().LearnRecipe("BasicAnvil:FlamingStick");
+
         GridInventoryMenu gridInventoryMenu =
             new GridInventoryMenu(player.GetComponent<InventoryComponent>(), ResourceCache, 80, 50, 480, 250);
         UISystem.RegisterMenu("Inventory", gridInventoryMenu);
+        
+        MenuSystem craftingMenuSystem = new CraftingMenuSystem(CraftingSystem.Instance, player.GetComponent<InventoryComponent>(), player.GetComponent<CraftingKnowledgeComponent>(), ResourceCache, UISystem, 80, 50, 480, 250);
+        UISystem.RegisterMenu("Crafting", craftingMenuSystem);
     }
 }

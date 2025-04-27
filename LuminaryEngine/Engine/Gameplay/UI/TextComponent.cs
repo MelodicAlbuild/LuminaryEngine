@@ -41,30 +41,35 @@ public class TextComponent : UIComponent
         if (Font == null || string.IsNullOrEmpty(text)) return;
 
         wrappedLines.Clear();
-        string[] words = text.Split(' ');
-        string currentLine = "";
+        string[] lines = text.Split('\n'); // Split the text into lines based on newlines
         int spaceWidth, lineHeight;
         SDL_ttf.TTF_SizeText(Font.Handle, " ", out spaceWidth, out lineHeight);
 
-        foreach (var word in words)
+        foreach (var line in lines)
         {
-            int textWidth, textHeight;
-            SDL_ttf.TTF_SizeText(Font.Handle, (currentLine + word).Trim(), out textWidth, out textHeight);
+            string[] words = line.Split(' '); // Further split each line into words
+            string currentLine = "";
 
-            if (textWidth > Width && !string.IsNullOrEmpty(currentLine))
+            foreach (var word in words)
+            {
+                int textWidth, textHeight;
+                SDL_ttf.TTF_SizeText(Font.Handle, (currentLine + word).Trim(), out textWidth, out textHeight);
+
+                if (textWidth > Width && !string.IsNullOrEmpty(currentLine))
+                {
+                    wrappedLines.Add(currentLine.Trim());
+                    currentLine = word + " ";
+                }
+                else
+                {
+                    currentLine += word + " ";
+                }
+            }
+
+            if (!string.IsNullOrEmpty(currentLine))
             {
                 wrappedLines.Add(currentLine.Trim());
-                currentLine = word + " ";
             }
-            else
-            {
-                currentLine += word + " ";
-            }
-        }
-
-        if (!string.IsNullOrEmpty(currentLine))
-        {
-            wrappedLines.Add(currentLine.Trim());
         }
     }
 
@@ -116,5 +121,10 @@ public class TextComponent : UIComponent
     {
         Text = text;
         WrapText(text); // Recalculate wrapped lines with the new text
+    }
+    
+    public void SetColor(SDL.SDL_Color color)
+    {
+        Color = color;
     }
 }
